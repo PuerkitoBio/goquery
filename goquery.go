@@ -6,6 +6,7 @@ import (
 	//"fmt"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 )
 
@@ -131,13 +132,12 @@ func (this *Selection) AddFromSelection(sel *Selection) *Selection {
 	return this
 }
 
-// The Attr() method gets the attribute value for only the first element in the Selection.
-// To get the value for each element individually, use a looping construct such as Each() or Map() method.
-func (this *Selection) Attr(attrName string) (val string, exists bool) {
-	if this.Nodes == nil || len(this.Nodes) == 0 {
+func getAttributeValue(attrName string, n *html.Node) (val string, exists bool) {
+	if n == nil {
 		return
 	}
-	for _, a := range this.Nodes[0].Attr {
+
+	for _, a := range n.Attr {
 		if a.Key == attrName {
 			val = a.Val
 			exists = true
@@ -145,6 +145,15 @@ func (this *Selection) Attr(attrName string) (val string, exists bool) {
 		}
 	}
 	return
+}
+
+// The Attr() method gets the attribute value for only the first element in the Selection.
+// To get the value for each element individually, use a looping construct such as Each() or Map() method.
+func (this *Selection) Attr(attrName string) (val string, exists bool) {
+	if len(this.Nodes) == 0 {
+		return
+	}
+	return getAttributeValue(attrName, this.Nodes[0])
 }
 
 // Returns a new Selection object.
@@ -238,4 +247,23 @@ func (this *Selection) Get(index int) *html.Node {
 		return this.Nodes[index]
 	}
 	return nil
+}
+
+// Returns true if at least one node in the selection has the given class
+func (this *Selection) HasClass(class string) bool {
+	var rx = regexp.MustCompile("[\t\r\n]")
+
+	class = " " + class + " "
+	for _, n := range this.Nodes {
+		// Applies only to element nodes
+		if n.Type == html.ElementNode {
+			if elClass, ok := getAttributeValue("class", n); ok {
+				elClass = rx.ReplaceAllString(" "+elClass+" ", " ")
+				if strings.Index(elClass, class) > -1 {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
