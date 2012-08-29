@@ -55,14 +55,17 @@ func findWithContext(selector string, nodes ...*html.Node) []*html.Node {
 	return matches
 }
 
+// Returns a new Selection object
 func (this *Document) Find(selector string) *Selection {
 	return &Selection{findWithContext(selector, this.Root), this}
 }
 
+// Returns a new Selection object
 func (this *Selection) Find(selector string) *Selection {
 	return &Selection{findWithContext(selector, this.Nodes...), this.document}
 }
 
+// Returns this (same Selection object)
 func (this *Selection) Each(f func(int, *html.Node)) *Selection {
 	for i, n := range this.Nodes {
 		f(i, n)
@@ -77,7 +80,24 @@ func (this *Selection) Add(selector string) *Selection {
 	return this
 }
 
+// Adds nodes of the specified Selection object to the current selection. Returns this (the same Selection object).
 func (this *Selection) AddFromSelection(sel *Selection) *Selection {
 	this.Nodes = append(this.Nodes, sel.Nodes...)
 	return this
+}
+
+// The Attr() method gets the attribute value for only the first element in the Selection.
+// To get the value for each element individually, use a looping construct such as Each() or Map() method.
+func (this *Selection) Attr(attrName string) (val string, exists bool) {
+	if this.Nodes == nil || len(this.Nodes) == 0 {
+		return
+	}
+	for _, a := range this.Nodes[0].Attr {
+		if a.Key == attrName {
+			val = a.Val
+			exists = true
+			return
+		}
+	}
+	return
 }

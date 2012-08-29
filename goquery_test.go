@@ -2,7 +2,6 @@ package goquery
 
 import (
 	"exp/html"
-	"fmt"
 	"testing"
 )
 
@@ -19,7 +18,7 @@ func TestNewDocument(t *testing.T) {
 func TestFind(t *testing.T) {
 	sel := doc.Find("div.row-fluid")
 	if sel.Nodes == nil || len(sel.Nodes) != 9 {
-		t.Error(fmt.Sprintf("Expected 9 matching nodes, found %v.", len(sel.Nodes)))
+		t.Errorf("Expected 9 matching nodes, found %v.", len(sel.Nodes))
 	}
 }
 
@@ -45,7 +44,7 @@ func TestFindInvalidSelector(t *testing.T) {
 func TestChainedFind(t *testing.T) {
 	sel := doc.Find("div.hero-unit").Find(".row-fluid")
 	if sel.Nodes == nil || len(sel.Nodes) != 4 {
-		t.Error(fmt.Sprintf("Expected 4 matching nodes, found %v.", len(sel.Nodes)))
+		t.Errorf("Expected 4 matching nodes, found %v.", len(sel.Nodes))
 	}
 }
 
@@ -54,14 +53,14 @@ func TestEach(t *testing.T) {
 
 	sel := doc.Find(".hero-unit .row-fluid").Each(func(i int, n *html.Node) {
 		cnt++
-		t.Log(fmt.Sprintf("At index %v, node %v", i, n.Data))
+		t.Logf("At index %v, node %v", i, n.Data)
 	}).Find("a")
 
 	if cnt != 4 {
-		t.Error(fmt.Sprintf("Expected Each() to call function 4 times, got %v times.", cnt))
+		t.Errorf("Expected Each() to call function 4 times, got %v times.", cnt)
 	}
 	if len(sel.Nodes) != 6 {
-		t.Error(fmt.Sprintf("Expected 6 matching nodes, found %v.", len(sel.Nodes)))
+		t.Errorf("Expected 6 matching nodes, found %v.", len(sel.Nodes))
 	}
 }
 
@@ -78,4 +77,18 @@ func TestAdd(t *testing.T) {
 		t.Error("Expected nodes to be added to Selection.")
 	}
 	t.Logf("%v nodes after div.row-fluid and a were added.", len(sel.Nodes))
+}
+
+func TestAttrExists(t *testing.T) {
+	if val, ok := doc.Find("a").Attr("href"); !ok {
+		t.Error("Expected a value for the href attribute.")
+	} else {
+		t.Logf("Href of first anchor: %v.", val)
+	}
+}
+
+func TestAttrNotExist(t *testing.T) {
+	if val, ok := doc.Find("div.row-fluid").Attr("href"); ok {
+		t.Errorf("Expected no value for the href attribute, got %v.", val)
+	}
 }
