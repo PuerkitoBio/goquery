@@ -18,6 +18,8 @@ import (
 // - Contents() (similar to Children(), but includes text and comment nodes, so Children() should filter them out)
 // - End()
 // - Eq()
+// - Find() : Complete with Selection object and Node object as selectors
+// - Has()
 
 type Document struct {
 	Root *html.Node
@@ -223,4 +225,25 @@ func (this *Selection) FilterSelection(s *Selection) *Selection {
 		}
 	}
 	return &Selection{matches, this.document}
+}
+
+// Returns a new Selection object
+func (this *Selection) First() *Selection {
+	if len(this.Nodes) == 0 {
+		return &Selection{nil, this.document}
+	}
+	return &Selection{[]*html.Node{this.Nodes[0]}, this.document}
+}
+
+// Get() without parameter is not implemented, its behaviour would be exactly the same as getting selection.Nodes
+func (this *Selection) Get(index int) *html.Node {
+	var l = len(this.Nodes)
+
+	if index < 0 {
+		index += l // Negative index gets from the end
+	}
+	if index >= 0 && index < l {
+		return this.Nodes[index]
+	}
+	return nil
 }

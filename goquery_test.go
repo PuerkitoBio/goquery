@@ -168,3 +168,33 @@ func TestFilterSelection(t *testing.T) {
 		t.Errorf("Expected 1 node, found %v.", len(sel3.Nodes))
 	}
 }
+
+func TestFirst(t *testing.T) {
+	sel := doc.Find(".pvk-content").First()
+	if len(sel.Nodes) != 1 {
+		t.Errorf("Expected 1 node, found %v.", len(sel.Nodes))
+	}
+}
+
+func TestFirstEmpty(t *testing.T) {
+	sel := doc.Find(".pvk-zzcontentzz").First()
+	if len(sel.Nodes) != 0 {
+		t.Errorf("Expected 0 node, found %v.", len(sel.Nodes))
+	}
+}
+
+func TestGet(t *testing.T) {
+	sel := doc.Find(".pvk-content")
+	node := sel.Get(1)
+	if sel.Nodes[1] != node {
+		t.Errorf("Expected node %v to be %v.", node, sel.Nodes[1])
+	}
+	node = sel.Get(-3)
+	if sel.Nodes[0] != node {
+		t.Errorf("Expected node %v to be %v.", node, sel.Nodes[0])
+	}
+	node = sel.Get(129)
+	if node != nil {
+		t.Error("Expected node to be nil.")
+	}
+}
