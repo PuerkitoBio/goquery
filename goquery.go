@@ -168,21 +168,13 @@ func (this *Selection) ChildrenFiltered(selector string) *Selection {
 }
 
 func (this *Selection) Filter(selector string) *Selection {
-	var matches []*html.Node
-
 	sel, e := cascadia.Compile(selector)
 	if e != nil {
 		// Selector doesn't compile, which means empty selection
 		return &Selection{nil, this.document}
 	}
 
-	// Check for a match for each current selection
-	for _, n := range this.Nodes {
-		if sel(n) {
-			matches = append(matches, n)
-		}
-	}
-	return &Selection{matches, this.document}
+	return &Selection{sel.Filter(this.Nodes), this.document}
 }
 
 func (this *Selection) FilterFunction(f func(int, *Selection) bool) *Selection {
