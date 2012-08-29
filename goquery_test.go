@@ -35,7 +35,7 @@ func TestFindInvalidSelector(t *testing.T) {
 	if sel.Nodes != nil {
 		t.Error("Expected a Selection object with Nodes == nil.")
 	}
-	sel.Each(func(i int, n *html.Node) {
+	sel.Each(func(i int, n *Selection) {
 		cnt++
 	})
 	if cnt > 0 {
@@ -57,9 +57,9 @@ func TestChainedFind(t *testing.T) {
 func TestEach(t *testing.T) {
 	var cnt int
 
-	sel := doc.Find(".hero-unit .row-fluid").Each(func(i int, n *html.Node) {
+	sel := doc.Find(".hero-unit .row-fluid").Each(func(i int, n *Selection) {
 		cnt++
-		t.Logf("At index %v, node %v", i, n.Data)
+		t.Logf("At index %v, node %v", i, n.Nodes[0].Data)
 	}).Find("a")
 
 	if cnt != 4 {
