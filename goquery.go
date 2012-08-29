@@ -6,13 +6,18 @@ import (
 	//"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // TODO : Ensure no node is added more than once in a selection (especially with Add...)
 // TODO : Add the following methods:
 // - Closest()
 // - Parents()
-// - Fix ChildrenFiltered, by forking Cascadia and adding a MatchSingle() method?
+// - Contains() (static function?)
+// - Contents() (similar to Children(), but includes text and comment nodes, so Children() should filter them out)
+// - Each() should pass a Selection object over a single node, so that Attr() and such can be called
+// - End()
+// - Eq()
 
 type Document struct {
 	Root *html.Node
@@ -68,25 +73,26 @@ func findWithContext(selector string, nodes ...*html.Node) []*html.Node {
 
 func childrenWithContext(selector string, nodes ...*html.Node) []*html.Node {
 	var matches []*html.Node
-	//var allChildren bool
-	//var sel *cascadia.Selector
-	/*
-		if selector == "*" || selector == "" {
-			// Get all children
-			allChildren = true
-		} else {
-			if sel, e := cascadia.Compile(selector); e != nil {
-				// Selector doesn't compile, empty selection
-				return nil
-			}
+	var allChildren bool
+	var sel cascadia.Selector
+	var e error
+
+	selector = strings.TrimSpace(selector)
+	if selector == "*" || selector == "" {
+		// Get all children
+		allChildren = true
+	} else {
+		if sel, e = cascadia.Compile(selector); e != nil {
+			// Selector doesn't compile, empty selection
+			return nil
 		}
-	*/
+	}
+
 	for _, n := range nodes {
 		for _, nchild := range n.Child {
-			// TODO : At the moment, given Cascadia's API, cannot call Children with a selector string
-			//if allChildren /*|| sel(nchild)*/ {
-			matches = append(matches, nchild)
-			//}
+			if allChildren || sel(nchild) {
+				matches = append(matches, nchild)
+			}
 		}
 	}
 	return matches
