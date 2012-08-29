@@ -9,13 +9,13 @@ import (
 	"strings"
 )
 
+// TODO : Benchmarks
 // TODO : Ensure no node is added more than once in a selection (especially with Add...)
 // TODO : Add the following methods:
 // - Closest()
 // - Parents()
 // - Contains() (static function?)
 // - Contents() (similar to Children(), but includes text and comment nodes, so Children() should filter them out)
-// - Each() should pass a Selection object over a single node, so that Attr() and such can be called
 // - End()
 // - Eq()
 
@@ -163,4 +163,64 @@ func (this *Document) ChildrenFiltered(selector string) *Selection {
 // Returns a new Selection object.
 func (this *Selection) ChildrenFiltered(selector string) *Selection {
 	return &Selection{childrenWithContext(selector, this.Nodes...), this.document}
+}
+
+func (this *Selection) Filter(selector string) *Selection {
+	var matches []*html.Node
+
+	sel, e := cascadia.Compile(selector)
+	if e != nil {
+		// Selector doesn't compile, which means empty selection
+		return &Selection{nil, this.document}
+	}
+
+	// Check for a match for each current selection
+	for _, n := range this.Nodes {
+		if sel(n) {
+			matches = append(matches, n)
+		}
+	}
+	return &Selection{matches, this.document}
+}
+
+func (this *Selection) FilterFunction(f func(int, *Selection) bool) *Selection {
+	var matches []*html.Node
+
+	// Check for a match for each current selection
+	for i, n := range this.Nodes {
+		if f(i, &Selection{[]*html.Node{n}, this.document}) {
+			matches = append(matches, n)
+		}
+	}
+	return &Selection{matches, this.document}
+}
+
+func (this *Selection) FilterNode(node *html.Node) *Selection {
+	// TODO : Use Contains() on the this.Nodes array, if it contains, return node Selection, otherwise empty
+	for _, n := range this.Nodes {
+		if n == node {
+			return &Selection{[]*html.Node{n}, this.document}
+		}
+	}
+	return &Selection{nil, this.document}
+}
+
+func (this *Selection) FilterSelection(s *Selection) *Selection {
+	// TODO : Exactly an Union() of two Selections, so maybe call it Union(), or have it as synonymous
+	var matches []*html.Node
+
+	if s == nil {
+		return &Selection{nil, this.document}
+	}
+
+	// Check for a match for each current selection
+	for _, n1 := range this.Nodes {
+		for _, n2 := range s.Nodes {
+			if n1 == n2 {
+				matches = append(matches, n1)
+				break
+			}
+		}
+	}
+	return &Selection{matches, this.document}
 }
