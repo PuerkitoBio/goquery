@@ -20,10 +20,13 @@ Coming soon.
 
 ## License
 
-Coming soon.
+The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia's license is [here][caslic].
 
 [jquery]: http://jquery.com/
 [go]: http://golang.org/
 [exphtml]: http://code.google.com/p/go/source/browse#hg%2Fsrc%2Fpkg%2Fexp
 [cascadia]: http://code.google.com/p/cascadia/
 [wikiexp]: http://code.google.com/p/go-wiki/wiki/InstallingExp
+[bsd]: http://opensource.org/licenses/BSD-3-Clause
+[golic]: http://golang.org/LICENSE
+[caslic]: http://code.google.com/p/cascadia/source/browse/LICENSE
