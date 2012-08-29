@@ -3,15 +3,26 @@ package goquery
 import (
 	"code.google.com/p/cascadia"
 	"exp/html"
+	//"fmt"
 	"net/http"
 	"net/url"
 )
 
 // TODO : Ensure no node is added more than once in a selection (especially with Add...)
+// TODO : Add the following methods:
+// - Closest()
+// - Parents()
+// - Fix ChildrenFiltered, by forking Cascadia and adding a MatchSingle() method?
 
 type Document struct {
 	Root *html.Node
 	Url  *url.URL
+}
+
+func NewDocumentFromNode(root *html.Node) (d *Document) {
+	// Create and fill the document
+	d = &Document{root, nil}
+	return
 }
 
 func NewDocument(url string) (d *Document, e error) {
@@ -51,6 +62,32 @@ func findWithContext(selector string, nodes ...*html.Node) []*html.Node {
 	// Match the selector on each node
 	for _, n := range nodes {
 		matches = append(matches, sel.MatchAll(n)...)
+	}
+	return matches
+}
+
+func childrenWithContext(selector string, nodes ...*html.Node) []*html.Node {
+	var matches []*html.Node
+	//var allChildren bool
+	//var sel *cascadia.Selector
+	/*
+		if selector == "*" || selector == "" {
+			// Get all children
+			allChildren = true
+		} else {
+			if sel, e := cascadia.Compile(selector); e != nil {
+				// Selector doesn't compile, empty selection
+				return nil
+			}
+		}
+	*/
+	for _, n := range nodes {
+		for _, nchild := range n.Child {
+			// TODO : At the moment, given Cascadia's API, cannot call Children with a selector string
+			//if allChildren /*|| sel(nchild)*/ {
+			matches = append(matches, nchild)
+			//}
+		}
 	}
 	return matches
 }
@@ -100,4 +137,24 @@ func (this *Selection) Attr(attrName string) (val string, exists bool) {
 		}
 	}
 	return
+}
+
+// Returns a new Selection object.
+func (this *Document) Children() *Selection {
+	return this.ChildrenFiltered("")
+}
+
+// Returns a new Selection object.
+func (this *Selection) Children() *Selection {
+	return this.ChildrenFiltered("")
+}
+
+// Returns a new Selection object.
+func (this *Document) ChildrenFiltered(selector string) *Selection {
+	return &Selection{childrenWithContext(selector, this.Root), this}
+}
+
+// Returns a new Selection object.
+func (this *Selection) ChildrenFiltered(selector string) *Selection {
+	return &Selection{childrenWithContext(selector, this.Nodes...), this.document}
 }

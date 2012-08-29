@@ -2,16 +2,22 @@ package goquery
 
 import (
 	"exp/html"
+	"os"
 	"testing"
 )
 
 var doc *Document
 
 func TestNewDocument(t *testing.T) {
-	var e error
-	doc, e = NewDocument("http://provok.in")
-	if e != nil {
+	if f, e := os.Open("./testdata/page.html"); e != nil {
 		t.Error(e.Error())
+	} else {
+		defer f.Close()
+		if node, e := html.Parse(f); e != nil {
+			t.Error(e.Error())
+		} else {
+			doc = NewDocumentFromNode(node)
+		}
 	}
 }
 
@@ -90,5 +96,15 @@ func TestAttrExists(t *testing.T) {
 func TestAttrNotExist(t *testing.T) {
 	if val, ok := doc.Find("div.row-fluid").Attr("href"); ok {
 		t.Errorf("Expected no value for the href attribute, got %v.", val)
+	}
+}
+
+func TestChildren(t *testing.T) {
+	sel := doc.Find(".pvk-content").Children()
+	if len(sel.Nodes) != 13 {
+		t.Errorf("Expected 13 child nodes, got %v.", len(sel.Nodes))
+		for _, n := range sel.Nodes {
+			t.Logf("%+v", n)
+		}
 	}
 }

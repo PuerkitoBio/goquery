@@ -18,16 +18,9 @@ Once this is done, install GoQuery:
 
 GoQuery exposes two classes, `Document` and `Selection`. Unlike jQuery, which is loaded as part of a DOM document, and thus acts on its containing document, GoQuery doesn't know which HTML document to act upon. So it needs to be told, and that's what the `Document` class is for. It holds the root document node to manipulate, and can make selections on this document.
 
-### Document constructors
+Please note that Cascadia's selectors do NOT necessarily match all supported selectors of jQuery (Sizzle). See the [cascadia project][cascadia] for details.
 
-A `*Document` can be created by one of these methods:
-
-*    **NewDocument(url string) (*Document, error)** : loads the HTML document specified by the URL as a string, parses it to its in-memory node representation (using the experimental HTML package) and returns the document reference, or an error.
-*    **&Document{rootNode, nil}** : creates a document and sets its root node. Useful if you already parsed an HTML document and want to manipulate it using GoQuery.
-
-### .Add(string), .AddFromSelection(*Selection)
-
-
+(reference coming soon)
 
 ## License
 
