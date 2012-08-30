@@ -47,12 +47,19 @@ func nodeContains(container *html.Node, contained *html.Node) bool {
 
 // Checks if the target node is in the slice of nodes.
 func isInSlice(slice []*html.Node, node *html.Node) bool {
-	for _, n := range slice {
-		if n == node {
-			return true
+	return indexInSlice(slice, node) > -1
+}
+
+// Returns the index of the target node in the slice, or -1.
+func indexInSlice(slice []*html.Node, node *html.Node) int {
+	if node != nil {
+		for i, n := range slice {
+			if n == node {
+				return i
+			}
 		}
 	}
-	return false
+	return -1
 }
 
 // Appends the new nodes to the target slice, making sure no duplicate is added.

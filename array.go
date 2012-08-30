@@ -41,3 +41,49 @@ func (this *Selection) Get(index int) *html.Node {
 	}
 	return this.Nodes[index]
 }
+
+// Index() returns the position of the first element within the Selection object relative to
+// its sibling elements.
+func (this *Selection) Index() int {
+	// TODO : Eventually refactor with prevAll(), like jQuery's code
+	if len(this.Nodes) > 0 {
+		n := this.Nodes[0]
+		if p := n.Parent; p != nil {
+			var i = 0
+			for _, c := range p.Child {
+				if c == n {
+					// This is the index of the element
+					return i
+				} else if c.Type == html.ElementNode {
+					i++
+				}
+			}
+		}
+	}
+	return -1
+}
+
+// IndexSelector() returns the position of the first element within the Selection object
+// relative to the elements matched by the selector, or -1 if not found.
+func (this *Selection) IndexSelector(selector string) int {
+	if len(this.Nodes) > 0 {
+		sel := this.document.Find(selector)
+		return indexInSlice(sel.Nodes, this.Nodes[0])
+	}
+	return -1
+}
+
+// IndexOfNode() returns the position of the specified node within the Selection object,
+// or -1 if not found.
+func (this *Selection) IndexOfNode(node *html.Node) int {
+	return indexInSlice(this.Nodes, node)
+}
+
+// IndexOfSelection() returns the position of the first node in the specified Selection object
+// within this Selection object, or -1 if not found.
+func (this *Selection) IndexOfSelection(s *Selection) int {
+	if len(s.Nodes) > 0 {
+		return indexInSlice(this.Nodes, s.Nodes[0])
+	}
+	return -1
+}
