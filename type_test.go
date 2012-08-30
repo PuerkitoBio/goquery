@@ -8,6 +8,13 @@ import (
 
 var doc *Document
 
+func Doc() *Document {
+	if doc == nil {
+		EnsureDocLoaded()
+	}
+	return doc
+}
+
 func EnsureDocLoaded() {
 	if f, e := os.Open("./testdata/page.html"); e != nil {
 		panic(e.Error())

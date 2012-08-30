@@ -7,7 +7,7 @@ import (
 func TestEach(t *testing.T) {
 	var cnt int
 
-	sel := doc.Find(".hero-unit .row-fluid").Each(func(i int, n *Selection) {
+	sel := Doc().Find(".hero-unit .row-fluid").Each(func(i int, n *Selection) {
 		cnt++
 		t.Logf("At index %v, node %v", i, n.Nodes[0].Data)
 	}).Find("a")

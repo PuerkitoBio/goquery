@@ -5,7 +5,7 @@ import (
 )
 
 func TestFind(t *testing.T) {
-	sel := doc.Find("div.row-fluid")
+	sel := Doc().Find("div.row-fluid")
 	if sel.Nodes == nil || len(sel.Nodes) != 9 {
 		t.Errorf("Expected 9 matching nodes, found %v.", len(sel.Nodes))
 	}
@@ -18,13 +18,13 @@ func TestFindInvalidSelector(t *testing.T) {
 		}
 	}()
 
-	doc.Find(":+ ^")
+	Doc().Find(":+ ^")
 }
 
 func TestEachEmptySelection(t *testing.T) {
 	var cnt int
 
-	sel := doc.Find("zzzz")
+	sel := Doc().Find("zzzz")
 	sel.Each(func(i int, n *Selection) {
 		cnt++
 	})
@@ -38,14 +38,14 @@ func TestEachEmptySelection(t *testing.T) {
 }
 
 func TestChainedFind(t *testing.T) {
-	sel := doc.Find("div.hero-unit").Find(".row-fluid")
+	sel := Doc().Find("div.hero-unit").Find(".row-fluid")
 	if sel.Nodes == nil || len(sel.Nodes) != 4 {
 		t.Errorf("Expected 4 matching nodes, found %v.", len(sel.Nodes))
 	}
 }
 
 func TestChildren(t *testing.T) {
-	sel := doc.Find(".pvk-content").Children()
+	sel := Doc().Find(".pvk-content").Children()
 	if len(sel.Nodes) != 13 {
 		t.Errorf("Expected 13 child nodes, got %v.", len(sel.Nodes))
 		for _, n := range sel.Nodes {
@@ -55,7 +55,7 @@ func TestChildren(t *testing.T) {
 }
 
 func TestChildrenFiltered(t *testing.T) {
-	sel := doc.Find(".pvk-content").ChildrenFiltered(".hero-unit")
+	sel := Doc().Find(".pvk-content").ChildrenFiltered(".hero-unit")
 	if len(sel.Nodes) != 1 {
 		t.Errorf("Expected 1 child nodes, got %v.", len(sel.Nodes))
 		for _, n := range sel.Nodes {
@@ -65,7 +65,7 @@ func TestChildrenFiltered(t *testing.T) {
 }
 
 func TestChildrenFilteredNone(t *testing.T) {
-	sel := doc.Find(".pvk-content").ChildrenFiltered("a.btn")
+	sel := Doc().Find(".pvk-content").ChildrenFiltered("a.btn")
 	if len(sel.Nodes) != 0 {
 		t.Errorf("Expected 0 child node, got %v.", len(sel.Nodes))
 		for _, n := range sel.Nodes {

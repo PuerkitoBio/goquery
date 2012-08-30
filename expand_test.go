@@ -9,7 +9,7 @@ func TestAdd(t *testing.T) {
 
 	EnsureDocLoaded()
 
-	sel := doc.Find("div.row-fluid")
+	sel := Doc().Find("div.row-fluid")
 	cnt = len(sel.Nodes)
 	sel2 := sel.Add("a")
 	if sel != sel2 {
