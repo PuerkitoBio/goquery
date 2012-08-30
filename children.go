@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+// TODO : Filtered using Node and other Selection object
+
 // Returns a new Selection object.
 func (this *Document) Children() *Selection {
 	return this.ChildrenFiltered("")

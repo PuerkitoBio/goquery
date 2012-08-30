@@ -1,7 +1,6 @@
 package goquery
 
 // TODO : Benchmarks
-// TODO : Ensure no node is added more than once in a selection (especially with Add...)
 // TODO : Add the following methods:
 // - Closest()
 // - Parents()

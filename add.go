@@ -1,5 +1,7 @@
 package goquery
 
+// TODO : Avoid duplicates
+
 // Adds matching nodes to the current selection. Returns the same Selection object.
 // The new selector string is run in the context of the document of the Selection object.
 func (this *Selection) Add(selector string) *Selection {
