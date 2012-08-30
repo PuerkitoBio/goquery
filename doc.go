@@ -36,14 +36,14 @@ package goquery
 // x Find() : Complete with Selection object and Node object as selectors - Tree Traversal
 // x First() - Filtering
 // x Get() - Node (DOM) Manipulation
-// - Has() - Filtering
+// x Has() - Filtering
 // x HasClass() - Attributes
 // - Html() ? - Attributes
 // - Index() - DOM Manipulation
 // - Is() - Filtering
-// - Last() - Filtering
-// - Length() / Size() - jQUery property
-// - Map() - Filtering
+// x Last() - Filtering
+// x Length() / Size() - jQUery property
+// x Map() - Filtering
 // - Next() - Tree traversal
 // - NextAll() - Tree traversal
 // - NextUntil() - Tree traversal

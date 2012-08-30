@@ -60,8 +60,22 @@ func (this *Selection) FilterSelection(s *Selection) *Selection {
 func (this *Selection) Has(selector string) *Selection {
 	sel := this.document.Find(selector)
 
+	return this.HasSelection(sel)
+}
+
+func (this *Selection) HasNode(node *html.Node) *Selection {
 	return this.FilterFunction(func(_ int, s *Selection) bool {
-		// Add all nodes that contain one of the nodes selected by the Has() selector
+		// Add all nodes that contain the node specified
+		if s.Contains(node) {
+			return true
+		}
+		return false
+	})
+}
+
+func (this *Selection) HasSelection(sel *Selection) *Selection {
+	return this.FilterFunction(func(_ int, s *Selection) bool {
+		// Add all nodes that contain one of the nodes in the selection
 		for _, n := range sel.Nodes {
 			if s.Contains(n) {
 				return true

@@ -3,10 +3,13 @@ package goquery
 // First() reduces the set of matched elements to the first in the set.
 // It returns a new Selection object.
 func (this *Selection) First() *Selection {
-	if len(this.Nodes) == 0 {
-		return newEmptySelection(this.document)
-	}
-	return newSingleSelection(this.Nodes[0], this.document)
+	return this.Eq(0)
+}
+
+// Last() reduces the set of matched elements to the last in the set.
+// It returns a new Selection object.
+func (this *Selection) Last() *Selection {
+	return this.Eq(-1)
 }
 
 // Eq() reduces the set of matched elements to the one at the specified index.
