@@ -28,17 +28,17 @@ func (this *Selection) FilterFunction(f func(int, *Selection) bool) *Selection {
 }
 
 func (this *Selection) FilterNode(node *html.Node) *Selection {
-	// TODO : Use Contains() on the this.Nodes array, if it contains, return node Selection, otherwise empty
-	for _, n := range this.Nodes {
-		if n == node {
-			return newSingleSelection(n, this.document)
-		}
+	if isInSlice(this.Nodes, node) {
+		return newSingleSelection(node, this.document)
 	}
 	return newEmptySelection(this.document)
 }
 
+func (this *Selection) Union(s *Selection) *Selection {
+	return this.FilterSelection(s)
+}
+
 func (this *Selection) FilterSelection(s *Selection) *Selection {
-	// TODO : Exactly an Union() of two Selections, so maybe call it Union(), or have it as synonymous
 	var matches []*html.Node
 
 	if s == nil {
@@ -48,11 +48,25 @@ func (this *Selection) FilterSelection(s *Selection) *Selection {
 	// Check for a match for each current selection
 	for _, n1 := range this.Nodes {
 		for _, n2 := range s.Nodes {
-			if n1 == n2 {
+			if n1 == n2 && !isInSlice(matches, n2) {
 				matches = append(matches, n1)
 				break
 			}
 		}
 	}
 	return &Selection{matches, this.document}
+}
+
+func (this *Selection) Has(selector string) *Selection {
+	sel := this.document.Find(selector)
+
+	return this.FilterFunction(func(_ int, s *Selection) bool {
+		// Add all nodes that contain one of the nodes selected by the Has() selector
+		for _, n := range sel.Nodes {
+			if s.Contains(n) {
+				return true
+			}
+		}
+		return false
+	})
 }
