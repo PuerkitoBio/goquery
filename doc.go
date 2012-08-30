@@ -37,7 +37,7 @@ necessary since multiple return values cannot be used to allow a chainable inter
 */
 package goquery
 
-// array.go : Positional Manipulation: First(), Last(), Eq(), Get(), Index(), Slice()
+// DONE array.go : Positional Manipulation: First(), Last(), Eq(), Get(), Index(), Slice()
 // filter.go : Filtering: Filter(), Not(), Has(), End()
 // expand.go : "Expanding": Add(), AndSelf()
 // query.go : Reflect (query) node: Is(), Contains(), HasClass()
@@ -68,7 +68,7 @@ package goquery
 // x Has() - Filtering
 // x HasClass() - Attributes
 // - Html() ? - Attributes
-// - Index() - DOM Manipulation
+// x Index() - DOM Manipulation
 // - Is() - Filtering
 // x Last() - Filtering
 // x Length() / Size() - jQUery property

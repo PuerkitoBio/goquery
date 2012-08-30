@@ -85,6 +85,8 @@ func grep(sel *Selection, predicate func(i int, s *Selection) bool) (result []*h
 	return
 }
 
+// Creates a new Selection object based on the specified nodes, and keeps the source
+// Selection object on the stack (linked list).
 func pushStack(fromSel *Selection, nodes []*html.Node) (result *Selection) {
 	result = &Selection{nodes, fromSel.document, fromSel}
 	return

@@ -35,3 +35,17 @@ func NewDocument(url string) (d *Document, e error) {
 	d = &Document{root, res.Request.URL}
 	return
 }
+
+type Selection struct {
+	Nodes    []*html.Node
+	document *Document
+	prevSel  *Selection
+}
+
+func newEmptySelection(doc *Document) *Selection {
+	return &Selection{nil, doc, nil}
+}
+
+func newSingleSelection(node *html.Node, doc *Document) *Selection {
+	return &Selection{[]*html.Node{node}, doc, nil}
+}

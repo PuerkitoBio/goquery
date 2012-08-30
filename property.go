@@ -13,6 +13,14 @@ func (this *Selection) Attr(attrName string) (val string, exists bool) {
 	return getAttributeValue(attrName, this.Nodes[0])
 }
 
+func (this *Selection) Size() int {
+	return this.Length()
+}
+
+func (this *Selection) Length() int {
+	return len(this.Nodes)
+}
+
 // Private function to get the specified attribute's value from a node.
 func getAttributeValue(attrName string, n *html.Node) (val string, exists bool) {
 	if n == nil {
