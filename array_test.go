@@ -66,3 +66,30 @@ func TestSliceOutOfBounds(t *testing.T) {
 	}()
 	doc.Find(".pvk-content").Slice(2, 12)
 }
+
+func TestGet(t *testing.T) {
+	sel := doc.Find(".pvk-content")
+	node := sel.Get(1)
+	if sel.Nodes[1] != node {
+		t.Errorf("Expected node %v to be %v.", node, sel.Nodes[1])
+	}
+}
+
+func TestGetNegative(t *testing.T) {
+	sel := doc.Find(".pvk-content")
+	node := sel.Get(-3)
+	if sel.Nodes[0] != node {
+		t.Errorf("Expected node %v to be %v.", node, sel.Nodes[0])
+	}
+}
+
+func TestGetInvalid(t *testing.T) {
+	defer func() {
+		if e := recover(); e == nil {
+			t.Error("Expected a panic, Get() called with out of bounds index.")
+		}
+	}()
+
+	sel := doc.Find(".pvk-content")
+	sel.Get(129)
+}
