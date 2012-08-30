@@ -32,17 +32,13 @@ func childrenWithContext(selector string, nodes ...*html.Node) []*html.Node {
 	var matches []*html.Node
 	var allChildren bool
 	var sel cascadia.Selector
-	var e error
 
 	selector = strings.TrimSpace(selector)
 	if selector == "*" || selector == "" {
 		// Get all children
 		allChildren = true
 	} else {
-		if sel, e = cascadia.Compile(selector); e != nil {
-			// Selector doesn't compile, empty selection
-			return nil
-		}
+		sel = cascadia.MustCompile(selector)
 	}
 
 	for _, n := range nodes {

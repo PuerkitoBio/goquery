@@ -12,12 +12,19 @@ func TestFind(t *testing.T) {
 }
 
 func TestFindInvalidSelector(t *testing.T) {
+	defer func() {
+		if e := recover(); e == nil {
+			t.Error("Expected panic due to invalid selector.")
+		}
+	}()
+
+	doc.Find(":+ ^")
+}
+
+func TestEachEmptySelection(t *testing.T) {
 	var cnt int
 
-	sel := doc.Find(":+ ^")
-	if sel.Nodes != nil {
-		t.Error("Expected a Selection object with Nodes == nil.")
-	}
+	sel := doc.Find("zzzz")
 	sel.Each(func(i int, n *Selection) {
 		cnt++
 	})

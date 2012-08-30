@@ -29,7 +29,7 @@ func TestFilterFunction(t *testing.T) {
 
 func TestFilterNode(t *testing.T) {
 	sel := doc.Find(".pvk-content")
-	sel2 := sel.FilterNode(sel.Nodes[2])
+	sel2 := sel.FilterNodes(sel.Nodes[2])
 	if len(sel2.Nodes) != 1 {
 		t.Errorf("Expected 1 node, found %v.", len(sel2.Nodes))
 	}

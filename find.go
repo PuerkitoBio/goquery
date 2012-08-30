@@ -19,12 +19,7 @@ func (this *Selection) Find(selector string) *Selection {
 func findWithContext(selector string, nodes ...*html.Node) []*html.Node {
 	var matches []*html.Node
 
-	sel, e := cascadia.Compile(selector)
-	if e != nil {
-		// Selector doesn't compile, which means empty selection
-		return nil
-	}
-
+	sel := cascadia.MustCompile(selector)
 	// Match the selector on each node
 	for _, n := range nodes {
 		matches = append(matches, sel.MatchAll(n)...)

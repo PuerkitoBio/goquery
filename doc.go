@@ -37,11 +37,14 @@ necessary since multiple return values cannot be used to allow a chainable inter
 */
 package goquery
 
-// Positional Filtering: First(), Last(), Eq(), Get(), Index()
+// Positional Manipulation: First(), Last(), Eq(), Get(), Index(), Slice()
+// Filtering: Filter(), Not(), Has(), End()
 // "Expanding": Add(), AndSelf()
 // Reflect (query) node: Is(), Contains(), HasClass()
-// Inspect node: Contents(), Html(), Text(), Attr()
+// Inspect node: Contents(), Html(), Text(), Attr(), Val()
 // Selection "properties": Length(), Size()
+// Traversal: Find(), Children(), Parents...(), Next...(), Prev...(), Closest(), Siblings()
+// Iteration: Each(), Map()
 
 // TODO : Benchmarks
 
@@ -73,17 +76,17 @@ package goquery
 // - Next() - Tree traversal
 // - NextAll() - Tree traversal
 // - NextUntil() - Tree traversal
-// - Not() - Filtering
+// x Not() - Filtering
 // - Parent() - Tree traversal
 // - Parents() - Tree traversal
 // - ParentsUntil() - Tree traversal
 // - Prev() - Tree traversal
 // - PrevAll() - Tree traversal
 // - PrevUntil() - Tree traversal
-// - PushStack() ? - Internals
+// x PushStack() ? - Internals
 // - Siblings() - Tree traversal
 // - Slice() - Filtering
 // - Text() - DOM Manipulation
-// - ToArray() Is not implemented, is Selection.Nodes
-// - Unique() ? Or internally only, to remove duplicates and maintain node order? - Utilities
+// x ToArray() Is not implemented, is Selection.Nodes
+// x Unique() ? Or internally only, to remove duplicates and maintain node order? - Utilities
 // - Val() ? - Attributes

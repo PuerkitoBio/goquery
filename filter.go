@@ -6,61 +6,60 @@ import (
 )
 
 func (this *Selection) Filter(selector string) *Selection {
-	sel, e := cascadia.Compile(selector)
-	if e != nil {
-		// Selector doesn't compile, which means empty selection
-		return newEmptySelection(this.document)
-	}
+	return pushStack(this, winnow(this, selector, true))
+}
 
-	return &Selection{sel.Filter(this.Nodes), this.document, nil}
+func (this *Selection) Not(selector string) *Selection {
+	return pushStack(this, winnow(this, selector, false))
 }
 
 func (this *Selection) FilterFunction(f func(int, *Selection) bool) *Selection {
-	return &Selection{winnowFunction(this, f, true), this.document, nil}
+	return pushStack(this, winnowFunction(this, f, true))
 }
 
 func (this *Selection) NotFunction(f func(int, *Selection) bool) *Selection {
-	return &Selection{winnowFunction(this, f, false), this.document, nil}
+	return pushStack(this, winnowFunction(this, f, false))
 }
 
-func (this *Selection) FilterNode(node *html.Node) *Selection {
-	if isInSlice(this.Nodes, node) {
-		return newSingleSelection(node, this.document)
-	}
-	return newEmptySelection(this.document)
+func (this *Selection) FilterNodes(nodes ...*html.Node) *Selection {
+	return pushStack(this, winnowNodes(this, nodes, true))
+}
+
+func (this *Selection) NotNodes(nodes ...*html.Node) *Selection {
+	return pushStack(this, winnowNodes(this, nodes, false))
+}
+
+func (this *Selection) FilterSelection(s *Selection) *Selection {
+	return pushStack(this, winnowNodes(this, s.Nodes, true))
+}
+
+func (this *Selection) NotSelection(s *Selection) *Selection {
+	return pushStack(this, winnowNodes(this, s.Nodes, false))
 }
 
 func (this *Selection) Union(s *Selection) *Selection {
 	return this.FilterSelection(s)
 }
 
-func (this *Selection) FilterSelection(s *Selection) *Selection {
-	var matches []*html.Node
+func winnow(sel *Selection, selector string, keep bool) []*html.Node {
+	cs := cascadia.MustCompile(selector)
 
-	if s == nil {
-		return newEmptySelection(this.document)
+	// Optimize if keep is requested
+	if keep {
+		return cs.Filter(sel.Nodes)
+	} else {
+		// Use grep
+		return grep(sel, func(i int, s *Selection) bool {
+			return !cs(s.Get(0))
+		})
 	}
-
-	// Check for a match for each current selection
-	for _, n1 := range this.Nodes {
-		for _, n2 := range s.Nodes {
-			if n1 == n2 && !isInSlice(matches, n2) {
-				matches = append(matches, n1)
-				break
-			}
-		}
-	}
-	return &Selection{matches, this.document, nil}
+	return nil
 }
 
-func winnow(sel *Selection, selector string) []*html.Node {
-	cs, e := cascadia.Compile(selector)
-	if e != nil {
-		// Selector doesn't compile, which means empty selection
-		return nil
-	}
-
-	return cs.Filter(sel.Nodes)
+func winnowNodes(sel *Selection, nodes []*html.Node, keep bool) []*html.Node {
+	return grep(sel, func(i int, s *Selection) bool {
+		return isInSlice(nodes, s.Get(0)) == keep
+	})
 }
 
 // Identical functionality for FilterFunction() and NotFunction(), only keep changes.
