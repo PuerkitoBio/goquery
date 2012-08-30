@@ -67,3 +67,18 @@ func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node) []*html.No
 
 	return target
 }
+
+// Loop through a selection, returning only those nodes that pass the predicate function.
+func grep(sel *Selection, predicate func(i int, s *Selection) bool) (result []*html.Node) {
+	for i, n := range sel.Nodes {
+		if predicate(i, newSingleSelection(n, sel.document)) {
+			result = append(result, n)
+		}
+	}
+	return
+}
+
+func pushStack(fromSel *Selection, nodes []*html.Node) (result *Selection) {
+	result = &Selection{nodes, fromSel.document, fromSel}
+	return
+}

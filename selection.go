@@ -19,9 +19,9 @@ func (this *Selection) Length() int {
 }
 
 func newEmptySelection(doc *Document) *Selection {
-	return &Selection{nil, doc}
+	return &Selection{nil, doc, nil}
 }
 
 func newSingleSelection(node *html.Node, doc *Document) *Selection {
-	return &Selection{[]*html.Node{node}, doc}
+	return &Selection{[]*html.Node{node}, doc, nil}
 }

@@ -20,12 +20,12 @@ func (this *Selection) Children() *Selection {
 
 // Returns a new Selection object.
 func (this *Document) ChildrenFiltered(selector string) *Selection {
-	return &Selection{childrenWithContext(selector, this.Root), this}
+	return &Selection{childrenWithContext(selector, this.Root), this, nil}
 }
 
 // Returns a new Selection object.
 func (this *Selection) ChildrenFiltered(selector string) *Selection {
-	return &Selection{childrenWithContext(selector, this.Nodes...), this.document}
+	return &Selection{childrenWithContext(selector, this.Nodes...), this.document, nil}
 }
 
 func childrenWithContext(selector string, nodes ...*html.Node) []*html.Node {

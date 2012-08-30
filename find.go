@@ -7,12 +7,12 @@ import (
 
 // Returns a new Selection object
 func (this *Document) Find(selector string) *Selection {
-	return &Selection{findWithContext(selector, this.Root), this}
+	return &Selection{findWithContext(selector, this.Root), this, nil}
 }
 
 // Returns a new Selection object
 func (this *Selection) Find(selector string) *Selection {
-	return &Selection{findWithContext(selector, this.Nodes...), this.document}
+	return &Selection{findWithContext(selector, this.Nodes...), this.document, nil}
 }
 
 // Private internal implementation of the various Find() methods

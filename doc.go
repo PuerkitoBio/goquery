@@ -1,10 +1,25 @@
 // Copyright (c) 2012, Martin Angers & Contributors
 // All rights reserved.
-// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-// * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-// * Neither the name of the author nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// Redistribution and use in source and binary forms, with or without modification,
+// are permitted provided that the following conditions are met:
+//
+// * Redistributions of source code must retain the above copyright notice,
+// this list of conditions and the following disclaimer.
+// * Redistributions in binary form must reproduce the above copyright notice,
+// this list of conditions and the following disclaimer in the documentation and/or
+// other materials provided with the distribution.
+// * Neither the name of the author nor the names of its contributors may be used to
+// endorse or promote products derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+// OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+// AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+// WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+// WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*
 Package goquery implements features similar to jQuery, including the chainable syntax,
@@ -15,12 +30,23 @@ as "exp/html". See this tutorial on how to install it accordingly: http://code.g
 
 It uses Cascadia as CSS selector (similar to Sizzle for jQuery). This dependency is automatically installed
 when using "go get ..." to install GoQuery.
+
+To provide chainable interface, error management is strict, and goquery panics if an invalid Cascadia selector
+is used (basically the same behavior as jQuery/Sizzle/document.querySelectorAll, an error is thrown). This is
+necessary since multiple return values cannot be used to allow a chainable interface.
 */
 package goquery
 
-// Positional Filtering: First(), Last(), Eq()
+// Positional Filtering: First(), Last(), Eq(), Get(), Index()
+// "Expanding": Add(), AndSelf()
+// Reflect (query) node: Is(), Contains(), HasClass()
+// Inspect node: Contents(), Html(), Text(), Attr()
+// Selection "properties": Length(), Size()
 
 // TODO : Benchmarks
+
+// TODO : Check each method, if it applies to any node or only Element nodes (Cascadia's selectors already make sure of that)
+
 // TODO : Add the following methods:
 // x Add() - Misc. Traversing
 // - AndSelf() - Misc. Traversing

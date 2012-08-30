@@ -12,19 +12,15 @@ func (this *Selection) Filter(selector string) *Selection {
 		return newEmptySelection(this.document)
 	}
 
-	return &Selection{sel.Filter(this.Nodes), this.document}
+	return &Selection{sel.Filter(this.Nodes), this.document, nil}
 }
 
 func (this *Selection) FilterFunction(f func(int, *Selection) bool) *Selection {
-	var matches []*html.Node
+	return &Selection{winnowFunction(this, f, true), this.document, nil}
+}
 
-	// Check for a match for each current selection
-	for i, n := range this.Nodes {
-		if f(i, newSingleSelection(n, this.document)) {
-			matches = append(matches, n)
-		}
-	}
-	return &Selection{matches, this.document}
+func (this *Selection) NotFunction(f func(int, *Selection) bool) *Selection {
+	return &Selection{winnowFunction(this, f, false), this.document, nil}
 }
 
 func (this *Selection) FilterNode(node *html.Node) *Selection {
@@ -54,7 +50,24 @@ func (this *Selection) FilterSelection(s *Selection) *Selection {
 			}
 		}
 	}
-	return &Selection{matches, this.document}
+	return &Selection{matches, this.document, nil}
+}
+
+func winnow(sel *Selection, selector string) []*html.Node {
+	cs, e := cascadia.Compile(selector)
+	if e != nil {
+		// Selector doesn't compile, which means empty selection
+		return nil
+	}
+
+	return cs.Filter(sel.Nodes)
+}
+
+// Identical functionality for FilterFunction() and NotFunction(), only keep changes.
+func winnowFunction(sel *Selection, f func(int, *Selection) bool, keep bool) []*html.Node {
+	return grep(sel, func(i int, s *Selection) bool {
+		return f(i, s) == keep
+	})
 }
 
 func (this *Selection) Has(selector string) *Selection {
