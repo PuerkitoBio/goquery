@@ -21,8 +21,11 @@ func (this *Selection) Eq(index int) *Selection {
 	if index < 0 {
 		index += l
 	}
-	if index > -1 && index < l {
-		return newSingleSelection(this.Nodes[index], this.document)
-	}
-	return newEmptySelection(this.document)
+	return this.Slice(index, index+1)
+}
+
+// Slice() reduces the set of matched elements to a subset specified by a range of indices.
+// At the moment, negative indices are not supported.
+func (this *Selection) Slice(start int, end int) *Selection {
+	return pushStack(this, this.Nodes[start:end])
 }

@@ -37,14 +37,14 @@ necessary since multiple return values cannot be used to allow a chainable inter
 */
 package goquery
 
-// Positional Manipulation: First(), Last(), Eq(), Get(), Index(), Slice()
-// Filtering: Filter(), Not(), Has(), End()
-// "Expanding": Add(), AndSelf()
-// Reflect (query) node: Is(), Contains(), HasClass()
-// Inspect node: Contents(), Html(), Text(), Attr(), Val()
-// Selection "properties": Length(), Size()
-// Traversal: Find(), Children(), Parents...(), Next...(), Prev...(), Closest(), Siblings()
-// Iteration: Each(), Map()
+// array.go : Positional Manipulation: First(), Last(), Eq(), Get(), Index(), Slice()
+// filter.go : Filtering: Filter(), Not(), Has(), End()
+// expand.go : "Expanding": Add(), AndSelf()
+// query.go : Reflect (query) node: Is(), Contains(), HasClass()
+// property.go : Inspect node: Contents(), Html(), Text(), Attr(), Val(), Length(), Size()
+// traversal.go : Traversal: Find(), Children(), Parents...(), Next...(), Prev...(), Closest(), Siblings()
+// iteration.go : Iteration: Each(), Map()
+// type.go : Selection and Document
 
 // TODO : Benchmarks
 
@@ -85,7 +85,7 @@ package goquery
 // - PrevUntil() - Tree traversal
 // x PushStack() ? - Internals
 // - Siblings() - Tree traversal
-// - Slice() - Filtering
+// x Slice() - Filtering
 // - Text() - DOM Manipulation
 // x ToArray() Is not implemented, is Selection.Nodes
 // x Unique() ? Or internally only, to remove duplicates and maintain node order? - Utilities
