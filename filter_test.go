@@ -91,3 +91,44 @@ func TestUnion(t *testing.T) {
 		t.Errorf("Expected 6 nodes, found %v.", len(sel2.Nodes))
 	}
 }
+
+func TestHas(t *testing.T) {
+	sel := Doc().Find(".container-fluid").Has(".center-content")
+	if len(sel.Nodes) != 2 {
+		t.Errorf("Expected 2 nodes, found %v.", len(sel.Nodes))
+	}
+	// Has() returns the high-level .container-fluid div, and the one that is the immediate parent of center-content
+}
+
+func TestHasNodes(t *testing.T) {
+	sel := Doc().Find(".container-fluid")
+	sel2 := Doc().Find(".center-content")
+	sel = sel.HasNodes(sel2.Nodes...)
+	if len(sel.Nodes) != 2 {
+		t.Errorf("Expected 2 nodes, found %v.", len(sel.Nodes))
+	}
+	// Has() returns the high-level .container-fluid div, and the one that is the immediate parent of center-content
+}
+
+func TestHasSelection(t *testing.T) {
+	sel := Doc().Find("p")
+	sel2 := Doc().Find("small")
+	sel = sel.HasSelection(sel2)
+	if len(sel.Nodes) != 1 {
+		t.Errorf("Expected 1 node, found %v.", len(sel.Nodes))
+	}
+}
+
+func TestEnd(t *testing.T) {
+	sel := Doc().Find("p").Has("small").End()
+	if len(sel.Nodes) != 4 {
+		t.Errorf("Expected 4 nodes, found %v.", len(sel.Nodes))
+	}
+}
+
+func TestEndToTop(t *testing.T) {
+	sel := Doc().Find("p").Has("small").End().End()
+	if len(sel.Nodes) != 0 {
+		t.Errorf("Expected 0 node, found %v.", len(sel.Nodes))
+	}
+}
