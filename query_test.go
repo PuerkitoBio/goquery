@@ -4,6 +4,64 @@ import (
 	"testing"
 )
 
+func TestIs(t *testing.T) {
+	sel := Doc().Find(".footer p:nth-child(1)")
+	if !sel.Is("p") {
+		t.Error("Expected .footer p:nth-child(1) to be p.")
+	}
+}
+
+func TestIsPositional(t *testing.T) {
+	sel := Doc().Find(".footer p:nth-child(2)")
+	if !sel.Is("p:nth-child(2)") {
+		t.Error("Expected .footer p:nth-child(2) to be p:nth-child(2).")
+	}
+}
+
+func TestIsPositionalNot(t *testing.T) {
+	sel := Doc().Find(".footer p:nth-child(1)")
+	if sel.Is("p:nth-child(2)") {
+		t.Error("Expected .footer p:nth-child(1) NOT to be p:nth-child(2).")
+	}
+}
+
+func TestIsFunction(t *testing.T) {
+	ok := Doc().Find("div").IsFunction(func(i int, s *Selection) bool {
+		return s.HasClass("container-fluid")
+	})
+
+	if !ok {
+		t.Error("Expected some div to have a container-fluid class.")
+	}
+}
+
+func TestIsSelection(t *testing.T) {
+	sel := Doc().Find("div")
+	sel2 := Doc().Find(".pvk-gutter")
+
+	if !sel.IsSelection(sel2) {
+		t.Error("Expected some div to have a pvk-gutter class.")
+	}
+}
+
+func TestIsSelectionNot(t *testing.T) {
+	sel := Doc().Find("div")
+	sel2 := Doc().Find("a")
+
+	if sel.IsSelection(sel2) {
+		t.Error("Expected some div NOT to be an anchor.")
+	}
+}
+
+func TestIsNodes(t *testing.T) {
+	sel := Doc().Find("div")
+	sel2 := Doc().Find(".footer")
+
+	if !sel.IsNodes(sel2.Nodes[0]) {
+		t.Error("Expected some div to have a footer class.")
+	}
+}
+
 func TestHasClass(t *testing.T) {
 	sel := Doc().Find("div")
 	if !sel.HasClass("span12") {
