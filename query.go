@@ -6,7 +6,24 @@ import (
 	"strings"
 )
 
-// Returns true if at least one node in the selection has the given class
+func (this *Selection) Is(selector string) bool {
+
+}
+
+func (this *Selection) IsFunction(func(int, *Selection) bool) bool {
+
+}
+
+func (this *Selection) IsSelection(s *Selection) bool {
+
+}
+
+func (this *Selection) IsNodes(nodes ...*html.Node) bool {
+
+}
+
+// HasClass() determines whether any of the matched elements are assigned the
+// given class.
 func (this *Selection) HasClass(class string) bool {
 	var rx = regexp.MustCompile("[\t\r\n]")
 
