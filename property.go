@@ -14,10 +14,12 @@ func (this *Selection) Attr(attrName string) (val string, exists bool) {
 	return getAttributeValue(attrName, this.Nodes[0])
 }
 
+// Size() is an alias for Length().
 func (this *Selection) Size() int {
 	return this.Length()
 }
 
+// Length() returns the number of elements in the Selection object.
 func (this *Selection) Length() int {
 	return len(this.Nodes)
 }
