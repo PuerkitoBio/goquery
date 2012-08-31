@@ -4,24 +4,6 @@ import (
 	"exp/html"
 )
 
-// Contains() returns true if the specified Node is within,
-// at any depth, one of the nodes in the Selection object.
-// It is NOT inclusive, to behave like jQuery's implementation, and
-// unlike Javascript's .contains(), so if the contained
-// node is itself in the selection, it returns false.
-func (this *Selection) Contains(n *html.Node) bool {
-	return sliceContains(this.Nodes, n)
-}
-
-// Contains() returns true if the specified Node is within,
-// at any depth, the root node of the Document object.
-// It is NOT inclusive, to behave like jQuery's implementation, and
-// unlike Javascript's .contains(), so if the contained
-// node is itself in the selection, it returns false.
-func (this *Document) Contains(n *html.Node) bool {
-	return sliceContains([]*html.Node{this.Root}, n)
-}
-
 // Loop through all container nodes to search for the target node.
 func sliceContains(container []*html.Node, contained *html.Node) bool {
 	for _, n := range container {

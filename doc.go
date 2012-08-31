@@ -41,7 +41,7 @@ https://github.com/puerkitobio/goquery
 package goquery
 
 // DONE array.go : Positional Manipulation: First(), Last(), Eq(), Get(), Index(), Slice()
-// filter.go : Filtering: Filter(), Not(), Has(), End()
+// TESTS filter.go : Filtering: Filter(), Not(), Has(), End()
 // expand.go : "Expanding": Add(), AndSelf()
 // query.go : Reflect (query) node: Is(), Contains(), HasClass()
 // property.go : Inspect node: Contents(), Html(), Text(), Attr(), Val(), Length(), Size()
@@ -62,7 +62,7 @@ package goquery
 // x Contains() (static function?) - Utilities - needs tests
 // - Contents() (similar to Children(), but includes text and comment nodes, so Children() should filter them out) - Misc. Traversing
 // x Each() - Traversing
-// - End() - Misc. Traversing
+// x End() - Misc. Traversing
 // x Eq() - Filtering
 // x Filter() - Filtering
 // x Find() : Complete with Selection object and Node object as selectors - Tree Traversal
