@@ -4,7 +4,7 @@ GoQuery brings a syntax and features similar to [jQuery][] to the [Go language][
 
 Supported functions are (will be) query-oriented features (`hasClass()`, `attr()` and the likes), as well as traversing functions that make sense given what we have to work with. This makes GoQuery a great library for scraping web pages.
 
-Syntax-wise, it is as close as possible to jQuery, with the same function names when possible, and that warm and fuzzy chainable interface.
+Syntax-wise, it is as close as possible to jQuery, with the same function names when possible, and that warm and fuzzy chainable interface. jQuery being the ultra-popular library that it is, I felt that writing a similar HTML-manipulating library was better to follow its API than to start anew, even though some of its methods are less than intuitive (looking at you, [index()][index]...).
 
 ## Installation
 
@@ -20,11 +20,11 @@ GoQuery exposes two classes, `Document` and `Selection`. Unlike jQuery, which is
 
 Please note that Cascadia's selectors do NOT necessarily match all supported selectors of jQuery (Sizzle). See the [cascadia project][cascadia] for details.
 
-[Reference documentation can be found here][doc].
+GoQuery's complete [godoc reference documentation can be found here][doc].
 
 ## Examples
 
-TODO...
+Coming soon...
 
 ## License
 
@@ -39,3 +39,4 @@ The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia'
 [golic]: http://golang.org/LICENSE
 [caslic]: http://code.google.com/p/cascadia/source/browse/LICENSE
 [doc]: http://go.pkgdoc.org/github.com/puerkitobio/goquery
+[index]: http://api.jquery.com/index/
