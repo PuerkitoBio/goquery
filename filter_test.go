@@ -94,9 +94,9 @@ func TestNotSelection(t *testing.T) {
 	}
 }
 
-func TestUnion(t *testing.T) {
+func TestIntersection(t *testing.T) {
 	sel := Doc().Find(".pvk-gutter")
-	sel2 := Doc().Find("div").Union(sel)
+	sel2 := Doc().Find("div").Intersection(sel)
 	if len(sel2.Nodes) != 6 {
 		t.Errorf("Expected 6 nodes, found %v.", len(sel2.Nodes))
 	}

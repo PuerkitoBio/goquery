@@ -22,27 +22,83 @@
 // WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*
-Package goquery implements features similar to jQuery, including the chainable syntax,
-to manipulate and query an HTML document.
+Package goquery implements features similar to jQuery, including the chainable
+syntax, to manipulate and query an HTML document.
 
-It depends on Go's experimental html package, which must be installed so that it can be imported
-as "exp/html". See this tutorial on how to install it accordingly: http://code.google.com/p/go-wiki/wiki/InstallingExp
+It depends on Go's experimental html package, which must be installed so that it
+can be imported as "exp/html". See this tutorial on how to install it 
+accordingly: http://code.google.com/p/go-wiki/wiki/InstallingExp
 
-It uses Cascadia as CSS selector (similar to Sizzle for jQuery). This dependency is automatically installed
-when using "go get ..." to install GoQuery.
+It uses Cascadia as CSS selector (similar to Sizzle for jQuery). This dependency
+is automatically installed when using "go get ..." to install GoQuery.
 
-To provide chainable interface, error management is strict, and goquery panics if an invalid Cascadia selector
-is used (basically the same behavior as jQuery/Sizzle/document.querySelectorAll, an error is thrown). This is
-necessary since multiple return values cannot be used to allow a chainable interface.
+To provide a chainable interface, error management is strict, and goquery panics
+if an invalid Cascadia selector is used (this is consistent with the behavior of
+jQuery/Sizzle/document.querySelectorAll, where an error is thrown). This is
+necessary since multiple return values cannot be used to allow a chainable 
+interface.
 
-It is hosted here, along with additional documentation in the README.md file:
-https://github.com/puerkitobio/goquery
+It is hosted on GitHub, along with additional documentation in the README.md
+file: https://github.com/puerkitobio/goquery
+
+The various methods are split into files based on the category of behavior:
+
+* array.go : array-like positional manipulation of the selection.
+    - First()
+    - Last()
+    - Eq()
+    - Get()
+    - Index...()
+    - Slice()
+
+* filter.go : filtering methods, that reduce the selection's set.
+    - Filter...()
+    - Not...()
+    - Has...()
+    - End()
+    - Intersection(), which is an alias of FilterSelection()
+
+* expand.go : methods that expand or augment the selection's set.
+    - Add...()
+    - AndSelf()
+    - Union(), which is an alias for AddSelection()
+
+* query.go : methods that query, or reflect, a node's identity.
+    - Contains()
+    - HasClass()
+    - Is...()
+
+* property.go : methods that inspect and get the node's properties values.
+    - Attr()
+    - Contents()
+    - Html()
+    - Length()
+    - Size(), which is an alias for Length()
+    - Text()
+    - Val()
+
+* traversal.go : methods to traverse the HTML document tree.
+    - Children...()
+    - Closest()
+    - Find...()
+    - Next...()
+    - Parent[s]...()
+    - Prev...()
+    - Siblings...()
+
+* iteration.go : methods to loop over the selection's nodes.
+    - Each()
+    - Map()
+
+* type.go : definition of the types exposed by GoQuery.
+    - Document
+    - Selection
 */
 package goquery
 
 // DONE array.go : Positional Manipulation: First(), Last(), Eq(), Get(), Index(), Slice()
 // DONE filter.go : Filtering: Filter(), Not(), Has(), End()
-// expand.go : "Expanding": Add(), AndSelf()
+// DONE expand.go : "Expanding": Add(), AndSelf()
 // query.go : Reflect (query) node: Is(), Contains(), HasClass()
 // property.go : Inspect node: Contents(), Html(), Text(), Attr(), Val(), Length(), Size()
 // traversal.go : Traversal: Find(), Children(), Parents...(), Next...(), Prev...(), Closest(), Siblings()
@@ -54,42 +110,42 @@ package goquery
 // TODO : Check each method, if it applies to any node or only Element nodes (Cascadia's selectors already make sure of that)
 
 // TODO : Add the following methods:
-// x Add() - Misc. Traversing
-// - AndSelf() - Misc. Traversing
-// x Attr() - Attributes
-// x Children() - Tree Traversal
+// x Add()
+// x AndSelf()
+// x Attr()
+// x Children()
 // - Closest() - Tree Traversal
-// x Contains() (static function?) - Utilities - needs tests
+// x Contains()
 // - Contents() (similar to Children(), but includes text and comment nodes, so Children() should filter them out) - Misc. Traversing
-// x Each() - Traversing
-// x End() - Misc. Traversing
-// x Eq() - Filtering
-// x Filter() - Filtering
-// x Find() : Complete with Selection object and Node object as selectors - Tree Traversal
-// x First() - Filtering
-// x Get() - Node (DOM) Manipulation
-// x Has() - Filtering
-// x HasClass() - Attributes
+// x Each()
+// x End()
+// x Eq()
+// x Filter()
+// - Find() : Complete with Selection object and Node object as selectors - Tree Traversal
+// x First()
+// x Get()
+// x Has()
+// x HasClass()
 // - Html() ? - Attributes
-// x Index() - DOM Manipulation
+// x Index()
 // - Is() - Filtering
-// x Last() - Filtering
-// x Length() / Size() - jQUery property
-// x Map() - Filtering
+// x Last()
+// x Length() / Size()
+// x Map()
 // - Next() - Tree traversal
 // - NextAll() - Tree traversal
 // - NextUntil() - Tree traversal
-// x Not() - Filtering
+// x Not()
 // - Parent() - Tree traversal
 // - Parents() - Tree traversal
 // - ParentsUntil() - Tree traversal
 // - Prev() - Tree traversal
 // - PrevAll() - Tree traversal
 // - PrevUntil() - Tree traversal
-// x PushStack() ? - Internals
+// x PushStack()
 // - Siblings() - Tree traversal
-// x Slice() - Filtering
+// x Slice()
 // - Text() - DOM Manipulation
-// x ToArray() Is not implemented, is Selection.Nodes
-// x Unique() ? Or internally only, to remove duplicates and maintain node order? - Utilities
+// x ToArray()
+// x Unique() internally only
 // - Val() ? - Attributes

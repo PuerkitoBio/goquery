@@ -4,8 +4,9 @@ import (
 	"exp/html"
 )
 
-// Attr() gets the specified attribute's value for the first element in the Selection.
-// To get the value for each element individually, use a looping construct such as Each() or Map() method.
+// Attr() gets the specified attribute's value for the first element in the
+// Selection. To get the value for each element individually, use a looping
+// construct such as Each() or Map() method.
 func (this *Selection) Attr(attrName string) (val string, exists bool) {
 	if len(this.Nodes) == 0 {
 		return

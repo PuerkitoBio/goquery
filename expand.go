@@ -21,6 +21,11 @@ func (this *Selection) AddSelection(sel *Selection) *Selection {
 	return this.AddNodes(sel.Nodes...)
 }
 
+// Union() is an alias for AddSelection().
+func (this *Selection) Union(sel *Selection) *Selection {
+	return this.AddSelection(sel)
+}
+
 // AddNodes() adds the specified nodes to those in the
 // current selection and returns a new Selection object.
 func (this *Selection) AddNodes(nodes ...*html.Node) *Selection {

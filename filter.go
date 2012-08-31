@@ -61,8 +61,8 @@ func (this *Selection) NotSelection(s *Selection) *Selection {
 	return pushStack(this, winnowNodes(this, s.Nodes, false))
 }
 
-// Union() is an alias for FilterSelection().
-func (this *Selection) Union(s *Selection) *Selection {
+// Intersection() is an alias for FilterSelection().
+func (this *Selection) Intersection(s *Selection) *Selection {
 	return this.FilterSelection(s)
 }
 
