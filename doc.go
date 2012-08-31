@@ -34,6 +34,9 @@ when using "go get ..." to install GoQuery.
 To provide chainable interface, error management is strict, and goquery panics if an invalid Cascadia selector
 is used (basically the same behavior as jQuery/Sizzle/document.querySelectorAll, an error is thrown). This is
 necessary since multiple return values cannot be used to allow a chainable interface.
+
+It is hosted here, along with additional documentation in the README.md file:
+https://github.com/puerkitobio/goquery
 */
 package goquery
 
