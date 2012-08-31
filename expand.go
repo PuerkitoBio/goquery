@@ -4,24 +4,32 @@ import (
 	"exp/html"
 )
 
-// TODO : Should return a new Selection object, use pushStack()
-
-// Adds matching nodes to the current selection. Returns the same Selection object.
-// The new selector string is run in the context of the document of the Selection object.
+// Add() adds the selector string's matching nodes to those in the current
+// selection and returns a new Selection object.
+// The selector string is run in the context of the document of the current
+// Selection object.
 func (this *Selection) Add(selector string) *Selection {
-	this.Nodes = appendWithoutDuplicates(this.Nodes, findWithContext(selector, this.document.Root))
-	return this
+	return this.AddNodes(findWithContext(selector, this.document.Root)...)
 }
 
-// Adds nodes of the specified Selection object to the current selection. Returns the same Selection object.
+// AddSelection() adds the specified Selection object's nodes to those in the
+// current selection and returns a new Selection object.
 func (this *Selection) AddSelection(sel *Selection) *Selection {
-	this.Nodes = appendWithoutDuplicates(this.Nodes, sel.Nodes)
-	return this
+	if sel == nil {
+		return this.AddNodes()
+	}
+	return this.AddNodes(sel.Nodes...)
 }
 
-// Adds nodes to the current selection. Returns the same Selection object.
-// No verification about the same document origin is done.
-func (this *Selection) AddNodes(nodes []*html.Node) *Selection {
-	this.Nodes = appendWithoutDuplicates(this.Nodes, nodes)
-	return this
+// AddNodes() adds the specified nodes to those in the
+// current selection and returns a new Selection object.
+func (this *Selection) AddNodes(nodes ...*html.Node) *Selection {
+	return pushStack(this, appendWithoutDuplicates(this.Nodes, nodes))
+}
+
+// AndSelf() adds the previous set of elements on the stack to the current set.
+// It returns a new Selection object containing the current Selection combined
+// with the previous one.
+func (this *Selection) AndSelf() *Selection {
+	return this.AddSelection(this.prevSel)
 }

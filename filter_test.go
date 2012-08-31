@@ -44,6 +44,16 @@ func TestFilterSelection(t *testing.T) {
 	}
 }
 
+func TestFilterSelectionNil(t *testing.T) {
+	var sel2 *Selection
+
+	sel := Doc().Find(".link")
+	sel3 := sel.FilterSelection(sel2)
+	if len(sel3.Nodes) != 0 {
+		t.Errorf("Expected no node, found %v.", len(sel3.Nodes))
+	}
+}
+
 func TestNot(t *testing.T) {
 	sel := Doc().Find(".span12").Not(".alert")
 	if len(sel.Nodes) != 1 {

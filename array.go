@@ -17,8 +17,9 @@ func (this *Selection) Last() *Selection {
 }
 
 // Eq() reduces the set of matched elements to the one at the specified index.
-// If a negative index is given, it counts backwards starting at the end of the set.
-// It returns a new Selection object, and an empty Selection object if the index is invalid.
+// If a negative index is given, it counts backwards starting at the end of the
+// set. It returns a new Selection object, and an empty Selection object if the
+// index is invalid.
 func (this *Selection) Eq(index int) *Selection {
 	if index < 0 {
 		index += len(this.Nodes)
@@ -26,9 +27,10 @@ func (this *Selection) Eq(index int) *Selection {
 	return this.Slice(index, index+1)
 }
 
-// Slice() reduces the set of matched elements to a subset specified by a range of indices.
-// At the moment, negative indices are not supported.
+// Slice() reduces the set of matched elements to a subset specified by a range
+// of indices. At the moment, negative indices are not supported.
 func (this *Selection) Slice(start int, end int) *Selection {
+	// TODO : Negative indices, like jQuery
 	return pushStack(this, this.Nodes[start:end])
 }
 
@@ -42,8 +44,8 @@ func (this *Selection) Get(index int) *html.Node {
 	return this.Nodes[index]
 }
 
-// Index() returns the position of the first element within the Selection object relative to
-// its sibling elements.
+// Index() returns the position of the first element within the Selection object
+// relative to its sibling elements.
 func (this *Selection) Index() int {
 	// TODO : Eventually refactor with prevAll(), like jQuery's code
 	if len(this.Nodes) > 0 {
@@ -63,8 +65,9 @@ func (this *Selection) Index() int {
 	return -1
 }
 
-// IndexSelector() returns the position of the first element within the Selection object
-// relative to the elements matched by the selector, or -1 if not found.
+// IndexSelector() returns the position of the first element within the
+// Selection object relative to the elements matched by the selector, or -1 if
+// not found.
 func (this *Selection) IndexSelector(selector string) int {
 	if len(this.Nodes) > 0 {
 		sel := this.document.Find(selector)
@@ -73,16 +76,16 @@ func (this *Selection) IndexSelector(selector string) int {
 	return -1
 }
 
-// IndexOfNode() returns the position of the specified node within the Selection object,
-// or -1 if not found.
+// IndexOfNode() returns the position of the specified node within the Selection
+// object, or -1 if not found.
 func (this *Selection) IndexOfNode(node *html.Node) int {
 	return indexInSlice(this.Nodes, node)
 }
 
-// IndexOfSelection() returns the position of the first node in the specified Selection object
-// within this Selection object, or -1 if not found.
+// IndexOfSelection() returns the position of the first node in the specified
+// Selection object within this Selection object, or -1 if not found.
 func (this *Selection) IndexOfSelection(s *Selection) int {
-	if len(s.Nodes) > 0 {
+	if s != nil && len(s.Nodes) > 0 {
 		return indexInSlice(this.Nodes, s.Nodes[0])
 	}
 	return -1

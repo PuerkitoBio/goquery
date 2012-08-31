@@ -41,7 +41,7 @@ https://github.com/puerkitobio/goquery
 package goquery
 
 // DONE array.go : Positional Manipulation: First(), Last(), Eq(), Get(), Index(), Slice()
-// TESTS filter.go : Filtering: Filter(), Not(), Has(), End()
+// DONE filter.go : Filtering: Filter(), Not(), Has(), End()
 // expand.go : "Expanding": Add(), AndSelf()
 // query.go : Reflect (query) node: Is(), Contains(), HasClass()
 // property.go : Inspect node: Contents(), Html(), Text(), Attr(), Val(), Length(), Size()

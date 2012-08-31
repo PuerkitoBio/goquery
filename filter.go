@@ -41,15 +41,23 @@ func (this *Selection) NotNodes(nodes ...*html.Node) *Selection {
 	return pushStack(this, winnowNodes(this, nodes, false))
 }
 
-// FilterSelection() reduces the set of matched elements to those that match a node in the specified Selection object.
+// FilterSelection() reduces the set of matched elements to those that match a
+// node in the specified Selection object.
 // It returns a new Selection object for this subset of elements.
 func (this *Selection) FilterSelection(s *Selection) *Selection {
+	if s == nil {
+		return pushStack(this, winnowNodes(this, nil, true))
+	}
 	return pushStack(this, winnowNodes(this, s.Nodes, true))
 }
 
-// Not() removes elements from the Selection that match a node in the specified Selection object.
+// Not() removes elements from the Selection that match a node in the specified
+// Selection object.
 // It returns a new Selection object with the matching elements removed.
 func (this *Selection) NotSelection(s *Selection) *Selection {
+	if s == nil {
+		return pushStack(this, winnowNodes(this, nil, false))
+	}
 	return pushStack(this, winnowNodes(this, s.Nodes, false))
 }
 
@@ -58,14 +66,15 @@ func (this *Selection) Union(s *Selection) *Selection {
 	return this.FilterSelection(s)
 }
 
-// Has() reduces the set of matched elements to those that have a descendant that matches the selector.
+// Has() reduces the set of matched elements to those that have a descendant
+// that matches the selector.
 // It returns a new Selection object with the matching elements.
 func (this *Selection) Has(selector string) *Selection {
-	sel := this.document.Find(selector)
-	return this.HasSelection(sel)
+	return this.HasSelection(this.document.Find(selector))
 }
 
-// HasNodes() reduces the set of matched elements to those that have a descendant that matches one of the nodes.
+// HasNodes() reduces the set of matched elements to those that have a
+// descendant that matches one of the nodes.
 // It returns a new Selection object with the matching elements.
 func (this *Selection) HasNodes(nodes ...*html.Node) *Selection {
 	return this.FilterFunction(func(_ int, s *Selection) bool {
@@ -79,15 +88,18 @@ func (this *Selection) HasNodes(nodes ...*html.Node) *Selection {
 	})
 }
 
-// HasSelection() reduces the set of matched elements to those that have a descendant that matches one of
-// the nodes of the specified Selection object.
+// HasSelection() reduces the set of matched elements to those that have a
+// descendant that matches one of the nodes of the specified Selection object.
 // It returns a new Selection object with the matching elements.
 func (this *Selection) HasSelection(sel *Selection) *Selection {
+	if sel == nil {
+		return this.HasNodes()
+	}
 	return this.HasNodes(sel.Nodes...)
 }
 
-// End() ends the most recent filtering operation in the current chain and returns
-// the set of matched elements to its previous state.
+// End() ends the most recent filtering operation in the current chain and
+// returns the set of matched elements to its previous state.
 func (this *Selection) End() *Selection {
 	if this.prevSel != nil {
 		return this.prevSel

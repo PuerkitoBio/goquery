@@ -19,7 +19,9 @@ func sliceContains(container []*html.Node, contained *html.Node) bool {
 func nodeContains(container *html.Node, contained *html.Node) bool {
 	// Check if the parent of the contained node is the container node, traversing
 	// upward until the top is reached, or the container is found.
-	for contained = contained.Parent; contained != nil; contained = contained.Parent {
+	for contained = contained.Parent; contained != nil; contained =
+		contained.Parent {
+
 		if container == contained {
 			return true
 		}
@@ -45,9 +47,12 @@ func indexInSlice(slice []*html.Node, node *html.Node) int {
 }
 
 // Appends the new nodes to the target slice, making sure no duplicate is added.
-// There is no check to the original state of the target slice, so it may still contain
-// duplicates. The target slice is returned because append() may create a new underlying array.
-func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node) []*html.Node {
+// There is no check to the original state of the target slice, so it may still
+// contain duplicates. The target slice is returned because append() may create
+// a new underlying array.
+func appendWithoutDuplicates(target []*html.Node,
+	nodes []*html.Node) []*html.Node {
+
 	for _, n := range nodes {
 		if !isInSlice(target, n) {
 			target = append(target, n)
@@ -57,8 +62,11 @@ func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node) []*html.No
 	return target
 }
 
-// Loop through a selection, returning only those nodes that pass the predicate function.
-func grep(sel *Selection, predicate func(i int, s *Selection) bool) (result []*html.Node) {
+// Loop through a selection, returning only those nodes that pass the predicate
+// function.
+func grep(sel *Selection, predicate func(i int,
+	s *Selection) bool,) (result []*html.Node) {
+
 	for i, n := range sel.Nodes {
 		if predicate(i, newSingleSelection(n, sel.document)) {
 			result = append(result, n)
@@ -67,8 +75,8 @@ func grep(sel *Selection, predicate func(i int, s *Selection) bool) (result []*h
 	return
 }
 
-// Creates a new Selection object based on the specified nodes, and keeps the source
-// Selection object on the stack (linked list).
+// Creates a new Selection object based on the specified nodes, and keeps the
+// source Selection object on the stack (linked list).
 func pushStack(fromSel *Selection, nodes []*html.Node) (result *Selection) {
 	result = &Selection{nodes, fromSel.document, fromSel}
 	return
