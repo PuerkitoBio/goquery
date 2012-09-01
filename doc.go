@@ -103,7 +103,7 @@ package goquery
 // property.go : Inspect node: Contents(), Html(), Text(), Attr(), ** Does it make sense in a static HTML tree? Val()**, Length(), Size()
 // traversal.go : Traversal: Find(), Children(), Parents...(), Next...(), Prev...(), Closest(), Siblings()
 // DONE iteration.go : Iteration: Each(), Map()
-// type.go : Selection and Document
+// DONE type.go : Selection and Document
 
 // TODO : Benchmarks
 
