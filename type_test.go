@@ -28,6 +28,17 @@ func EnsureDocLoaded() {
 	}
 }
 
+func printNode(n *html.Node, t *testing.T) {
+	t.Logf("Type: %v, Data: %v\n", n.Type, n.Data)
+	for _, c := range n.Child {
+		printNode(c, t)
+	}
+}
+
+func TestPrintAll(t *testing.T) {
+	//printNode(Doc().Root, t)
+}
+
 func TestNewDocument(t *testing.T) {
 	if f, e := os.Open("./testdata/page.html"); e != nil {
 		t.Error(e.Error())

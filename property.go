@@ -1,6 +1,7 @@
 package goquery
 
 import (
+	"bytes"
 	"exp/html"
 )
 
@@ -14,6 +15,15 @@ func (this *Selection) Attr(attrName string) (val string, exists bool) {
 	return getAttributeValue(attrName, this.Nodes[0])
 }
 
+func (this *Selection) Text() string {
+	var buf bytes.Buffer
+
+	for _, n := range this.Nodes {
+		buf.WriteString(getNodeText(n))
+	}
+	return buf.String()
+}
+
 // Size() is an alias for Length().
 func (this *Selection) Size() int {
 	return this.Length()
@@ -22,6 +32,19 @@ func (this *Selection) Size() int {
 // Length() returns the number of elements in the Selection object.
 func (this *Selection) Length() int {
 	return len(this.Nodes)
+}
+
+func getNodeText(node *html.Node) (ret string) {
+	if node.Type == html.TextNode {
+		//ret = strings.Trim(node.Data, " \t\r\n")
+		// Keep newlines and spaces, like jQuery
+		ret = node.Data
+	} else if len(node.Child) > 0 {
+		for _, c := range node.Child {
+			ret += getNodeText(c)
+		}
+	}
+	return
 }
 
 // Private function to get the specified attribute's value from a node.

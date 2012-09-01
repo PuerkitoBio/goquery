@@ -1,6 +1,8 @@
 package goquery
 
 import (
+	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -19,3 +21,31 @@ func TestAttrNotExist(t *testing.T) {
 		t.Errorf("Expected no value for the href attribute, got %v.", val)
 	}
 }
+
+func TestText(t *testing.T) {
+	txt := Doc().Find("h1").Text()
+	if strings.Trim(txt, " \n\r\t") != "Provok.in" {
+		t.Errorf("Expected text to be Provok.in, found %s.", txt)
+	}
+}
+
+func TestText2(t *testing.T) {
+	txt := Doc().Find(".hero-unit .container-fluid .row-fluid:nth-child(1)").Text()
+	if ok, e := regexp.MatchString(`^\s+Provok\.in\s+Prove your point.\s+$`, txt); !ok || e != nil {
+		t.Errorf("Expected text to be Provok.in Prove your point., found %s.", txt)
+		if e != nil {
+			t.Logf("Error: %s.", e.Error())
+		}
+	}
+}
+
+/*func TestText3(t *testing.T) {
+	txt := Doc().Find(".pvk-gutter").First().Text()
+	if ok, e := regexp.MatchString(`^\s+$`, txt); !ok || e != nil {
+		t.Errorf("Expected spaces, found %v.", txt)
+		if e != nil {
+			t.Logf("Error: %s.", e.Error())
+		}
+	}
+}
+*/
