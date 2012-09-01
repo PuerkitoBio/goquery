@@ -1,6 +1,7 @@
 package goquery
 
-// Returns this (same Selection object)
+// Each() iterates over a Selection object, executing a function for each
+// matched element.
 func (this *Selection) Each(f func(int, *Selection)) *Selection {
 	for i, n := range this.Nodes {
 		f(i, newSingleSelection(n, this.document))

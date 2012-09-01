@@ -102,7 +102,7 @@ package goquery
 // DONE query.go : Reflect (query) node: Is(), Contains(), HasClass()
 // property.go : Inspect node: Contents(), Html(), Text(), Attr(), ** Does it make sense in a static HTML tree? Val()**, Length(), Size()
 // traversal.go : Traversal: Find(), Children(), Parents...(), Next...(), Prev...(), Closest(), Siblings()
-// iteration.go : Iteration: Each(), Map()
+// DONE iteration.go : Iteration: Each(), Map()
 // type.go : Selection and Document
 
 // TODO : Benchmarks
