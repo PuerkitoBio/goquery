@@ -21,6 +21,22 @@ func TestEach(t *testing.T) {
 	}
 }
 
+func TestEachEmptySelection(t *testing.T) {
+	var cnt int
+
+	sel := Doc().Find("zzzz")
+	sel.Each(func(i int, n *Selection) {
+		cnt++
+	})
+	if cnt > 0 {
+		t.Error("Expected Each() to not be called on empty Selection.")
+	}
+	sel2 := sel.Find("div")
+	if sel2.Nodes != nil {
+		t.Error("Expected Find() on empty Selection to return an empty Selection.")
+	}
+}
+
 func TestMap(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	vals := sel.Map(func(i int, s *Selection) string {

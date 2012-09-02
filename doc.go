@@ -95,6 +95,9 @@ The various methods are split into files based on the category of behavior:
 */
 package goquery
 
+// TODO : Test End() on all filtering/expanding/array/traversal functions, make
+// sure it returns the same object as the previous selection.
+
 // DONE array.go : Positional Manipulation: First(), Last(), Eq(), Get(), Index(), Slice()
 // DONE filter.go : Filtering: Filter(), Not(), Has(), End()
 // DONE expand.go : "Expanding": Add(), AndSelf()
@@ -115,7 +118,7 @@ package goquery
 // x Children()
 // - Closest() - Tree Traversal
 // x Contains()
-// - Contents() (similar to Children(), but includes text and comment nodes, so Children() should filter them out) - Misc. Traversing
+// x Contents()
 // x Each()
 // x End()
 // x Eq()
@@ -125,7 +128,7 @@ package goquery
 // x Get()
 // x Has()
 // x HasClass()
-// - Html() ? - Attributes
+// x Html()
 // x Index()
 // x Is() - Filtering
 // x Last()
@@ -147,4 +150,3 @@ package goquery
 // x Text() - DOM Manipulation
 // x ToArray()
 // x Unique() internally only
-// - Val() ? - Attributes
