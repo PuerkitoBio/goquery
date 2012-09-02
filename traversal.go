@@ -40,47 +40,35 @@ func findWithContext(selector string, nodes ...*html.Node) []*html.Node {
 	return matches
 }
 
-// TODO : Filtered using Node and other Selection object
+// TODO : Tests and doc for contents and children
 
-// Returns a new Selection object.
-func (this *Document) Children() *Selection {
-	return this.ChildrenFiltered("")
-}
-
-// Returns a new Selection object.
-func (this *Selection) Children() *Selection {
-	return this.ChildrenFiltered("")
-}
-
-// Returns a new Selection object.
-func (this *Document) ChildrenFiltered(selector string) *Selection {
-	return &Selection{childrenWithContext(selector, this.Root), this, nil}
-}
-
-// Returns a new Selection object.
-func (this *Selection) ChildrenFiltered(selector string) *Selection {
-	return &Selection{childrenWithContext(selector, this.Nodes...), this.document, nil}
-}
-
-func childrenWithContext(selector string, nodes ...*html.Node) []*html.Node {
+func (this *Selection) Contents() *Selection {
 	var matches []*html.Node
-	var allChildren bool
-	var sel cascadia.Selector
 
-	selector = strings.TrimSpace(selector)
-	if selector == "*" || selector == "" {
-		// Get all children
-		allChildren = true
-	} else {
-		sel = cascadia.MustCompile(selector)
+	for _, n := range this.Nodes {
+		matches = appendWithoutDuplicates(matches, getChildren(n, false))
 	}
+	return pushStack(this, matches)
+}
 
-	for _, n := range nodes {
-		for _, nchild := range n.Child {
-			if allChildren || sel(nchild) {
-				matches = append(matches, nchild)
+func (this *Selection) Children() *Selection {
+	var matches []*html.Node
+
+	for _, n := range this.Nodes {
+		matches = appendWithoutDuplicates(matches, getChildren(n, true))
+	}
+	return pushStack(this, matches)
+}
+
+// Return the immediate children of the node, filtered on element nodes only
+// if requested. The result is necessarily a slice of unique nodes.
+func getChildren(n *html.Node, elemOnly bool) (result []*html.Node) {
+	if n != nil {
+		for _, c := range n.Child {
+			if c.Type == html.ElementNode || !elemOnly {
+				result = append(result, c)
 			}
 		}
 	}
-	return matches
+	return
 }

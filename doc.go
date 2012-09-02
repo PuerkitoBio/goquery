@@ -44,19 +44,19 @@ file: https://github.com/puerkitobio/goquery
 The various methods are split into files based on the category of behavior:
 
 * array.go : array-like positional manipulation of the selection.
-    - First()
-    - Last()
     - Eq()
+    - First()
     - Get()
     - Index...()
+    - Last()
     - Slice()
 
 * filter.go : filtering methods, that reduce the selection's set.
-    - Filter...()
-    - Not...()
-    - Has...()
     - End()
+    - Filter...()
+    - Has...()
     - Intersection(), which is an alias of FilterSelection()
+    - Not...()
 
 * expand.go : methods that expand or augment the selection's set.
     - Add...()
@@ -70,7 +70,6 @@ The various methods are split into files based on the category of behavior:
 
 * property.go : methods that inspect and get the node's properties values.
     - Attr()
-    - Contents()
     - Html()
     - Length()
     - Size(), which is an alias for Length()
@@ -79,6 +78,7 @@ The various methods are split into files based on the category of behavior:
 * traversal.go : methods to traverse the HTML document tree.
     - Children...()
     - Closest()
+    - Contents()
     - Find...()
     - Next...()
     - Parent[s]...()
@@ -99,8 +99,8 @@ package goquery
 // DONE filter.go : Filtering: Filter(), Not(), Has(), End()
 // DONE expand.go : "Expanding": Add(), AndSelf()
 // DONE query.go : Reflect (query) node: Is(), Contains(), HasClass()
-// property.go : Inspect node: Contents(), Html(), Text(), Attr(), Length(), Size()
-// traversal.go : Traversal: Find(), Children(), Parents...(), Next...(), Prev...(), Closest(), Siblings()
+// DONE property.go : Inspect node: Html(), Text(), Attr(), Length(), Size()
+// traversal.go : Traversal: Contents(), Find(), Children(), Parents...(), Next...(), Prev...(), Closest(), Siblings()
 // DONE iteration.go : Iteration: Each(), Map()
 // DONE type.go : Selection and Document
 
