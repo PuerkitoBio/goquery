@@ -6,24 +6,36 @@ import (
 	"strings"
 )
 
-// Returns a new Selection object
+// TODO : Maybe make the Document's Root return a Selection, Find() on the
+// Document is not very useful (would need all the same funcs as Selection)
 func (this *Document) Find(selector string) *Selection {
 	return &Selection{findWithContext(selector, this.Root), this, nil}
 }
 
-// Returns a new Selection object
+// Find() gets the descendants of each element in the current set of matched
+// elements, filtered by a selector. It returns a new Selection object
+// containing these matched elements.
 func (this *Selection) Find(selector string) *Selection {
-	return &Selection{findWithContext(selector, this.Nodes...), this.document, nil}
+	return pushStack(this, findWithContext(selector, this.Nodes...))
 }
 
-// Private internal implementation of the various Find() methods
+func (this *Selection) FindSelection(sel *Selection) *Selection {
+	return nil
+}
+
+// Private internal implementation of the Find() methods
 func findWithContext(selector string, nodes ...*html.Node) []*html.Node {
 	var matches []*html.Node
 
 	sel := cascadia.MustCompile(selector)
 	// Match the selector on each node
 	for _, n := range nodes {
-		matches = append(matches, sel.MatchAll(n)...)
+		// Go down one level, becausejQuery's Find() selects only within descendants
+		for _, c := range n.Child {
+			if c.Type == html.ElementNode {
+				matches = appendWithoutDuplicates(matches, sel.MatchAll(c))
+			}
+		}
 	}
 	return matches
 }

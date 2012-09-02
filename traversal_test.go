@@ -11,6 +11,13 @@ func TestFind(t *testing.T) {
 	}
 }
 
+func TestFindNotSelf(t *testing.T) {
+	sel := Doc().Find("h1").Find("h1")
+	if len(sel.Nodes) > 0 {
+		t.Errorf("Expected no node, found %v.", len(sel.Nodes))
+	}
+}
+
 func TestFindInvalidSelector(t *testing.T) {
 	defer func() {
 		if e := recover(); e == nil {

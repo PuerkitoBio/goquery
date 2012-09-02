@@ -128,7 +128,7 @@ package goquery
 // x HasClass()
 // - Html() ? - Attributes
 // x Index()
-// - Is() - Filtering
+// x Is() - Filtering
 // x Last()
 // x Length() / Size()
 // x Map()
@@ -145,7 +145,7 @@ package goquery
 // x PushStack()
 // - Siblings() - Tree traversal
 // x Slice()
-// - Text() - DOM Manipulation
+// x Text() - DOM Manipulation
 // x ToArray()
 // x Unique() internally only
 // - Val() ? - Attributes
