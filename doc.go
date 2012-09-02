@@ -23,7 +23,7 @@
 
 /*
 Package goquery implements features similar to jQuery, including the chainable
-syntax, to manipulate and query an HTML document.
+syntax, to manipulate and query an HTML document (the modification functions of jQuery are not included).
 
 It depends on Go's experimental html package, which must be installed so that it
 can be imported as "exp/html". See this tutorial on how to install it 
@@ -75,7 +75,6 @@ The various methods are split into files based on the category of behavior:
     - Length()
     - Size(), which is an alias for Length()
     - Text()
-    - Val()
 
 * traversal.go : methods to traverse the HTML document tree.
     - Children...()
@@ -100,7 +99,7 @@ package goquery
 // DONE filter.go : Filtering: Filter(), Not(), Has(), End()
 // DONE expand.go : "Expanding": Add(), AndSelf()
 // DONE query.go : Reflect (query) node: Is(), Contains(), HasClass()
-// property.go : Inspect node: Contents(), Html(), Text(), Attr(), ** Does it make sense in a static HTML tree? Val()**, Length(), Size()
+// property.go : Inspect node: Contents(), Html(), Text(), Attr(), Length(), Size()
 // traversal.go : Traversal: Find(), Children(), Parents...(), Next...(), Prev...(), Closest(), Siblings()
 // DONE iteration.go : Iteration: Each(), Map()
 // DONE type.go : Selection and Document

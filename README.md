@@ -1,6 +1,6 @@
 # goquery - a little like that j-thing, only in Go
 
-GoQuery brings a syntax and features similar to [jQuery][] to the [Go language][go]. It is based on the [experimental html package][exphtml] and the CSS Selector library [cascadia][]. Since the html parser returns tokens (nodes), and not a full-featured DOM object, jQuery's manipulation and modification functions have been left off (no point in modifying data in the parsed tree of the HTML, it has no effect).
+GoQuery brings a syntax and features similar to [jQuery][] to the [Go language][go]. It is based on the [experimental html package][exphtml] and the CSS Selector library [cascadia][]. Since the html parser returns tokens (nodes), and not a full-featured DOM object, jQuery's manipulation and modification functions have been left off (no point in modifying data in the parsed tree of the HTML, it has no effect - although it could be used to re-render the HTML from a modified node tree afterwards... maybe someday).
 
 Supported functions are (will be) query-oriented features (`hasClass()`, `attr()` and the likes), as well as traversing functions that make sense given what we have to work with. This makes GoQuery a great library for scraping web pages.
 

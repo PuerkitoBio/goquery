@@ -49,3 +49,17 @@ func TestText2(t *testing.T) {
 	}
 }
 */
+
+func TestHtml(t *testing.T) {
+	txt, e := Doc().Find("h1").Html()
+	if e != nil {
+		t.Errorf("Error: %s.", e)
+	}
+
+	if ok, e := regexp.MatchString(`^\s*<a href="/">Provok<span class="green">\.</span><span class="red">i</span>n</a>\s*$`, txt); !ok || e != nil {
+		t.Errorf("Unexpected HTML content, found %s.", txt)
+		if e != nil {
+			t.Logf("Error: %s.", e.Error())
+		}
+	}
+}

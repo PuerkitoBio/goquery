@@ -36,6 +36,26 @@ func (this *Selection) Length() int {
 	return len(this.Nodes)
 }
 
+// Html() gets the HTML contents of the first element in the set of matched
+// elements.
+func (this *Selection) Html() (ret string, e error) {
+	// Since there is no .innerHtml, the HTML content must be re-created from
+	// the nodes usint html.Render().
+	var buf bytes.Buffer
+
+	if len(this.Nodes) > 0 {
+		for _, c := range this.Nodes[0].Child {
+			e = html.Render(&buf, c)
+			if e != nil {
+				return
+			}
+		}
+		ret = buf.String()
+	}
+
+	return
+}
+
 // Get the specified node's text content.
 func getNodeText(node *html.Node) string {
 	if node.Type == html.TextNode {
