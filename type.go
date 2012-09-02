@@ -12,16 +12,15 @@ import (
 // to be told, and that's what the Document class is for. It holds the root
 // document node to manipulate, and can make selections on this document.
 type Document struct {
-	Root *html.Node
-	Url  *url.URL
+	Root     *Selection
+	Url      *url.URL
+	rootNode *html.Node
 }
 
 // NewDocumentFromNode() is a Document constructor that takes a root html Node
 // as argument.
 func NewDocumentFromNode(root *html.Node) (d *Document) {
-	// Create and fill the document
-	d = &Document{root, nil}
-	return
+	return newDocument(root, nil)
 }
 
 // NewDocument() is a Document constructor that takes a string URL as argument.
@@ -42,7 +41,15 @@ func NewDocument(url string) (d *Document, e error) {
 	}
 
 	// Create and fill the document
-	d = &Document{root, res.Request.URL}
+	d = newDocument(root, res.Request.URL)
+	return
+}
+
+// Private constructor, make sure all fields are correctly filled.
+func newDocument(root *html.Node, url *url.URL) (d *Document) {
+	// Create and fill the document
+	d = &Document{nil, url, root}
+	d.Root = newSingleSelection(root, d)
 	return
 }
 
@@ -55,13 +62,12 @@ type Selection struct {
 	prevSel  *Selection
 }
 
-// TODO : Keep those methods? When using pushStack, this should not be necessary,
-// but maybe yes when iterating with Each or Map?
-
+// Helper constructor to create an empty selection
 func newEmptySelection(doc *Document) *Selection {
 	return &Selection{nil, doc, nil}
 }
 
+// Helper constructor to create a selection of only one node
 func newSingleSelection(node *html.Node, doc *Document) *Selection {
 	return &Selection{[]*html.Node{node}, doc, nil}
 }

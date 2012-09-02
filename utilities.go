@@ -19,9 +19,7 @@ func sliceContains(container []*html.Node, contained *html.Node) bool {
 func nodeContains(container *html.Node, contained *html.Node) bool {
 	// Check if the parent of the contained node is the container node, traversing
 	// upward until the top is reached, or the container is found.
-	for contained = contained.Parent; contained != nil; contained =
-		contained.Parent {
-
+	for contained = contained.Parent; contained != nil; contained = contained.Parent {
 		if container == contained {
 			return true
 		}
@@ -64,8 +62,7 @@ func appendWithoutDuplicates(target []*html.Node,
 
 // Loop through a selection, returning only those nodes that pass the predicate
 // function.
-func grep(sel *Selection, predicate func(i int,
-	s *Selection) bool,) (result []*html.Node) {
+func grep(sel *Selection, predicate func(i int, s *Selection) bool) (result []*html.Node) {
 
 	for i, n := range sel.Nodes {
 		if predicate(i, newSingleSelection(n, sel.document)) {

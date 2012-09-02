@@ -8,7 +8,7 @@ import (
 func TestEach(t *testing.T) {
 	var cnt int
 
-	sel := Doc().Find(".hero-unit .row-fluid").Each(func(i int, n *Selection) {
+	sel := Doc().Root.Find(".hero-unit .row-fluid").Each(func(i int, n *Selection) {
 		cnt++
 		t.Logf("At index %v, node %v", i, n.Nodes[0].Data)
 	}).Find("a")
@@ -24,7 +24,7 @@ func TestEach(t *testing.T) {
 func TestEachEmptySelection(t *testing.T) {
 	var cnt int
 
-	sel := Doc().Find("zzzz")
+	sel := Doc().Root.Find("zzzz")
 	sel.Each(func(i int, n *Selection) {
 		cnt++
 	})
@@ -38,7 +38,7 @@ func TestEachEmptySelection(t *testing.T) {
 }
 
 func TestMap(t *testing.T) {
-	sel := Doc().Find(".pvk-content")
+	sel := Doc().Root.Find(".pvk-content")
 	vals := sel.Map(func(i int, s *Selection) string {
 		n := s.Get(0)
 		if n.Type == html.ElementNode {

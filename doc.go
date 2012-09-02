@@ -107,7 +107,7 @@ package goquery
 // DONE iteration.go : Iteration: Each(), Map()
 // DONE type.go : Selection and Document
 
-// TODO : Benchmarks
+// TODO : Benchmarks, examples
 
 // TODO : Check each method, if it applies to any node or only Element nodes (Cascadia's selectors already make sure of that)
 

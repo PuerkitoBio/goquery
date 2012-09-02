@@ -9,7 +9,7 @@ import (
 // The selector string is run in the context of the document of the current
 // Selection object.
 func (this *Selection) Add(selector string) *Selection {
-	return this.AddNodes(findWithContext(selector, this.document.Root)...)
+	return this.AddNodes(findWithContext(selector, this.document.rootNode)...)
 }
 
 // AddSelection() adds the specified Selection object's nodes to those in the

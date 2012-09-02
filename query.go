@@ -15,7 +15,7 @@ func (this *Selection) Is(selector string) bool {
 	if len(this.Nodes) > 0 {
 		// The selector must be done on the document if it has positional criteria
 		if ok, e := regexp.MatchString(rxNeedsContext, selector); ok {
-			sel := this.document.Find(selector)
+			sel := this.document.Root.Find(selector)
 			for _, n := range this.Nodes {
 				if sel.IndexOfNode(n) > -1 {
 					return true
@@ -84,13 +84,4 @@ func (this *Selection) HasClass(class string) bool {
 // node is itself in the selection, it returns false.
 func (this *Selection) Contains(n *html.Node) bool {
 	return sliceContains(this.Nodes, n)
-}
-
-// Contains() returns true if the specified Node is within,
-// at any depth, the root node of the Document object.
-// It is NOT inclusive, to behave like jQuery's implementation, and
-// unlike Javascript's .contains(), so if the contained
-// node is itself in the selection, it returns false.
-func (this *Document) Contains(n *html.Node) bool {
-	return sliceContains([]*html.Node{this.Root}, n)
 }

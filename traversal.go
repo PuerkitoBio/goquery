@@ -5,12 +5,6 @@ import (
 	"exp/html"
 )
 
-// TODO : Maybe make the Document's Root return a Selection, Find() on the
-// Document is not very useful (would need all the same funcs as Selection)
-func (this *Document) Find(selector string) *Selection {
-	return &Selection{findWithContext(selector, this.Root), this, nil}
-}
-
 // Find() gets the descendants of each element in the current set of matched
 // elements, filtered by a selector. It returns a new Selection object
 // containing these matched elements.
@@ -19,6 +13,10 @@ func (this *Selection) Find(selector string) *Selection {
 }
 
 func (this *Selection) FindSelection(sel *Selection) *Selection {
+	return nil
+}
+
+func (this *Selection) FindNodes(nodes ...*html.Node) *Selection {
 	return nil
 }
 
