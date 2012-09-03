@@ -12,12 +12,33 @@ func (this *Selection) Find(selector string) *Selection {
 	return pushStack(this, findWithContext(selector, this.Nodes...))
 }
 
+// FindSelection() gets the descendants of each element in the current
+// Selection, filtered by a Selection. It returns a new Selection object
+// containing these matched elements.
 func (this *Selection) FindSelection(sel *Selection) *Selection {
-	return nil
+	if sel == nil {
+		return pushStack(this, nil)
+	}
+
+	// Filter the specified Selection to only the current nodes that
+	// contain one of the Selection.
+	return sel.FilterFunction(func(i int, s *Selection) bool {
+		return sliceContains(this.Nodes, s.Nodes[0])
+	})
 }
 
+// FindSelection() gets the descendants of each element in the current
+// Selection, filtered by some nodes. It returns a new Selection object
+// containing these matched elements.
 func (this *Selection) FindNodes(nodes ...*html.Node) *Selection {
-	return nil
+	var matches []*html.Node
+
+	for _, n := range nodes {
+		if sliceContains(this.Nodes, n) {
+			matches = appendWithoutDuplicates(matches, n)
+		}
+	}
+	return pushStack(this, matches)
 }
 
 // Private internal implementation of the Find() methods
