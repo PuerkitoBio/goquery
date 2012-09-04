@@ -138,9 +138,9 @@ package goquery
 // - NextAll() - Tree traversal
 // - NextUntil() - Tree traversal
 // x Not()
-// - Parent() - Tree traversal
-// - Parents() - Tree traversal
-// - ParentsUntil() - Tree traversal
+// x Parent() - Tree traversal
+// x Parents() - Tree traversal
+// x ParentsUntil() - Tree traversal
 // - Prev() - Tree traversal
 // - PrevAll() - Tree traversal
 // - PrevUntil() - Tree traversal

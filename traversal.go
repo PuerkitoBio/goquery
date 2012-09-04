@@ -140,6 +140,44 @@ func (this *Selection) ParentsUntilNodes(nodes ...*html.Node) *Selection {
 	return pushStack(this, getParentsNodes(this.Nodes, "", nodes))
 }
 
+// ParentsFilteredUntil() is like ParentsUntil(), with the option to filter the
+// results based on a selector string. It returns a new Selection
+// object containing the matched elements.
+func (this *Selection) ParentsFilteredUntil(filterSelector string, untilSelector string) *Selection {
+
+	// Get the ParentsUntil() unfiltered
+	nodes := getParentsNodes(this.Nodes, untilSelector, nil)
+	// Create a temporary Selection to filter using winnow
+	sel := &Selection{nodes, this.document, nil}
+	// Filter based on selector
+	nodes = winnow(sel, filterSelector, true)
+	return pushStack(this, nodes)
+}
+
+// ParentsFilteredUntilSelection() is like ParentsUntilSelection(), with the
+// option to filter the results based on a selector string. It returns a new
+// Selection object containing the matched elements.
+func (this *Selection) ParentsFilteredUntilSelection(filterSelector string, sel *Selection) *Selection {
+	if sel == nil {
+		return this.ParentsFiltered(filterSelector)
+	}
+	return this.ParentsFilteredUntilNodes(filterSelector, sel.Nodes...)
+}
+
+// ParentsFilteredUntilNodes() is like ParentsUntilNodes(), with the
+// option to filter the results based on a selector string. It returns a new
+// Selection object containing the matched elements.
+func (this *Selection) ParentsFilteredUntilNodes(filterSelector string, nodes ...*html.Node) *Selection {
+
+	// Get the ParentsUntilNodes() unfiltered
+	n := getParentsNodes(this.Nodes, "", nodes)
+	// Create a temporary Selection to filter using winnow
+	sel := &Selection{n, this.document, nil}
+	// Filter based on selector
+	n = winnow(sel, filterSelector, true)
+	return pushStack(this, n)
+}
+
 // Internal implementation to get all parent nodes, stopping at the specified 
 // node (or nil if no stop).
 func getParentsNodes(nodes []*html.Node, stopSelector string, stopNodes []*html.Node) []*html.Node {
