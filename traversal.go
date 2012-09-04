@@ -7,6 +7,8 @@ import (
 
 type siblingType int
 
+// Sibling type, used internally when iterating over children at the same
+// level (siblings) to specify which nodes are requested.
 const (
 	siblintPrevAll siblingType = iota - 2
 	siblingPrev
@@ -20,7 +22,7 @@ const (
 // elements, filtered by a selector. It returns a new Selection object
 // containing these matched elements.
 func (this *Selection) Find(selector string) *Selection {
-	return pushStack(this, findWithContext(selector, this.Nodes...))
+	return pushStack(this, findWithSelector(this.Nodes, selector))
 }
 
 // FindSelection() gets the descendants of each element in the current
@@ -37,14 +39,12 @@ func (this *Selection) FindSelection(sel *Selection) *Selection {
 // Selection, filtered by some nodes. It returns a new Selection object
 // containing these matched elements.
 func (this *Selection) FindNodes(nodes ...*html.Node) *Selection {
-	var matches []*html.Node
-
-	for _, n := range nodes {
+	return pushStack(this, mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
 		if sliceContains(this.Nodes, n) {
-			matches = appendWithoutDuplicates(matches, []*html.Node{n})
+			return []*html.Node{n}
 		}
-	}
-	return pushStack(this, matches)
+		return nil
+	}))
 }
 
 // Contents() gets the children of each element in the Selection,
@@ -225,6 +225,22 @@ func filterAndPush(srcSel *Selection, nodes []*html.Node, selector string) *Sele
 	return pushStack(srcSel, winnow(sel, selector, true))
 }
 
+// Internal implementation of Find that return raw nodes.
+func findWithSelector(nodes []*html.Node, selector string) []*html.Node {
+	// Compile the selector once
+	sel := cascadia.MustCompile(selector)
+	// Map nodes to find the matches within the children of each node
+	return mapNodes(nodes, func(i int, n *html.Node) (result []*html.Node) {
+		// Go down one level, becausejQuery's Find() selects only within descendants
+		for _, c := range n.Child {
+			if c.Type == html.ElementNode {
+				result = append(result, sel.MatchAll(c)...)
+			}
+		}
+		return
+	})
+}
+
 // Internal implementation to get all parent nodes, stopping at the specified 
 // node (or nil if no stop).
 func getParentsNodes(nodes []*html.Node, stopSelector string, stopNodes []*html.Node) []*html.Node {
@@ -260,12 +276,16 @@ func getSiblingNodes(nodes []*html.Node, st siblingType) []*html.Node {
 	})
 }
 
+// Gets the children nodes of each node in the specified slice of nodes,
+// based on the sibling type request.
 func getChildrenNodes(nodes []*html.Node, st siblingType) []*html.Node {
 	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
 		return getChildrenWithSiblingType(n, st, nil)
 	})
 }
 
+// Gets the children of the specified parent, based on the requested sibling
+// type, skipping a specified node if required.
 func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *html.Node) (result []*html.Node) {
 	var prev *html.Node
 	var nFound bool
@@ -325,22 +345,4 @@ func mapNodes(nodes []*html.Node, f func(int, *html.Node) []*html.Node) (result 
 	}
 
 	return
-}
-
-// Private internal implementation of the Find() methods
-func findWithContext(selector string, nodes ...*html.Node) []*html.Node {
-	var matches []*html.Node
-
-	// TODO : Refactor to use mapNodes?
-	sel := cascadia.MustCompile(selector)
-	// Match the selector on each node
-	for _, n := range nodes {
-		// Go down one level, becausejQuery's Find() selects only within descendants
-		for _, c := range n.Child {
-			if c.Type == html.ElementNode {
-				matches = appendWithoutDuplicates(matches, sel.MatchAll(c))
-			}
-		}
-	}
-	return matches
 }

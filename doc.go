@@ -94,9 +94,6 @@ The various methods are split into files based on the category of behavior:
 */
 package goquery
 
-// TODO : Test End() on all filtering/expanding/array/traversal functions, make
-// sure it returns the same object as the previous selection.
-
 // DONE array.go : Positional Manipulation: First(), Last(), Eq(), Get(), Index(), Slice()
 // DONE filter.go : Filtering: Filter(), Not(), Has(), End()
 // DONE expand.go : "Expanding": Add(), AndSelf()
@@ -105,47 +102,3 @@ package goquery
 // traversal.go : Traversal: Contents(), Find(), Children(), Parents...(), Next...(), Prev...(), Siblings()
 // DONE iteration.go : Iteration: Each(), Map()
 // DONE type.go : Selection and Document
-
-// TODO : Benchmarks, examples
-
-// TODO : Check each method, if it applies to any node or only Element nodes (Cascadia's selectors already make sure of that)
-
-// TODO : Add the following methods:
-// x Add()
-// x AndSelf()
-// x Attr()
-// x Children()
-// x Closest() ?
-// x Contains()
-// x Contents()
-// x Each()
-// x End()
-// x Eq()
-// x Filter()
-// x Find() : Complete with Selection object and Node object as selectors - Tree Traversal
-// x First()
-// x Get()
-// x Has()
-// x HasClass()
-// x Html()
-// x Index()
-// x Is() - Filtering
-// x Last()
-// x Length() / Size()
-// x Map()
-// x Next() - Tree traversal
-// x NextAll() - Tree traversal
-// - NextUntil() - Tree traversal
-// x Not()
-// x Parent() - Tree traversal
-// x Parents() - Tree traversal
-// x ParentsUntil() - Tree traversal
-// x Prev() - Tree traversal
-// x PrevAll() - Tree traversal
-// - PrevUntil() - Tree traversal
-// x PushStack()
-// x Siblings() - Tree traversal
-// x Slice()
-// x Text() - DOM Manipulation
-// x ToArray()
-// x Unique() internally only
