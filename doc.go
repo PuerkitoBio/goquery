@@ -122,7 +122,7 @@ package goquery
 // x End()
 // x Eq()
 // x Filter()
-// - Find() : Complete with Selection object and Node object as selectors - Tree Traversal
+// x Find() : Complete with Selection object and Node object as selectors - Tree Traversal
 // x First()
 // x Get()
 // x Has()
@@ -134,14 +134,14 @@ package goquery
 // x Length() / Size()
 // x Map()
 // x Next() - Tree traversal
-// - NextAll() - Tree traversal
+// x NextAll() - Tree traversal
 // - NextUntil() - Tree traversal
 // x Not()
 // x Parent() - Tree traversal
 // x Parents() - Tree traversal
 // x ParentsUntil() - Tree traversal
 // x Prev() - Tree traversal
-// - PrevAll() - Tree traversal
+// x PrevAll() - Tree traversal
 // - PrevUntil() - Tree traversal
 // x PushStack()
 // x Siblings() - Tree traversal

@@ -13,6 +13,7 @@ const (
 	siblingAll
 	siblingNext
 	siblingNextAll
+	siblingAllIncludingNonElements
 )
 
 // Find() gets the descendants of each element in the current set of matched
@@ -50,7 +51,7 @@ func (this *Selection) FindNodes(nodes ...*html.Node) *Selection {
 // including text and comment nodes. It returns a new Selection object
 // containing these elements.
 func (this *Selection) Contents() *Selection {
-	return pushStack(this, getSelectionChildren(this, false))
+	return pushStack(this, getChildrenNodes(this.Nodes, siblingAllIncludingNonElements))
 }
 
 // ContentsFiltered() gets the children of each element in the Selection,
@@ -68,15 +69,14 @@ func (this *Selection) ContentsFiltered(selector string) *Selection {
 // Children() gets the child elements of each element in the Selection.
 // It returns a new Selection object containing these elements.
 func (this *Selection) Children() *Selection {
-	// TODO : Refactor using siblings?
-	return pushStack(this, getSelectionChildren(this, true))
+	return pushStack(this, getChildrenNodes(this.Nodes, siblingAll))
 }
 
 // ChildrenFiltered() gets the child elements of each element in the Selection,
 // filtered by the specified selector. It returns a new
 // Selection object containing these elements.
 func (this *Selection) ChildrenFiltered(selector string) *Selection {
-	return filterAndPush(this, getSelectionChildren(this, true), selector)
+	return filterAndPush(this, getChildrenNodes(this.Nodes, siblingAll), selector)
 }
 
 // Parent() gets the parent of each element in the Selection. It returns a 
@@ -250,45 +250,56 @@ func getParentsNodes(nodes []*html.Node, stopSelector string, stopNodes []*html.
 
 // Internal implementation of sibling nodes that return a raw slice of matches.
 func getSiblingNodes(nodes []*html.Node, st siblingType) []*html.Node {
-	return mapNodes(nodes, func(i int, n *html.Node) (result []*html.Node) {
-		var prev *html.Node
-		var nFound bool
+	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
 
 		// Get the parent and loop through all children
 		if p := n.Parent; p != nil {
-			for _, c := range p.Child {
-				// Care only about elements
-				if c.Type == html.ElementNode {
-					// Is it the existing node?
-					if c == n {
-						// Found the current node
-						nFound = true
-						if st == siblingPrev {
-							// We want the previous node only, so append it and return
-							if prev != nil {
-								result = append(result, prev)
-							}
-							return
-						}
-					} else if prev == n && st == siblingNext {
-						// We want only the next node and this is it, so append it and return
-						result = append(result, c)
-						return
-					}
-					// Keep child as previous
-					prev = c
+			return getChildrenWithSiblingType(p, st, n)
+		}
+		return nil
+	})
+}
 
-					// If child is not the current node, check if sibling type requires
-					// to add it to the result.
-					if c != n && (st == siblingAll || (st == siblintPrevAll && !nFound) ||
-						(st == siblingNextAll && nFound)) {
-						result = append(result, c)
+func getChildrenNodes(nodes []*html.Node, st siblingType) []*html.Node {
+	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
+		return getChildrenWithSiblingType(n, st, nil)
+	})
+}
+
+func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *html.Node) (result []*html.Node) {
+	var prev *html.Node
+	var nFound bool
+
+	for _, c := range parent.Child {
+		// Care only about elements
+		if c.Type == html.ElementNode || st == siblingAllIncludingNonElements {
+			// Is it the existing node?
+			if c == skipNode {
+				// Found the current node
+				nFound = true
+				if st == siblingPrev {
+					// We want the previous node only, so append it and return
+					if prev != nil {
+						result = append(result, prev)
 					}
+					return
 				}
+			} else if prev == skipNode && st == siblingNext {
+				// We want only the next node and this is it, so append it and return
+				result = append(result, c)
+				return
+			}
+			// Keep child as previous
+			prev = c
+
+			// If child is not the current node, check if sibling type requires
+			// to add it to the result.
+			if c != skipNode && (st == siblingAll || st == siblingAllIncludingNonElements || (st == siblintPrevAll && !nFound) || (st == siblingNextAll && nFound)) {
+				result = append(result, c)
 			}
 		}
-		return
-	})
+	}
+	return
 }
 
 // Internal implementation of parent nodes that return a raw slice of Nodes.
@@ -332,27 +343,4 @@ func findWithContext(selector string, nodes ...*html.Node) []*html.Node {
 		}
 	}
 	return matches
-}
-
-// Return the child nodes of each node in the Selection object, without
-// duplicates.
-func getSelectionChildren(s *Selection, elemOnly bool) (result []*html.Node) {
-	// TODO : Refactor to use mapNodes?
-	for _, n := range s.Nodes {
-		result = appendWithoutDuplicates(result, getChildren(n, elemOnly))
-	}
-	return
-}
-
-// Return the immediate children of the node, filtered on element nodes only
-// if requested. The result is necessarily a slice of unique nodes.
-func getChildren(n *html.Node, elemOnly bool) (result []*html.Node) {
-	if n != nil {
-		for _, c := range n.Child {
-			if c.Type == html.ElementNode || !elemOnly {
-				result = append(result, c)
-			}
-		}
-	}
-	return
 }

@@ -1,8 +1,8 @@
 # goquery - a little like that j-thing, only in Go
 
-GoQuery brings a syntax and features similar to [jQuery][] to the [Go language][go]. It is based on the [experimental html package][exphtml] and the CSS Selector library [cascadia][]. Since the html parser returns tokens (nodes), and not a full-featured DOM object, jQuery's manipulation and modification functions have been left off (no point in modifying data in the parsed tree of the HTML, it has no effect - although it could be used to re-render the HTML from a modified node tree afterwards... maybe someday).
+GoQuery brings a syntax and a set of features similar to [jQuery][] to the [Go language][go]. It is based on the [experimental html package][exphtml] and the CSS Selector library [cascadia][]. Since the experimental html parser returns tokens (nodes), and not a full-featured DOM object, jQuery's manipulation and modification functions have been left off (no point in modifying data in the parsed tree of the HTML, it has no effect).
 
-Supported functions are (will be) query-oriented features (`hasClass()`, `attr()` and the likes), as well as traversing functions that make sense given what we have to work with. This makes GoQuery a great library for scraping web pages.
+Supported functions are query-oriented features (`hasClass()`, `attr()` and the likes), as well as traversing functions that make sense given what we have to work with. This makes GoQuery a great library for scraping web pages.
 
 Syntax-wise, it is as close as possible to jQuery, with the same function names when possible, and that warm and fuzzy chainable interface. jQuery being the ultra-popular library that it is, I felt that writing a similar HTML-manipulating library was better to follow its API than to start anew (in the same spirit as Go's `fmt` package), even though some of its methods are less than intuitive (looking at you, [index()][index]...).
 
@@ -16,15 +16,29 @@ Once this is done, install GoQuery:
 
 ## API
 
-GoQuery exposes two classes, `Document` and `Selection`. Unlike jQuery, which is loaded as part of a DOM document, and thus acts on its containing document, GoQuery doesn't know which HTML document to act upon. So it needs to be told, and that's what the `Document` class is for. It holds the root document node to manipulate, and can make selections on this document.
+GoQuery exposes two classes, `Document` and `Selection`. Unlike jQuery, which is loaded as part of a DOM document, and thus acts on its containing document, GoQuery doesn't know which HTML document to act upon. So it needs to be told, and that's what the `Document` class is for. It holds the root document node as the initial Selection object to manipulate.
 
-Please note that Cascadia's selectors do NOT necessarily match all supported selectors of jQuery (Sizzle). See the [cascadia project][cascadia] for details.
+jQuery often has many variants for the same function (no argument, a selector string argument, a jQuery object argument, a DOM element argument, ...). Instead of exposing the same features in GoQuery as a single method with variadic empty interface arguments, I use statically-typed signatures following this naming convention:
+
+*    When the jQuery equivalent can be called with no argument, it has the same name as jQuery for the no argument signature (e.g.: `Prev()`), and the version with a selector string argument is called `XxxFiltered()` (e.g.: `PrevFiltered()`)
+*    When the jQuery equivalent **requires** one argument, the same name as jQuery is used for the selector string version (e.g.: `Is()`)
+*    The signatures accepting a jQuery object as argument are defined in GoQuery as `XxxSelection()` and take a `*Selection` object as argument (e.g.: `FilterSelection()`)
+*    The signatures accepting a DOM element as argument in jQuery are defined in GoQuery as `XxxNodes()` and take a variadic argument of type `*html.Node`(e.g.: `FilterNodes()`)
+*    Finally, the signatures accepting a function as argument in jQuery are defined in GoQuery as `XxxFunction()` and take a function as argument (e.g.: `FilterFunction()`)
 
 GoQuery's complete [godoc reference documentation can be found here][doc].
+
+Please note that Cascadia's selectors do NOT necessarily match all supported selectors of jQuery (Sizzle). See the [cascadia project][cascadia] for details.
 
 ## Examples
 
 Coming soon...
+
+## TODOs
+
+*    Tests to validate that all methods returning a new `*Selection` "rollback" correctly to the previous Selection when calling `.End()`.
+*    Benchmarks so that future changes have a baseline to compare to.
+*    Add jQuery's `Closest()`? Other missing functions?
 
 ## License
 
