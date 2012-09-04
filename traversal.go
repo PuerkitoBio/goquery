@@ -63,6 +63,7 @@ func (this *Selection) ContentsFiltered(selector string) *Selection {
 // Children() gets the child elements of each element in the Selection.
 // It returns a new Selection object containing these elements.
 func (this *Selection) Children() *Selection {
+	// TODO : Refactor using siblings?
 	return pushStack(this, getSelectionChildren(this, true))
 }
 
@@ -182,6 +183,19 @@ func (this *Selection) ParentsFilteredUntilNodes(filterSelector string, nodes ..
 // a new Selection object containing the matched elements.
 func (this *Selection) Siblings() *Selection {
 	return pushStack(this, getSiblingNodes(this.Nodes))
+}
+
+// SiblingsFiltered() gets the siblings of each element in the Selection
+// filtered by a selector. It returns a new Selection object containing the
+// matched elements.
+func (this *Selection) SiblingsFiltered(selector string) *Selection {
+	// Get the Siblings() unfiltered
+	n := getSiblingNodes(this.Nodes)
+	// Create a temporary Selection to filter using winnow
+	sel := &Selection{n, this.document, nil}
+	// Filter based on selector
+	n = winnow(sel, selector, true)
+	return pushStack(this, n)
 }
 
 // Internal implementation to get all parent nodes, stopping at the specified 

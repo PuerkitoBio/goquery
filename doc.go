@@ -145,7 +145,7 @@ package goquery
 // - PrevAll() - Tree traversal
 // - PrevUntil() - Tree traversal
 // x PushStack()
-// - Siblings() - Tree traversal
+// x Siblings() - Tree traversal
 // x Slice()
 // x Text() - DOM Manipulation
 // x ToArray()

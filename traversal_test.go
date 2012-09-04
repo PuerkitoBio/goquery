@@ -122,3 +122,13 @@ func TestSiblings2(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-gutter").Siblings()
 	AssertLength(t, sel.Nodes, 9)
 }
+
+func TestSiblings3(t *testing.T) {
+	sel := Doc().Root.Find("body>.container-fluid").Siblings()
+	AssertLength(t, sel.Nodes, 0)
+}
+
+func TestSiblingsFiltered(t *testing.T) {
+	sel := Doc().Root.Find(".pvk-gutter").SiblingsFiltered(".pvk-content")
+	AssertLength(t, sel.Nodes, 3)
+}
