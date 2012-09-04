@@ -112,3 +112,13 @@ func TestParentsFilteredUntilNodes(t *testing.T) {
 	sel = sel.ParentsFilteredUntilNodes("body", sel2.Nodes...)
 	AssertLength(t, sel.Nodes, 1)
 }
+
+func TestSiblings(t *testing.T) {
+	sel := Doc().Root.Find("h1").Siblings()
+	AssertLength(t, sel.Nodes, 1)
+}
+
+func TestSiblings2(t *testing.T) {
+	sel := Doc().Root.Find(".pvk-gutter").Siblings()
+	AssertLength(t, sel.Nodes, 9)
+}
