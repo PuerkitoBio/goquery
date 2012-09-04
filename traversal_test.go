@@ -132,3 +132,28 @@ func TestSiblingsFiltered(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-gutter").SiblingsFiltered(".pvk-content")
 	AssertLength(t, sel.Nodes, 3)
 }
+
+func TestNext(t *testing.T) {
+	sel := Doc().Root.Find("h1").Next()
+	AssertLength(t, sel.Nodes, 1)
+}
+
+func TestNext2(t *testing.T) {
+	sel := Doc().Root.Find(".close").Next()
+	AssertLength(t, sel.Nodes, 1)
+}
+
+func TestNextNone(t *testing.T) {
+	sel := Doc().Root.Find("small").Next()
+	AssertLength(t, sel.Nodes, 0)
+}
+
+func TestNextFiltered(t *testing.T) {
+	sel := Doc().Root.Find(".container-fluid").NextFiltered("div")
+	AssertLength(t, sel.Nodes, 2)
+}
+
+func TestNextFiltered2(t *testing.T) {
+	sel := Doc().Root.Find(".container-fluid").NextFiltered("[ng-view]")
+	AssertLength(t, sel.Nodes, 1)
+}

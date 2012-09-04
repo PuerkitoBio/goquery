@@ -14,14 +14,14 @@
         <link href="/css/pvk.min.css" rel="stylesheet" type="text/css">
     </head>
     <body>
-        <div class="container-fluid">
+        <div class="container-fluid" id="cf1">
             <div class="row-fluid">
                 <div class="pvk-gutter">
                     &nbsp;
                 </div>
                 <div class="pvk-content">
                     <div ng-controller="HeroCtrl" class="hero-unit">
-                        <div class="container-fluid">
+                        <div class="container-fluid" id="cf2">
                             <div class="row-fluid">
                                 <div class="span12">
                                     <h1>
@@ -55,7 +55,7 @@
                     &nbsp;
                 </div>
                 <div class="pvk-content">
-                    <div class="container-fluid">
+                    <div class="container-fluid" id="cf3">
                         <div class="row-fluid">
                             <div ng-cloak="" view-on-display="" ng-controller="MsgCtrl" ng-class="{'displayed': blockIsDisplayed}" class="message-box">
                                 <div ng-class="{'alert-info': isInfo, 'alert-error': !isInfo, 'displayed': isDisplayed}" class="alert">
@@ -70,7 +70,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="container-fluid">
+                    <div class="container-fluid" id="cf4">
                         <div ng-controller="ShareCtrl" ng-hide="isHidden" class="row-fluid center-content"></div>
                     </div>
                     <div ng-view=""></div>

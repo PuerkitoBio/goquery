@@ -77,7 +77,6 @@ The various methods are split into files based on the category of behavior:
 
 * traversal.go : methods to traverse the HTML document tree.
     - Children...()
-    - Closest()
     - Contents()
     - Find...()
     - Next...()
@@ -103,7 +102,7 @@ package goquery
 // DONE expand.go : "Expanding": Add(), AndSelf()
 // DONE query.go : Reflect (query) node: Is(), Contains(), HasClass()
 // DONE property.go : Inspect node: Html(), Text(), Attr(), Length(), Size()
-// traversal.go : Traversal: Contents(), Find(), Children(), Parents...(), Next...(), Prev...(), Closest(), Siblings()
+// traversal.go : Traversal: Contents(), Find(), Children(), Parents...(), Next...(), Prev...(), Siblings()
 // DONE iteration.go : Iteration: Each(), Map()
 // DONE type.go : Selection and Document
 
@@ -116,7 +115,7 @@ package goquery
 // x AndSelf()
 // x Attr()
 // x Children()
-// - Closest() - Tree Traversal
+// x Closest() ?
 // x Contains()
 // x Contents()
 // x Each()
