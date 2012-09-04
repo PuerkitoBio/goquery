@@ -16,9 +16,7 @@ func TestEach(t *testing.T) {
 	if cnt != 4 {
 		t.Errorf("Expected Each() to call function 4 times, got %v times.", cnt)
 	}
-	if len(sel.Nodes) != 6 {
-		t.Errorf("Expected 6 matching nodes, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 6)
 }
 
 func TestEachEmptySelection(t *testing.T) {
@@ -32,9 +30,7 @@ func TestEachEmptySelection(t *testing.T) {
 		t.Error("Expected Each() to not be called on empty Selection.")
 	}
 	sel2 := sel.Find("div")
-	if sel2.Nodes != nil {
-		t.Error("Expected Find() on empty Selection to return an empty Selection.")
-	}
+	AssertLength(t, sel2.Nodes, 0)
 }
 
 func TestMap(t *testing.T) {

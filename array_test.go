@@ -6,25 +6,18 @@ import (
 
 func TestFirst(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content").First()
-	if len(sel.Nodes) != 1 {
-		t.Errorf("Expected 1 node, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 1)
 }
 
 func TestFirstEmpty(t *testing.T) {
-	defer func() {
-		if e := recover(); e == nil {
-			t.Error("Expected a panic, First() called on empty Selection.")
-		}
-	}()
+	defer AssertPanic(t)
 	Doc().Root.Find(".pvk-zzcontentzz").First()
 }
 
 func TestLast(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content").Last()
-	if len(sel.Nodes) != 1 {
-		t.Errorf("Expected 1 node, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 1)
+
 	// Should contain Footer
 	foot := Doc().Root.Find(".footer")
 	if !sel.Contains(foot.Nodes[0]) {
@@ -34,16 +27,13 @@ func TestLast(t *testing.T) {
 
 func TestEq(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content").Eq(1)
-	if len(sel.Nodes) != 1 {
-		t.Errorf("Expected 1 node, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 1)
 }
 
 func TestEqNegative(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content").Eq(-1)
-	if len(sel.Nodes) != 1 {
-		t.Errorf("Expected 1 node, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 1)
+
 	// Should contain Footer
 	foot := Doc().Root.Find(".footer")
 	if !sel.Contains(foot.Nodes[0]) {
@@ -53,17 +43,12 @@ func TestEqNegative(t *testing.T) {
 
 func TestSlice(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content").Slice(0, 2)
-	if len(sel.Nodes) != 2 {
-		t.Errorf("Expected 2 nodes, found %v.", len(sel.Nodes))
-	}
+
+	AssertLength(t, sel.Nodes, 2)
 }
 
 func TestSliceOutOfBounds(t *testing.T) {
-	defer func() {
-		if e := recover(); e == nil {
-			t.Error("Expected a panic, Slice() called with out of bounds indices.")
-		}
-	}()
+	defer AssertPanic(t)
 	Doc().Root.Find(".pvk-content").Slice(2, 12)
 }
 
@@ -84,12 +69,7 @@ func TestGetNegative(t *testing.T) {
 }
 
 func TestGetInvalid(t *testing.T) {
-	defer func() {
-		if e := recover(); e == nil {
-			t.Error("Expected a panic, Get() called with out of bounds index.")
-		}
-	}()
-
+	defer AssertPanic(t)
 	sel := Doc().Root.Find(".pvk-content")
 	sel.Get(129)
 }

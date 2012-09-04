@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// Test helper functions and members
 var doc *Document
 
 func Doc() *Document {
@@ -13,6 +14,27 @@ func Doc() *Document {
 		EnsureDocLoaded()
 	}
 	return doc
+}
+
+func AssertLength(t *testing.T, nodes []*html.Node, length int) {
+	if len(nodes) != length {
+		t.Errorf("Expected %i nodes, found %v.", length, len(nodes))
+		for i, n := range nodes {
+			t.Logf("Node %i: %+v.", i, n)
+		}
+	}
+}
+
+func AssertClass(t *testing.T, sel *Selection, class string) {
+	if !sel.HasClass(class) {
+		t.Errorf("Expected node to have class %s.", class)
+	}
+}
+
+func AssertPanic(t *testing.T) {
+	if e := recover(); e == nil {
+		t.Error("Expected a panic.")
+	}
 }
 
 func EnsureDocLoaded() {
@@ -26,17 +48,6 @@ func EnsureDocLoaded() {
 			doc = NewDocumentFromNode(node)
 		}
 	}
-}
-
-func printNode(n *html.Node, t *testing.T) {
-	t.Logf("Type: %v, Data: %v\n", n.Type, n.Data)
-	for _, c := range n.Child {
-		printNode(c, t)
-	}
-}
-
-func TestPrintAll(t *testing.T) {
-	//printNode(Doc().Root, t)
 }
 
 func TestNewDocument(t *testing.T) {

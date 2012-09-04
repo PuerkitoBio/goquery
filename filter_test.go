@@ -6,42 +6,32 @@ import (
 
 func TestFilter(t *testing.T) {
 	sel := Doc().Root.Find(".span12").Filter(".alert")
-	if len(sel.Nodes) != 1 {
-		t.Errorf("Expected 1 node, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 1)
 }
 
 func TestFilterNone(t *testing.T) {
 	sel := Doc().Root.Find(".span12").Filter(".zzalert")
-	if sel.Nodes != nil {
-		t.Error("Expected no node (nil), found some.")
-	}
+	AssertLength(t, sel.Nodes, 0)
 }
 
 func TestFilterFunction(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content").FilterFunction(func(i int, s *Selection) bool {
 		return i > 0
 	})
-	if len(sel.Nodes) != 2 {
-		t.Errorf("Expected 2 nodes, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 2)
 }
 
 func TestFilterNode(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content")
 	sel2 := sel.FilterNodes(sel.Nodes[2])
-	if len(sel2.Nodes) != 1 {
-		t.Errorf("Expected 1 node, found %v.", len(sel2.Nodes))
-	}
+	AssertLength(t, sel2.Nodes, 1)
 }
 
 func TestFilterSelection(t *testing.T) {
 	sel := Doc().Root.Find(".link")
 	sel2 := Doc().Root.Find("a[ng-click]")
 	sel3 := sel.FilterSelection(sel2)
-	if len(sel3.Nodes) != 1 {
-		t.Errorf("Expected 1 node, found %v.", len(sel3.Nodes))
-	}
+	AssertLength(t, sel3.Nodes, 1)
 }
 
 func TestFilterSelectionNil(t *testing.T) {
@@ -49,64 +39,48 @@ func TestFilterSelectionNil(t *testing.T) {
 
 	sel := Doc().Root.Find(".link")
 	sel3 := sel.FilterSelection(sel2)
-	if len(sel3.Nodes) != 0 {
-		t.Errorf("Expected no node, found %v.", len(sel3.Nodes))
-	}
+	AssertLength(t, sel3.Nodes, 0)
 }
 
 func TestNot(t *testing.T) {
 	sel := Doc().Root.Find(".span12").Not(".alert")
-	if len(sel.Nodes) != 1 {
-		t.Errorf("Expected 1 node, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 1)
 }
 
 func TestNotNone(t *testing.T) {
 	sel := Doc().Root.Find(".span12").Not(".zzalert")
-	if len(sel.Nodes) != 2 {
-		t.Errorf("Expected 2 nodes, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 2)
 }
 
 func TestNotFunction(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content").NotFunction(func(i int, s *Selection) bool {
 		return i > 0
 	})
-	if len(sel.Nodes) != 1 {
-		t.Errorf("Expected 1 nodes, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 1)
 }
 
 func TestNotNode(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content")
 	sel2 := sel.NotNodes(sel.Nodes[2])
-	if len(sel2.Nodes) != 2 {
-		t.Errorf("Expected 2 nodes, found %v.", len(sel2.Nodes))
-	}
+	AssertLength(t, sel2.Nodes, 2)
 }
 
 func TestNotSelection(t *testing.T) {
 	sel := Doc().Root.Find(".link")
 	sel2 := Doc().Root.Find("a[ng-click]")
 	sel3 := sel.NotSelection(sel2)
-	if len(sel3.Nodes) != 6 {
-		t.Errorf("Expected 6 nodes, found %v.", len(sel3.Nodes))
-	}
+	AssertLength(t, sel3.Nodes, 6)
 }
 
 func TestIntersection(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-gutter")
 	sel2 := Doc().Root.Find("div").Intersection(sel)
-	if len(sel2.Nodes) != 6 {
-		t.Errorf("Expected 6 nodes, found %v.", len(sel2.Nodes))
-	}
+	AssertLength(t, sel2.Nodes, 6)
 }
 
 func TestHas(t *testing.T) {
 	sel := Doc().Root.Find(".container-fluid").Has(".center-content")
-	if len(sel.Nodes) != 2 {
-		t.Errorf("Expected 2 nodes, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 2)
 	// Has() returns the high-level .container-fluid div, and the one that is the immediate parent of center-content
 }
 
@@ -114,9 +88,7 @@ func TestHasNodes(t *testing.T) {
 	sel := Doc().Root.Find(".container-fluid")
 	sel2 := Doc().Root.Find(".center-content")
 	sel = sel.HasNodes(sel2.Nodes...)
-	if len(sel.Nodes) != 2 {
-		t.Errorf("Expected 2 nodes, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 2)
 	// Has() returns the high-level .container-fluid div, and the one that is the immediate parent of center-content
 }
 
@@ -124,21 +96,15 @@ func TestHasSelection(t *testing.T) {
 	sel := Doc().Root.Find("p")
 	sel2 := Doc().Root.Find("small")
 	sel = sel.HasSelection(sel2)
-	if len(sel.Nodes) != 1 {
-		t.Errorf("Expected 1 node, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 1)
 }
 
 func TestEnd(t *testing.T) {
 	sel := Doc().Root.Find("p").Has("small").End()
-	if len(sel.Nodes) != 4 {
-		t.Errorf("Expected 4 nodes, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 4)
 }
 
 func TestEndToTop(t *testing.T) {
 	sel := Doc().Root.Find("p").Has("small").End().End().End()
-	if len(sel.Nodes) != 0 {
-		t.Errorf("Expected 0 node, found %v.", len(sel.Nodes))
-	}
+	AssertLength(t, sel.Nodes, 0)
 }
