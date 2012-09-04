@@ -217,6 +217,25 @@ func (this *Selection) NextFiltered(selector string) *Selection {
 	return pushStack(this, n)
 }
 
+// Prev() gets the immediately preceding sibling of each element in the
+// Selection. It returns a new Selection object containing the matched elements.
+func (this *Selection) Prev() *Selection {
+	return pushStack(this, getSiblingNodes(this.Nodes, -1))
+}
+
+// PrevFiltered() gets the immediately preceding sibling of each element in the
+// Selection filtered by a selector. It returns a new Selection object
+// containing the matched elements.
+func (this *Selection) PrevFiltered(selector string) *Selection {
+	// Get the Prev() unfiltered
+	n := getSiblingNodes(this.Nodes, -1)
+	// Create a temporary Selection to filter using winnow
+	sel := &Selection{n, this.document, nil}
+	// Filter based on selector
+	n = winnow(sel, selector, true)
+	return pushStack(this, n)
+}
+
 // Internal implementation to get all parent nodes, stopping at the specified 
 // node (or nil if no stop).
 func getParentsNodes(nodes []*html.Node, stopSelector string, stopNodes []*html.Node) []*html.Node {

@@ -157,3 +157,24 @@ func TestNextFiltered2(t *testing.T) {
 	sel := Doc().Root.Find(".container-fluid").NextFiltered("[ng-view]")
 	AssertLength(t, sel.Nodes, 1)
 }
+
+func TestPrev(t *testing.T) {
+	sel := Doc().Root.Find(".red").Prev()
+	AssertLength(t, sel.Nodes, 1)
+	AssertClass(t, sel, "green")
+}
+
+func TestPrev2(t *testing.T) {
+	sel := Doc().Root.Find(".row-fluid").Prev()
+	AssertLength(t, sel.Nodes, 5)
+}
+
+func TestPrevNone(t *testing.T) {
+	sel := Doc().Root.Find("h2").Prev()
+	AssertLength(t, sel.Nodes, 0)
+}
+
+func TestPrevFiltered(t *testing.T) {
+	sel := Doc().Root.Find(".row-fluid").PrevFiltered(".row-fluid")
+	AssertLength(t, sel.Nodes, 5)
+}
