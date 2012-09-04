@@ -133,14 +133,14 @@ package goquery
 // x Last()
 // x Length() / Size()
 // x Map()
-// - Next() - Tree traversal
+// x Next() - Tree traversal
 // - NextAll() - Tree traversal
 // - NextUntil() - Tree traversal
 // x Not()
 // x Parent() - Tree traversal
 // x Parents() - Tree traversal
 // x ParentsUntil() - Tree traversal
-// - Prev() - Tree traversal
+// x Prev() - Tree traversal
 // - PrevAll() - Tree traversal
 // - PrevUntil() - Tree traversal
 // x PushStack()

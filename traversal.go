@@ -5,6 +5,16 @@ import (
 	"exp/html"
 )
 
+type siblingType int
+
+const (
+	siblintPrevAll siblingType = iota - 2
+	siblingPrev
+	siblingAll
+	siblingNext
+	siblingNextAll
+)
+
 // Find() gets the descendants of each element in the current set of matched
 // elements, filtered by a selector. It returns a new Selection object
 // containing these matched elements.
@@ -19,12 +29,7 @@ func (this *Selection) FindSelection(sel *Selection) *Selection {
 	if sel == nil {
 		return pushStack(this, nil)
 	}
-
-	// Filter the specified Selection to only the current nodes that
-	// contain one of the Selection.
-	return sel.FilterFunction(func(i int, s *Selection) bool {
-		return sliceContains(this.Nodes, s.Nodes[0])
-	})
+	return this.FindNodes(sel.Nodes...)
 }
 
 // FindNodes() gets the descendants of each element in the current
@@ -71,14 +76,7 @@ func (this *Selection) Children() *Selection {
 // filtered by the specified selector. It returns a new
 // Selection object containing these elements.
 func (this *Selection) ChildrenFiltered(selector string) *Selection {
-	// Get the Children() unfiltered
-	nodes := getSelectionChildren(this, true)
-	// Create a temporary Selection to filter using winnow
-	sel := &Selection{nodes, this.document, nil}
-	// Filter based on selector
-	nodes = winnow(sel, selector, true)
-	// Push on the stack and return the "real" Selection
-	return pushStack(this, nodes)
+	return filterAndPush(this, getSelectionChildren(this, true), selector)
 }
 
 // Parent() gets the parent of each element in the Selection. It returns a 
@@ -90,13 +88,7 @@ func (this *Selection) Parent() *Selection {
 // ParentFiltered() gets the parent of each element in the Selection filtered by a
 // selector. It returns a new Selection object containing the matched elements.
 func (this *Selection) ParentFiltered(selector string) *Selection {
-	// Get the Parent() unfiltered
-	nodes := getParentNodes(this.Nodes)
-	// Create a temporary Selection to filter using winnow
-	sel := &Selection{nodes, this.document, nil}
-	// Filter based on selector
-	nodes = winnow(sel, selector, true)
-	return pushStack(this, nodes)
+	return filterAndPush(this, getParentNodes(this.Nodes), selector)
 }
 
 // Parents() gets the ancestors of each element in the current Selection. It
@@ -108,13 +100,7 @@ func (this *Selection) Parents() *Selection {
 // ParentsFiltered() gets the ancestors of each element in the current
 // Selection. It returns a new Selection object with the matched elements.
 func (this *Selection) ParentsFiltered(selector string) *Selection {
-	// Get the Parents() unfiltered
-	nodes := getParentsNodes(this.Nodes, "", nil)
-	// Create a temporary Selection to filter using winnow
-	sel := &Selection{nodes, this.document, nil}
-	// Filter based on selector
-	nodes = winnow(sel, selector, true)
-	return pushStack(this, nodes)
+	return filterAndPush(this, getParentsNodes(this.Nodes, "", nil), selector)
 }
 
 // ParentsUntil() gets the ancestors of each element in the Selection, up to but
@@ -145,14 +131,7 @@ func (this *Selection) ParentsUntilNodes(nodes ...*html.Node) *Selection {
 // results based on a selector string. It returns a new Selection
 // object containing the matched elements.
 func (this *Selection) ParentsFilteredUntil(filterSelector string, untilSelector string) *Selection {
-
-	// Get the ParentsUntil() unfiltered
-	nodes := getParentsNodes(this.Nodes, untilSelector, nil)
-	// Create a temporary Selection to filter using winnow
-	sel := &Selection{nodes, this.document, nil}
-	// Filter based on selector
-	nodes = winnow(sel, filterSelector, true)
-	return pushStack(this, nodes)
+	return filterAndPush(this, getParentsNodes(this.Nodes, untilSelector, nil), filterSelector)
 }
 
 // ParentsFilteredUntilSelection() is like ParentsUntilSelection(), with the
@@ -169,71 +148,68 @@ func (this *Selection) ParentsFilteredUntilSelection(filterSelector string, sel 
 // option to filter the results based on a selector string. It returns a new
 // Selection object containing the matched elements.
 func (this *Selection) ParentsFilteredUntilNodes(filterSelector string, nodes ...*html.Node) *Selection {
-
-	// Get the ParentsUntilNodes() unfiltered
-	n := getParentsNodes(this.Nodes, "", nodes)
-	// Create a temporary Selection to filter using winnow
-	sel := &Selection{n, this.document, nil}
-	// Filter based on selector
-	n = winnow(sel, filterSelector, true)
-	return pushStack(this, n)
+	return filterAndPush(this, getParentsNodes(this.Nodes, "", nodes), filterSelector)
 }
 
 // Siblings() gets the siblings of each element in the Selection. It returns
 // a new Selection object containing the matched elements.
 func (this *Selection) Siblings() *Selection {
-	return pushStack(this, getSiblingNodes(this.Nodes, 0))
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingAll))
 }
 
 // SiblingsFiltered() gets the siblings of each element in the Selection
 // filtered by a selector. It returns a new Selection object containing the
 // matched elements.
 func (this *Selection) SiblingsFiltered(selector string) *Selection {
-	// Get the Siblings() unfiltered
-	n := getSiblingNodes(this.Nodes, 0)
-	// Create a temporary Selection to filter using winnow
-	sel := &Selection{n, this.document, nil}
-	// Filter based on selector
-	n = winnow(sel, selector, true)
-	return pushStack(this, n)
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingAll), selector)
 }
 
 // Next() gets the immediately following sibling of each element in the
 // Selection. It returns a new Selection object containing the matched elements.
 func (this *Selection) Next() *Selection {
-	return pushStack(this, getSiblingNodes(this.Nodes, 1))
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingNext))
 }
 
 // NextFiltered() gets the immediately following sibling of each element in the
 // Selection filtered by a selector. It returns a new Selection object
 // containing the matched elements.
 func (this *Selection) NextFiltered(selector string) *Selection {
-	// Get the Next() unfiltered
-	n := getSiblingNodes(this.Nodes, 1)
-	// Create a temporary Selection to filter using winnow
-	sel := &Selection{n, this.document, nil}
-	// Filter based on selector
-	n = winnow(sel, selector, true)
-	return pushStack(this, n)
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingNext), selector)
+}
+
+// NextAll() gets all the following siblings of each element in the
+// Selection. It returns a new Selection object containing the matched elements.
+func (this *Selection) NextAll() *Selection {
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingNextAll))
+}
+
+// NextAllFiltered() gets all the following siblings of each element in the
+// Selection filtered by a selector. It returns a new Selection object
+// containing the matched elements.
+func (this *Selection) NextAllFiltered(selector string) *Selection {
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingNextAll), selector)
 }
 
 // Prev() gets the immediately preceding sibling of each element in the
 // Selection. It returns a new Selection object containing the matched elements.
 func (this *Selection) Prev() *Selection {
-	return pushStack(this, getSiblingNodes(this.Nodes, -1))
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingPrev))
 }
 
 // PrevFiltered() gets the immediately preceding sibling of each element in the
 // Selection filtered by a selector. It returns a new Selection object
 // containing the matched elements.
 func (this *Selection) PrevFiltered(selector string) *Selection {
-	// Get the Prev() unfiltered
-	n := getSiblingNodes(this.Nodes, -1)
-	// Create a temporary Selection to filter using winnow
-	sel := &Selection{n, this.document, nil}
-	// Filter based on selector
-	n = winnow(sel, selector, true)
-	return pushStack(this, n)
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingPrev), selector)
+}
+
+// Filter and push filters the nodes based on a selector, and pushes the results
+// on the stack, with the srcSel as previous selection.
+func filterAndPush(srcSel *Selection, nodes []*html.Node, selector string) *Selection {
+	// Create a temporary Selection with the specified nodes to filter using winnow
+	sel := &Selection{nodes, srcSel.document, nil}
+	// Filter based on selector and push on stack
+	return pushStack(srcSel, winnow(sel, selector, true))
 }
 
 // Internal implementation to get all parent nodes, stopping at the specified 
@@ -260,13 +236,10 @@ func getParentsNodes(nodes []*html.Node, stopSelector string, stopNodes []*html.
 }
 
 // Internal implementation of sibling nodes that return a raw slice of matches.
-func getSiblingNodes(nodes []*html.Node, siblingType int) []*html.Node {
-	// Sibling type means:
-	// -1 : previous node only
-	// 1 : next node only
-	// 0 : all but itself
+func getSiblingNodes(nodes []*html.Node, st siblingType) []*html.Node {
 	return mapNodes(nodes, func(i int, n *html.Node) (result []*html.Node) {
 		var prev *html.Node
+		var nFound bool
 
 		// Get the parent and loop through all children
 		if p := n.Parent; p != nil {
@@ -274,20 +247,28 @@ func getSiblingNodes(nodes []*html.Node, siblingType int) []*html.Node {
 				// Care only about elements
 				if c.Type == html.ElementNode {
 					// Is it the existing node?
-					if c == n && siblingType == -1 {
-						// We want the previous node only, so append it and return
-						if prev != nil {
-							result = append(result, prev)
+					if c == n {
+						// Found the current node
+						nFound = true
+						if st == siblingPrev {
+							// We want the previous node only, so append it and return
+							if prev != nil {
+								result = append(result, prev)
+							}
+							return
 						}
-						return
-					} else if prev == n && siblingType == 1 {
+					} else if prev == n && st == siblingNext {
 						// We want only the next node and this is it, so append it and return
 						result = append(result, c)
 						return
 					}
+					// Keep child as previous
 					prev = c
-					if c != n && siblingType == 0 {
-						// This is not the original node, so append it
+
+					// If child is not the current node, check if sibling type requires
+					// to add it to the result.
+					if c != n && (st == siblingAll || (st == siblintPrevAll && !nFound) ||
+						(st == siblingNextAll && nFound)) {
 						result = append(result, c)
 					}
 				}
