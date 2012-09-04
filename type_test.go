@@ -18,9 +18,9 @@ func Doc() *Document {
 
 func AssertLength(t *testing.T, nodes []*html.Node, length int) {
 	if len(nodes) != length {
-		t.Errorf("Expected %i nodes, found %v.", length, len(nodes))
+		t.Errorf("Expected %d nodes, found %d.", length, len(nodes))
 		for i, n := range nodes {
-			t.Logf("Node %i: %+v.", i, n)
+			t.Logf("Node %d: %+v.", i, n)
 		}
 	}
 }

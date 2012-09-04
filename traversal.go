@@ -86,7 +86,7 @@ func (this *Selection) Parent() *Selection {
 	return pushStack(this, getParentNodes(this.Nodes))
 }
 
-// Parent() gets the parent of each element in the Selection filtered by a
+// ParentFiltered() gets the parent of each element in the Selection filtered by a
 // selector. It returns a new Selection object containing the matched elements.
 func (this *Selection) ParentFiltered(selector string) *Selection {
 	// Get the Parent() unfiltered
@@ -98,10 +98,44 @@ func (this *Selection) ParentFiltered(selector string) *Selection {
 	return pushStack(this, nodes)
 }
 
+// Parents() gets the ancestors of each element in the current Selection. It
+// returns a new Selection object with the matched elements.
+func (this *Selection) Parents() *Selection {
+	return pushStack(this, getParentsNodes(this.Nodes, nil))
+}
+
+// ParentsFiltered() gets the ancestors of each element in the current
+// Selection. It returns a new Selection object with the matched elements.
+func (this *Selection) ParentsFiltered(selector string) *Selection {
+	// Get the Parents() unfiltered
+	nodes := getParentsNodes(this.Nodes, nil)
+	// Create a temporary Selection to filter using winnow
+	sel := &Selection{nodes, this.document, nil}
+	// Filter based on selector
+	nodes = winnow(sel, selector, true)
+	return pushStack(this, nodes)
+}
+
+// Internal implementation to get all parent nodes, stopping at the specified 
+// node (or nil if no stop).
+func getParentsNodes(nodes []*html.Node, stopNode *html.Node) []*html.Node {
+	return mapNodes(nodes, func(i int, n *html.Node, stop *html.Node) (result []*html.Node) {
+		for p := n.Parent; p != nil; p = p.Parent {
+			if p == stopNode {
+				break
+			}
+			if p.Type == html.ElementNode {
+				result = append(result, p)
+			}
+		}
+		return
+	}, stopNode)
+}
+
 // Internal implementation of parent nodes that return a raw slice of Nodes.
 func getParentNodes(nodes []*html.Node) []*html.Node {
 	return mapNodes(nodes, func(i int, n *html.Node, _ *html.Node) []*html.Node {
-		if n.Parent != nil {
+		if n.Parent != nil && n.Parent.Type == html.ElementNode {
 			return []*html.Node{n.Parent}
 		}
 		return nil

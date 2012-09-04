@@ -64,3 +64,13 @@ func TestParentFiltered(t *testing.T) {
 	AssertLength(t, sel.Nodes, 1)
 	AssertClass(t, sel, "hero-unit")
 }
+
+func TestParents(t *testing.T) {
+	sel := Doc().Root.Find(".container-fluid").Parents()
+	AssertLength(t, sel.Nodes, 8)
+}
+
+func TestParentsFiltered(t *testing.T) {
+	sel := Doc().Root.Find(".container-fluid").ParentsFiltered("body")
+	AssertLength(t, sel.Nodes, 1)
+}
