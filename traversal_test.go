@@ -74,3 +74,22 @@ func TestParentsFiltered(t *testing.T) {
 	sel := Doc().Root.Find(".container-fluid").ParentsFiltered("body")
 	AssertLength(t, sel.Nodes, 1)
 }
+
+func TestParentsUntil(t *testing.T) {
+	sel := Doc().Root.Find(".container-fluid").ParentsUntil("body")
+	AssertLength(t, sel.Nodes, 6)
+}
+
+func TestParentsUntilSelection(t *testing.T) {
+	sel := Doc().Root.Find(".container-fluid")
+	sel2 := Doc().Root.Find(".pvk-content")
+	sel = sel.ParentsUntilSelection(sel2)
+	AssertLength(t, sel.Nodes, 3)
+}
+
+func TestParentsUntilNodes(t *testing.T) {
+	sel := Doc().Root.Find(".container-fluid")
+	sel2 := Doc().Root.Find(".pvk-content, .hero-unit")
+	sel = sel.ParentsUntilNodes(sel2.Nodes...)
+	AssertLength(t, sel.Nodes, 2)
+}

@@ -101,14 +101,14 @@ func (this *Selection) ParentFiltered(selector string) *Selection {
 // Parents() gets the ancestors of each element in the current Selection. It
 // returns a new Selection object with the matched elements.
 func (this *Selection) Parents() *Selection {
-	return pushStack(this, getParentsNodes(this.Nodes, nil))
+	return pushStack(this, getParentsNodes(this.Nodes, "", nil))
 }
 
 // ParentsFiltered() gets the ancestors of each element in the current
 // Selection. It returns a new Selection object with the matched elements.
 func (this *Selection) ParentsFiltered(selector string) *Selection {
 	// Get the Parents() unfiltered
-	nodes := getParentsNodes(this.Nodes, nil)
+	nodes := getParentsNodes(this.Nodes, "", nil)
 	// Create a temporary Selection to filter using winnow
 	sel := &Selection{nodes, this.document, nil}
 	// Filter based on selector
@@ -116,40 +116,71 @@ func (this *Selection) ParentsFiltered(selector string) *Selection {
 	return pushStack(this, nodes)
 }
 
+// ParentsUntil() gets the ancestors of each element in the Selection, up to but
+// not including the element matched by the selector. It returns a new Selection
+// object containing the matched elements.
+func (this *Selection) ParentsUntil(selector string) *Selection {
+	return pushStack(this, getParentsNodes(this.Nodes, selector, nil))
+}
+
+// ParentsUntilSelection() gets the ancestors of each element in the Selection,
+// up to but not including the elements in the specified Selection. It returns a
+// new Selection object containing the matched elements.
+func (this *Selection) ParentsUntilSelection(sel *Selection) *Selection {
+	if sel == nil {
+		return this.Parents()
+	}
+	return this.ParentsUntilNodes(sel.Nodes...)
+}
+
+// ParentsUntilNodes() gets the ancestors of each element in the Selection,
+// up to but not including the specified nodes. It returns a
+// new Selection object containing the matched elements.
+func (this *Selection) ParentsUntilNodes(nodes ...*html.Node) *Selection {
+	return pushStack(this, getParentsNodes(this.Nodes, "", nodes))
+}
+
 // Internal implementation to get all parent nodes, stopping at the specified 
 // node (or nil if no stop).
-func getParentsNodes(nodes []*html.Node, stopNode *html.Node) []*html.Node {
-	return mapNodes(nodes, func(i int, n *html.Node, stop *html.Node) (result []*html.Node) {
+func getParentsNodes(nodes []*html.Node, stopSelector string, stopNodes []*html.Node) []*html.Node {
+	return mapNodes(nodes, func(i int, n *html.Node) (result []*html.Node) {
 		for p := n.Parent; p != nil; p = p.Parent {
-			if p == stopNode {
-				break
+			sel := newSingleSelection(p, nil)
+			if stopSelector != "" {
+				if sel.Is(stopSelector) {
+					break
+				}
+			} else if len(stopNodes) > 0 {
+				if sel.IsNodes(stopNodes...) {
+					break
+				}
 			}
 			if p.Type == html.ElementNode {
 				result = append(result, p)
 			}
 		}
 		return
-	}, stopNode)
+	})
 }
 
 // Internal implementation of parent nodes that return a raw slice of Nodes.
 func getParentNodes(nodes []*html.Node) []*html.Node {
-	return mapNodes(nodes, func(i int, n *html.Node, _ *html.Node) []*html.Node {
+	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
 		if n.Parent != nil && n.Parent.Type == html.ElementNode {
 			return []*html.Node{n.Parent}
 		}
 		return nil
-	}, nil)
+	})
 }
 
 // Internal map function used by many traversing methods. Takes the source nodes
-// to iterate on, the mapping function that returns an array of nodes, and a
-// stop node used for the *Until methods. Returns an array of nodes mapped by
-// calling the callback function once for each node in the source nodes.
-func mapNodes(nodes []*html.Node, f func(int, *html.Node, *html.Node) []*html.Node, stopNode *html.Node) (result []*html.Node) {
+// to iterate on and the mapping function that returns an array of nodes.
+// Returns an array of nodes mapped by calling the callback function once for
+// each node in the source nodes.
+func mapNodes(nodes []*html.Node, f func(int, *html.Node) []*html.Node) (result []*html.Node) {
 
 	for i, n := range nodes {
-		if vals := f(i, n, stopNode); len(vals) > 0 {
+		if vals := f(i, n); len(vals) > 0 {
 			result = appendWithoutDuplicates(result, vals)
 		}
 	}
