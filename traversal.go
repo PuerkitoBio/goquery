@@ -203,6 +203,19 @@ func (this *Selection) PrevFiltered(selector string) *Selection {
 	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingPrev), selector)
 }
 
+// PrevAll() gets all the preceding siblings of each element in the
+// Selection. It returns a new Selection object containing the matched elements.
+func (this *Selection) PrevAll() *Selection {
+	return pushStack(this, getSiblingNodes(this.Nodes, siblintPrevAll))
+}
+
+// PrevAllFiltered() gets all the preceding siblings of each element in the
+// Selection filtered by a selector. It returns a new Selection object
+// containing the matched elements.
+func (this *Selection) PrevAllFiltered(selector string) *Selection {
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblintPrevAll), selector)
+}
+
 // Filter and push filters the nodes based on a selector, and pushes the results
 // on the stack, with the srcSel as previous selection.
 func filterAndPush(srcSel *Selection, nodes []*html.Node, selector string) *Selection {

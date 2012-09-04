@@ -178,3 +178,43 @@ func TestPrevFiltered(t *testing.T) {
 	sel := Doc().Root.Find(".row-fluid").PrevFiltered(".row-fluid")
 	AssertLength(t, sel.Nodes, 5)
 }
+
+func TestNextAll(t *testing.T) {
+	sel := Doc().Root.Find("#cf2 div:nth-child(1)").NextAll()
+	AssertLength(t, sel.Nodes, 3)
+}
+
+func TestNextAll2(t *testing.T) {
+	sel := Doc().Root.Find("div[ng-cloak]").NextAll()
+	AssertLength(t, sel.Nodes, 1)
+}
+
+func TestNextAllNone(t *testing.T) {
+	sel := Doc().Root.Find(".footer").NextAll()
+	AssertLength(t, sel.Nodes, 0)
+}
+
+func TestNextAllFiltered(t *testing.T) {
+	sel := Doc().Root.Find("#cf2 .row-fluid").NextAllFiltered("[ng-cloak]")
+	AssertLength(t, sel.Nodes, 2)
+}
+
+func TestNextAllFiltered2(t *testing.T) {
+	sel := Doc().Root.Find(".close").NextAllFiltered("h4")
+	AssertLength(t, sel.Nodes, 1)
+}
+
+func TestPrevAll(t *testing.T) {
+	sel := Doc().Root.Find("[ng-view]").PrevAll()
+	AssertLength(t, sel.Nodes, 2)
+}
+
+func TestPrevAll2(t *testing.T) {
+	sel := Doc().Root.Find(".pvk-gutter").PrevAll()
+	AssertLength(t, sel.Nodes, 6)
+}
+
+func TestPrevAllFiltered(t *testing.T) {
+	sel := Doc().Root.Find(".pvk-gutter").PrevAllFiltered(".pvk-content")
+	AssertLength(t, sel.Nodes, 3)
+}
