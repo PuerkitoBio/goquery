@@ -51,6 +51,11 @@ The various methods are split into files based on the category of behavior:
     - Last()
     - Slice()
 
+* expand.go : methods that expand or augment the selection's set.
+    - Add...()
+    - AndSelf()
+    - Union(), which is an alias for AddSelection()
+
 * filter.go : filtering methods, that reduce the selection's set.
     - End()
     - Filter...()
@@ -58,15 +63,9 @@ The various methods are split into files based on the category of behavior:
     - Intersection(), which is an alias of FilterSelection()
     - Not...()
 
-* expand.go : methods that expand or augment the selection's set.
-    - Add...()
-    - AndSelf()
-    - Union(), which is an alias for AddSelection()
-
-* query.go : methods that query, or reflect, a node's identity.
-    - Contains()
-    - HasClass()
-    - Is...()
+* iteration.go : methods to loop over the selection's nodes.
+    - Each()
+    - Map()
 
 * property.go : methods that inspect and get the node's properties values.
     - Attr()
@@ -74,6 +73,11 @@ The various methods are split into files based on the category of behavior:
     - Length()
     - Size(), which is an alias for Length()
     - Text()
+
+* query.go : methods that query, or reflect, a node's identity.
+    - Contains()
+    - HasClass()
+    - Is...()
 
 * traversal.go : methods to traverse the HTML document tree.
     - Children...()
@@ -84,21 +88,8 @@ The various methods are split into files based on the category of behavior:
     - Prev...()
     - Siblings...()
 
-* iteration.go : methods to loop over the selection's nodes.
-    - Each()
-    - Map()
-
 * type.go : definition of the types exposed by GoQuery.
     - Document
     - Selection
 */
 package goquery
-
-// DONE array.go : Positional Manipulation: First(), Last(), Eq(), Get(), Index(), Slice()
-// DONE filter.go : Filtering: Filter(), Not(), Has(), End()
-// DONE expand.go : "Expanding": Add(), AndSelf()
-// DONE query.go : Reflect (query) node: Is(), Contains(), HasClass()
-// DONE property.go : Inspect node: Html(), Text(), Attr(), Length(), Size()
-// traversal.go : Traversal: Contents(), Find(), Children(), Parents...(), Next...(), Prev...(), Siblings()
-// DONE iteration.go : Iteration: Each(), Map()
-// DONE type.go : Selection and Document

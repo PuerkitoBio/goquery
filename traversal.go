@@ -10,11 +10,13 @@ type siblingType int
 // Sibling type, used internally when iterating over children at the same
 // level (siblings) to specify which nodes are requested.
 const (
-	siblintPrevAll siblingType = iota - 2
+	siblingPrevUntil siblingType = iota - 3
+	siblingPrevAll
 	siblingPrev
 	siblingAll
 	siblingNext
 	siblingNextAll
+	siblingNextUntil
 	siblingAllIncludingNonElements
 )
 
@@ -206,14 +208,14 @@ func (this *Selection) PrevFiltered(selector string) *Selection {
 // PrevAll() gets all the preceding siblings of each element in the
 // Selection. It returns a new Selection object containing the matched elements.
 func (this *Selection) PrevAll() *Selection {
-	return pushStack(this, getSiblingNodes(this.Nodes, siblintPrevAll))
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingPrevAll))
 }
 
 // PrevAllFiltered() gets all the preceding siblings of each element in the
 // Selection filtered by a selector. It returns a new Selection object
 // containing the matched elements.
 func (this *Selection) PrevAllFiltered(selector string) *Selection {
-	return filterAndPush(this, getSiblingNodes(this.Nodes, siblintPrevAll), selector)
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingPrevAll), selector)
 }
 
 // Filter and push filters the nodes based on a selector, and pushes the results
@@ -314,7 +316,11 @@ func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *htm
 
 			// If child is not the current node, check if sibling type requires
 			// to add it to the result.
-			if c != skipNode && (st == siblingAll || st == siblingAllIncludingNonElements || (st == siblintPrevAll && !nFound) || (st == siblingNextAll && nFound)) {
+			if c != skipNode &&
+				(st == siblingAll ||
+					st == siblingAllIncludingNonElements ||
+					(st == siblingPrevAll && !nFound) ||
+					(st == siblingNextAll && nFound)) {
 				result = append(result, c)
 			}
 		}

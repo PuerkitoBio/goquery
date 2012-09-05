@@ -14,6 +14,12 @@ func TestFirstEmpty(t *testing.T) {
 	Doc().Root.Find(".pvk-zzcontentzz").First()
 }
 
+func TestFirstRollback(t *testing.T) {
+	sel := Doc().Root.Find(".pvk-content")
+	sel2 := sel.First().End()
+	AssertEqual(t, sel, sel2)
+}
+
 func TestLast(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content").Last()
 	AssertLength(t, sel.Nodes, 1)
@@ -23,6 +29,12 @@ func TestLast(t *testing.T) {
 	if !sel.Contains(foot.Nodes[0]) {
 		t.Error("Last .pvk-content should contain .footer.")
 	}
+}
+
+func TestLastRollback(t *testing.T) {
+	sel := Doc().Root.Find(".pvk-content")
+	sel2 := sel.Last().End()
+	AssertEqual(t, sel, sel2)
 }
 
 func TestEq(t *testing.T) {
@@ -41,6 +53,12 @@ func TestEqNegative(t *testing.T) {
 	}
 }
 
+func TestEqRollback(t *testing.T) {
+	sel := Doc().Root.Find(".pvk-content")
+	sel2 := sel.Eq(1).End()
+	AssertEqual(t, sel, sel2)
+}
+
 func TestSlice(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content").Slice(0, 2)
 
@@ -50,6 +68,12 @@ func TestSlice(t *testing.T) {
 func TestSliceOutOfBounds(t *testing.T) {
 	defer AssertPanic(t)
 	Doc().Root.Find(".pvk-content").Slice(2, 12)
+}
+
+func TestSliceRollback(t *testing.T) {
+	sel := Doc().Root.Find(".pvk-content")
+	sel2 := sel.Slice(0, 2).End()
+	AssertEqual(t, sel, sel2)
 }
 
 func TestGet(t *testing.T) {

@@ -37,8 +37,8 @@ Coming soon...
 ## TODOs
 
 *    Implement NextUntil() and PrevUntil().
-*    Check each method, make sure it uses only ElementNodes except when explicitly specified (i.e.: `Contents()`). Cascadia's selectors act only on elements.
-*    Tests to validate that all methods returning a new `*Selection` "rollback" correctly to the previous Selection when calling `.End()`.
+*    Fix Prev...() functions to return nodes in the same order as jQuery (starting with the immediately preceding node, up until first child of the parent).
+*    Tests to validate that all methods returning a new `*Selection` "rollback" correctly to the previous Selection when calling `.End()`. Done for array, expand and filter.
 *    Benchmarks so that future changes have a baseline to compare to.
 *    Add jQuery's `Closest()`? Other missing functions?
 *    Support negative indices in `Slice()`, like jQuery.

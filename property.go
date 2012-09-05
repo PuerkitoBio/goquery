@@ -20,6 +20,7 @@ func (this *Selection) Attr(attrName string) (val string, exists bool) {
 func (this *Selection) Text() string {
 	var buf bytes.Buffer
 
+	// Slightly optimized vs calling Each(): no single selection object created
 	for _, n := range this.Nodes {
 		buf.WriteString(getNodeText(n))
 	}
@@ -37,7 +38,7 @@ func (this *Selection) Length() int {
 }
 
 // Html() gets the HTML contents of the first element in the set of matched
-// elements.
+// elements. It includes text and comment nodes.
 func (this *Selection) Html() (ret string, e error) {
 	// Since there is no .innerHtml, the HTML content must be re-created from
 	// the nodes usint html.Render().
@@ -59,7 +60,6 @@ func (this *Selection) Html() (ret string, e error) {
 // Get the specified node's text content.
 func getNodeText(node *html.Node) string {
 	if node.Type == html.TextNode {
-		//ret = strings.Trim(node.Data, " \t\r\n")
 		// Keep newlines and spaces, like jQuery
 		return node.Data
 	} else if len(node.Child) > 0 {

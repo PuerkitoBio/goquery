@@ -39,19 +39,19 @@ func (this *Selection) Is(selector string) bool {
 	return false
 }
 
-// Is() checks the current matched set of elements against a predicate and
+// IsFunction() checks the current matched set of elements against a predicate and
 // returns true if at least one of these elements matches.
 func (this *Selection) IsFunction(f func(int, *Selection) bool) bool {
 	return this.FilterFunction(f).Length() > 0
 }
 
-// Is() checks the current matched set of elements against a Selection object
+// IsSelection() checks the current matched set of elements against a Selection object
 // and returns true if at least one of these elements matches.
 func (this *Selection) IsSelection(s *Selection) bool {
 	return this.FilterSelection(s).Length() > 0
 }
 
-// Is() checks the current matched set of elements against the specified nodes
+// IsNodes() checks the current matched set of elements against the specified nodes
 // and returns true if at least one of these elements matches.
 func (this *Selection) IsNodes(nodes ...*html.Node) bool {
 	return this.FilterNodes(nodes...).Length() > 0

@@ -37,6 +37,12 @@ func AssertPanic(t *testing.T) {
 	}
 }
 
+func AssertEqual(t *testing.T, s1 *Selection, s2 *Selection) {
+	if s1 != s2 {
+		t.Error("Expected selection objects to be the same.")
+	}
+}
+
 func EnsureDocLoaded() {
 	if f, e := os.Open("./testdata/page.html"); e != nil {
 		panic(e.Error())

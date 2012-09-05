@@ -47,20 +47,8 @@ func (this *Selection) Get(index int) *html.Node {
 // Index() returns the position of the first element within the Selection object
 // relative to its sibling elements.
 func (this *Selection) Index() int {
-	// TODO : Eventually refactor with prevAll(), like jQuery's code
 	if len(this.Nodes) > 0 {
-		n := this.Nodes[0]
-		if p := n.Parent; p != nil {
-			var i = 0
-			for _, c := range p.Child {
-				if c == n {
-					// This is the index of the element
-					return i
-				} else if c.Type == html.ElementNode {
-					i++
-				}
-			}
-		}
+		return newSingleSelection(this.Nodes[0], this.document).PrevAll().Length()
 	}
 	return -1
 }
