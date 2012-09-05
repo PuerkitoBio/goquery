@@ -23,7 +23,7 @@ jQuery often has many variants for the same function (no argument, a selector st
 *    When the jQuery equivalent can be called with no argument, it has the same name as jQuery for the no argument signature (e.g.: `Prev()`), and the version with a selector string argument is called `XxxFiltered()` (e.g.: `PrevFiltered()`)
 *    When the jQuery equivalent **requires** one argument, the same name as jQuery is used for the selector string version (e.g.: `Is()`)
 *    The signatures accepting a jQuery object as argument are defined in GoQuery as `XxxSelection()` and take a `*Selection` object as argument (e.g.: `FilterSelection()`)
-*    The signatures accepting a DOM element as argument in jQuery are defined in GoQuery as `XxxNodes()` and take a variadic argument of type `*html.Node`(e.g.: `FilterNodes()`)
+*    The signatures accepting a DOM element as argument in jQuery are defined in GoQuery as `XxxNodes()` and take a variadic argument of type `*html.Node` (e.g.: `FilterNodes()`)
 *    Finally, the signatures accepting a function as argument in jQuery are defined in GoQuery as `XxxFunction()` and take a function as argument (e.g.: `FilterFunction()`)
 
 GoQuery's complete [godoc reference documentation can be found here][doc].
@@ -32,7 +32,50 @@ Please note that Cascadia's selectors do NOT necessarily match all supported sel
 
 ## Examples
 
-Coming soon...
+Taken from example_test.go:
+
+    import (
+      "fmt"
+      // In real use, this import would be required (not in this example, since it
+      // is part of the goquery package)
+      //"github.com/PuerkitoBio/goquery"
+      "strconv"
+    )
+
+    // This example scrapes the 10 reviews shown on the home page of MetalReview.com,
+    // the best metal review site on the web :) (no, I'm not affiliated with them)
+    func ExampleScrape_MetalReview() {
+      // Load the HTML document (in real use, the type would be *goquery.Document)
+      var doc *Document
+      var e error
+      if doc, e = NewDocument("http://metalreview.com"); e != nil {
+        panic(e.Error())
+      }
+
+      // Find the review items (the type of the Selection would be *goquery.Selection)
+      doc.Root.Find(".slider-row:nth-child(1) .slider-item").Each(func(i int, s *Selection) {
+        var band, title string
+        var score float64
+
+        // For each item found, get the band, title and score, and print it
+        band = s.Find("strong").Text()
+        title = s.Find("em").Text()
+        score, e := strconv.ParseFloat(s.Find(".score").Text(), 64)
+        if e != nil {
+          // Not a valid float, ignore score
+          fmt.Printf("Review %d: %s - %s", i, band, title)
+        } else {
+          // Print all, including score
+          fmt.Printf("Review %d: %s - %s (%2.1f).\n", i, band, title, score)
+        }
+      })
+      // To see the output of the Example while running the test suite (go test), simply
+      // remove the leading "x" before Output on the next line. This will cause the
+      // example to fail (all the "real" tests should pass).
+
+      // xOutput: volutarily fail the Example output.
+    }
+
 
 ## TODOs
 
