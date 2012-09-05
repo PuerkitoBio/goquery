@@ -39,16 +39,16 @@ func TestText2(t *testing.T) {
 	}
 }
 
-/*func TestText3(t *testing.T) {
+func TestText3(t *testing.T) {
 	txt := Doc().Root.Find(".pvk-gutter").First().Text()
-	if ok, e := regexp.MatchString(`^\s+$`, txt); !ok || e != nil {
-		t.Errorf("Expected spaces, found %v.", txt)
+	// There's an &nbsp; character in there...
+	if ok, e := regexp.MatchString(`^[\s\x{00A0}]+$`, txt); !ok || e != nil {
+		t.Errorf("Expected spaces, found <%v>.", txt)
 		if e != nil {
 			t.Logf("Error: %s.", e.Error())
 		}
 	}
 }
-*/
 
 func TestHtml(t *testing.T) {
 	txt, e := Doc().Root.Find("h1").Html()

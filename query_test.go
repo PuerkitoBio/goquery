@@ -35,6 +35,16 @@ func TestIsFunction(t *testing.T) {
 	}
 }
 
+func TestIsFunctionRollback(t *testing.T) {
+	ok := Doc().Root.Find("div").IsFunction(func(i int, s *Selection) bool {
+		return s.HasClass("container-fluid")
+	})
+
+	if !ok {
+		t.Error("Expected some div to have a container-fluid class.")
+	}
+}
+
 func TestIsSelection(t *testing.T) {
 	sel := Doc().Root.Find("div")
 	sel2 := Doc().Root.Find(".pvk-gutter")
