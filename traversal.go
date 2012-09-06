@@ -220,8 +220,12 @@ func (this *Selection) PrevAllFiltered(selector string) *Selection {
 	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingPrevAll, "", nil), selector)
 }
 
+// PrevUntil() gets all preceding siblings of each element up to but not
+// including the element matched by the selector. It returns a new Selection
+// object containing the matched elements.
 func (this *Selection) PrevUntil(selector string) *Selection {
-	return nil
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingPrevUntil,
+		selector, nil))
 }
 
 // Filter and push filters the nodes based on a selector, and pushes the results

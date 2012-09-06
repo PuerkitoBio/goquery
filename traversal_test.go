@@ -406,3 +406,36 @@ func TestPrevAllFilteredRollback(t *testing.T) {
 	sel2 := sel.PrevAllFiltered(".pvk-content").End()
 	AssertEqual(t, sel, sel2)
 }
+
+func TestPrevUntil(t *testing.T) {
+	sel := Doc().Root.Find(".alert p").PrevUntil("a")
+	AssertLength(t, sel.Nodes, 1)
+	if !sel.Eq(0).Is("h4") {
+		t.Errorf("Expected node 0 to be h4, found %+v.", sel.Get(0))
+	}
+}
+
+func TestPrevUntil2(t *testing.T) {
+	sel := Doc().Root.Find("[ng-cloak]").PrevUntil(":not([ng-cloak])")
+	AssertLength(t, sel.Nodes, 1)
+	if !sel.Eq(0).Is("[ng-cloak]") {
+		t.Errorf("Expected node 0 to be [ng-cloak], found %+v.", sel.Get(0))
+	}
+}
+
+func TestPrevUntilOrder(t *testing.T) {
+	sel := Doc().Root.Find("#cf2-4").PrevUntil("#cf2-1")
+	AssertLength(t, sel.Nodes, 2)
+	if !sel.Eq(0).Is("#cf2-3") {
+		t.Errorf("Expected node 0 to be cf2-3, found %+v.", sel.Get(0))
+	}
+	if !sel.Eq(1).Is("#cf2-2") {
+		t.Errorf("Expected node 1 to be cf2-2, found %+v.", sel.Get(1))
+	}
+}
+
+func TestPrevUntilRollback(t *testing.T) {
+	sel := Doc().Root.Find("#cf2-4")
+	sel2 := sel.PrevUntil("#cf2-1").End()
+	AssertEqual(t, sel, sel2)
+}

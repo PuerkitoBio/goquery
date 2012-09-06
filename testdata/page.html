@@ -22,7 +22,7 @@
                 <div class="pvk-content">
                     <div ng-controller="HeroCtrl" class="hero-unit">
                         <div class="container-fluid" id="cf2">
-                            <div class="row-fluid">
+                            <div class="row-fluid" id="cf2-1">
                                 <div class="span12">
                                     <h1>
                                         <a href="/">Provok<span class="green">.</span><span class="red">i</span>n</a>
@@ -32,15 +32,15 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="row-fluid">
+                            <div class="row-fluid" id="cf2-2">
                                 <div class="span12 alert alert-error">
                                     <strong>Beta Version.</strong> Things may change. Or disappear. Or fail miserably. If it's the latter, <a href="https://github.com/PuerkitoBio/Provok.in-issues" target="_blank" class="link">please file an issue.</a>
                                 </div>
                             </div>
-                            <div ng-cloak="" ng-show="isLoggedOut() &amp;&amp; !hideLogin" class="row-fluid">
+                            <div ng-cloak="" ng-show="isLoggedOut() &amp;&amp; !hideLogin" class="row-fluid" id="cf2-3">
                                 <a ng-href="{{ROUTES.login}}" class="btn btn-primary">Sign in. Painless.</a> <span>or</span> <a ng-href="{{ROUTES.help}}" class="link">learn more about provok.in.</a>
                             </div>
-                            <div ng-cloak="" ng-show="isLoggedIn()" class="row-fluid logged-in-state">
+                            <div ng-cloak="" ng-show="isLoggedIn()" class="row-fluid logged-in-state" id="cf2-4">
                                 <span>Welcome,</span> <a ng-href="{{ROUTES.profile}}" class="link">{{getUserName()}}</a> <span>(</span> <a ng-click="doLogout($event)" class="link">logout</a> <span>)</span>
                             </div>
                         </div>
