@@ -2,18 +2,26 @@ package goquery
 
 import (
 	"exp/html"
+	"fmt"
 	"os"
 	"testing"
 )
 
 // Test helper functions and members
 var doc *Document
+var doc2 *Document
 
 func Doc() *Document {
 	if doc == nil {
-		EnsureDocLoaded()
+		doc = LoadDoc("page.html")
 	}
 	return doc
+}
+func Doc2() *Document {
+	if doc2 == nil {
+		doc2 = LoadDoc("page2.html")
+	}
+	return doc2
 }
 
 func AssertLength(t *testing.T, nodes []*html.Node, length int) {
@@ -43,17 +51,18 @@ func AssertEqual(t *testing.T, s1 *Selection, s2 *Selection) {
 	}
 }
 
-func EnsureDocLoaded() {
-	if f, e := os.Open("./testdata/page.html"); e != nil {
+func LoadDoc(page string) *Document {
+	if f, e := os.Open(fmt.Sprintf("./testdata/%s", page)); e != nil {
 		panic(e.Error())
 	} else {
 		defer f.Close()
 		if node, e := html.Parse(f); e != nil {
 			panic(e.Error())
 		} else {
-			doc = NewDocumentFromNode(node)
+			return NewDocumentFromNode(node)
 		}
 	}
+	return nil
 }
 
 func TestNewDocument(t *testing.T) {

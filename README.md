@@ -72,7 +72,7 @@ Taken from example_test.go:
       // remove the leading "x" before Output on the next line. This will cause the
       // example to fail (all the "real" tests should pass).
 
-      // xOutput: volutarily fail the Example output.
+      // xOutput: voluntarily fail the Example output.
     }
 
 

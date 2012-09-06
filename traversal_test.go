@@ -439,3 +439,40 @@ func TestPrevUntilRollback(t *testing.T) {
 	sel2 := sel.PrevUntil("#cf2-1").End()
 	AssertEqual(t, sel, sel2)
 }
+
+func TestPrevUntilSelection(t *testing.T) {
+	sel := Doc2().Root.Find("#n4")
+	sel2 := Doc2().Root.Find("#n2")
+	sel2 = sel.PrevUntilSelection(sel2)
+	AssertLength(t, sel2.Nodes, 1)
+	if !sel2.Eq(0).Is("#n3") {
+		t.Errorf("Expected node 0 to be n3, found %+v.", sel2.Get(0))
+	}
+}
+
+func TestPrevUntilSelectionRollback(t *testing.T) {
+	sel := Doc2().Root.Find("#n4")
+	sel2 := Doc2().Root.Find("#n2")
+	sel2 = sel.PrevUntilSelection(sel2).End()
+	AssertEqual(t, sel, sel2)
+}
+
+func TestPrevUntilNodes(t *testing.T) {
+	sel := Doc2().Root.Find("#n5")
+	sel2 := Doc2().Root.Find("#n2")
+	sel2 = sel.PrevUntilNodes(sel2.Nodes...)
+	AssertLength(t, sel2.Nodes, 2)
+	if !sel2.Eq(0).Is("#n4") {
+		t.Errorf("Expected node 0 to be n4, found %+v.", sel2.Get(0))
+	}
+	if !sel2.Eq(1).Is("#n3") {
+		t.Errorf("Expected node 1 to be n3, found %+v.", sel2.Get(1))
+	}
+}
+
+func TestPrevUntilNodesRollback(t *testing.T) {
+	sel := Doc2().Root.Find("#n5")
+	sel2 := Doc2().Root.Find("#n2")
+	sel2 = sel.PrevUntilNodes(sel2.Nodes...).End()
+	AssertEqual(t, sel, sel2)
+}

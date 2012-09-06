@@ -228,6 +228,24 @@ func (this *Selection) PrevUntil(selector string) *Selection {
 		selector, nil))
 }
 
+// PrevUntilSelection() gets all preceding siblings of each element up to but not
+// including the element matched by the Selection. It returns a new Selection
+// object containing the matched elements.
+func (this *Selection) PrevUntilSelection(sel *Selection) *Selection {
+	if sel == nil {
+		return this.PrevAll()
+	}
+	return this.PrevUntilNodes(sel.Nodes...)
+}
+
+// PrevUntilNodes() gets all preceding siblings of each element up to but not
+// including the element matched by the nodes. It returns a new Selection
+// object containing the matched elements.
+func (this *Selection) PrevUntilNodes(nodes ...*html.Node) *Selection {
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingPrevUntil,
+		"", nodes))
+}
+
 // Filter and push filters the nodes based on a selector, and pushes the results
 // on the stack, with the srcSel as previous selection.
 func filterAndPush(srcSel *Selection, nodes []*html.Node, selector string) *Selection {

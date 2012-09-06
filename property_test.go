@@ -7,8 +7,6 @@ import (
 )
 
 func TestAttrExists(t *testing.T) {
-	EnsureDocLoaded()
-
 	if val, ok := Doc().Root.Find("a").Attr("href"); !ok {
 		t.Error("Expected a value for the href attribute.")
 	} else {
