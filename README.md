@@ -78,7 +78,7 @@ Taken from example_test.go:
 
 ## TODOs
 
-*    Implement NextUntil() and PrevUntil().
+*    Implement NextUntil...() and PrevFilteredUntil...().
 *    Benchmarks so that future changes have a baseline to compare to.
 *    Add jQuery's `Closest()`? Other missing functions?
 *    Support negative indices in `Slice()`, like jQuery.
