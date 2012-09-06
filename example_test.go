@@ -26,8 +26,7 @@ func ExampleScrape_MetalReview() {
 		// For each item found, get the band, title and score, and print it
 		band = s.Find("strong").Text()
 		title = s.Find("em").Text()
-		score, e := strconv.ParseFloat(s.Find(".score").Text(), 64)
-		if e != nil {
+		if score, e = strconv.ParseFloat(s.Find(".score").Text(), 64); e != nil {
 			// Not a valid float, ignore score
 			fmt.Printf("Review %d: %s - %s", i, band, title)
 		} else {

@@ -43,7 +43,7 @@ Taken from example_test.go:
     )
 
     // This example scrapes the 10 reviews shown on the home page of MetalReview.com,
-    // the best metal review site on the web :) (no, I'm not affiliated with them)
+    // the best metal review site on the web :) (and no, I'm not affiliated to them!)
     func ExampleScrape_MetalReview() {
       // Load the HTML document (in real use, the type would be *goquery.Document)
       var doc *Document
@@ -60,8 +60,7 @@ Taken from example_test.go:
         // For each item found, get the band, title and score, and print it
         band = s.Find("strong").Text()
         title = s.Find("em").Text()
-        score, e := strconv.ParseFloat(s.Find(".score").Text(), 64)
-        if e != nil {
+        if score, e = strconv.ParseFloat(s.Find(".score").Text(), 64); e != nil {
           // Not a valid float, ignore score
           fmt.Printf("Review %d: %s - %s", i, band, title)
         } else {
