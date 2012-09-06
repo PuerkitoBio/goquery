@@ -158,66 +158,70 @@ func (this *Selection) ParentsFilteredUntilNodes(filterSelector string, nodes ..
 // Siblings() gets the siblings of each element in the Selection. It returns
 // a new Selection object containing the matched elements.
 func (this *Selection) Siblings() *Selection {
-	return pushStack(this, getSiblingNodes(this.Nodes, siblingAll))
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingAll, "", nil))
 }
 
 // SiblingsFiltered() gets the siblings of each element in the Selection
 // filtered by a selector. It returns a new Selection object containing the
 // matched elements.
 func (this *Selection) SiblingsFiltered(selector string) *Selection {
-	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingAll), selector)
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingAll, "", nil), selector)
 }
 
 // Next() gets the immediately following sibling of each element in the
 // Selection. It returns a new Selection object containing the matched elements.
 func (this *Selection) Next() *Selection {
-	return pushStack(this, getSiblingNodes(this.Nodes, siblingNext))
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingNext, "", nil))
 }
 
 // NextFiltered() gets the immediately following sibling of each element in the
 // Selection filtered by a selector. It returns a new Selection object
 // containing the matched elements.
 func (this *Selection) NextFiltered(selector string) *Selection {
-	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingNext), selector)
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingNext, "", nil), selector)
 }
 
 // NextAll() gets all the following siblings of each element in the
 // Selection. It returns a new Selection object containing the matched elements.
 func (this *Selection) NextAll() *Selection {
-	return pushStack(this, getSiblingNodes(this.Nodes, siblingNextAll))
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingNextAll, "", nil))
 }
 
 // NextAllFiltered() gets all the following siblings of each element in the
 // Selection filtered by a selector. It returns a new Selection object
 // containing the matched elements.
 func (this *Selection) NextAllFiltered(selector string) *Selection {
-	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingNextAll), selector)
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingNextAll, "", nil), selector)
 }
 
 // Prev() gets the immediately preceding sibling of each element in the
 // Selection. It returns a new Selection object containing the matched elements.
 func (this *Selection) Prev() *Selection {
-	return pushStack(this, getSiblingNodes(this.Nodes, siblingPrev))
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingPrev, "", nil))
 }
 
 // PrevFiltered() gets the immediately preceding sibling of each element in the
 // Selection filtered by a selector. It returns a new Selection object
 // containing the matched elements.
 func (this *Selection) PrevFiltered(selector string) *Selection {
-	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingPrev), selector)
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingPrev, "", nil), selector)
 }
 
 // PrevAll() gets all the preceding siblings of each element in the
 // Selection. It returns a new Selection object containing the matched elements.
 func (this *Selection) PrevAll() *Selection {
-	return pushStack(this, getSiblingNodes(this.Nodes, siblingPrevAll))
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingPrevAll, "", nil))
 }
 
 // PrevAllFiltered() gets all the preceding siblings of each element in the
 // Selection filtered by a selector. It returns a new Selection object
 // containing the matched elements.
 func (this *Selection) PrevAllFiltered(selector string) *Selection {
-	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingPrevAll), selector)
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingPrevAll, "", nil), selector)
+}
+
+func (this *Selection) PrevUntil(selector string) *Selection {
+	return nil
 }
 
 // Filter and push filters the nodes based on a selector, and pushes the results
@@ -269,22 +273,50 @@ func getParentsNodes(nodes []*html.Node, stopSelector string, stopNodes []*html.
 }
 
 // Internal implementation of sibling nodes that return a raw slice of matches.
-func getSiblingNodes(nodes []*html.Node, st siblingType) []*html.Node {
+func getSiblingNodes(nodes []*html.Node, st siblingType, untilSelector string,
+	untilNodes []*html.Node) []*html.Node {
+
+	var f func(*html.Node) bool
+
+	// If the requested siblings are ...Until(), create the test function to 
+	// determine if the until condition is reached (returns true if it is)
+	if st == siblingNextUntil || st == siblingPrevUntil {
+		f = func(n *html.Node) bool {
+			if untilSelector != "" {
+				// Selector-based condition
+				sel := newSingleSelection(n, nil)
+				return sel.Is(untilSelector)
+			} else if len(untilNodes) > 0 {
+				// Nodes-based condition
+				sel := newSingleSelection(n, nil)
+				return sel.IsNodes(untilNodes...)
+			}
+			return false
+		}
+	}
+
 	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
 
 		// Get the parent and loop through all children
 		if p := n.Parent; p != nil {
+			// For Prev() calls that may return more than one node (unlike Prev()),
+			// start at the current node, and work backwards from there. Since
+			// Prev() returns only one node, no advantage to find the current node
+			// first and loop backwards to find the previous one. Better to just loop
+			// from the start and stop once it is found.
 			if st == siblingPrevAll || st == siblingPrevUntil {
-				// Find the index of this node
+				// Find the index of this node within its parent's children
 				for i, c := range p.Child {
 					if c == n {
-						// Looking for previous nodes, so start at index - 1 upwards
-						return getChildrenWithSiblingType(p, st, n, i-1, -1)
+						// Looking for previous nodes, so start at index - 1 backwards
+						return getChildrenWithSiblingType(p, st, n, i-1, -1, f)
 					}
 				}
+				// Should never get here.
 				panic(errors.New(fmt.Sprintf("Could not find node %+v in his parent's Child slice.", n)))
 			} else {
-				return getChildrenWithSiblingType(p, st, n, 0, 1)
+				// Standard loop from start moving forwards.
+				return getChildrenWithSiblingType(p, st, n, 0, 1, f)
 			}
 		}
 		return nil
@@ -295,14 +327,14 @@ func getSiblingNodes(nodes []*html.Node, st siblingType) []*html.Node {
 // based on the sibling type request.
 func getChildrenNodes(nodes []*html.Node, st siblingType) []*html.Node {
 	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
-		return getChildrenWithSiblingType(n, st, nil, 0, 1)
+		return getChildrenWithSiblingType(n, st, nil, 0, 1, nil)
 	})
 }
 
 // Gets the children of the specified parent, based on the requested sibling
 // type, skipping a specified node if required.
 func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *html.Node,
-	startIndex int, increment int) (result []*html.Node) {
+	startIndex int, increment int, untilFunc func(*html.Node) bool) (result []*html.Node) {
 
 	var prev *html.Node
 	var nFound bool
@@ -337,8 +369,16 @@ func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *htm
 			if c != skipNode &&
 				(st == siblingAll ||
 					st == siblingAllIncludingNonElements ||
-					(st == siblingPrevAll && !nFound) ||
-					(st == siblingNextAll && nFound)) {
+					((st == siblingPrevAll || st == siblingPrevUntil) && !nFound) ||
+					((st == siblingNextAll || st == siblingNextUntil) && nFound)) {
+
+				// If this is an ...Until() case, test before append (returns true
+				// if the until condition is reached)
+				if st == siblingNextUntil || st == siblingPrevUntil {
+					if untilFunc(c) {
+						return
+					}
+				}
 				result = append(result, c)
 			}
 		}

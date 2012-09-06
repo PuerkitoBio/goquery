@@ -62,7 +62,7 @@ Taken from example_test.go:
         title = s.Find("em").Text()
         if score, e = strconv.ParseFloat(s.Find(".score").Text(), 64); e != nil {
           // Not a valid float, ignore score
-          fmt.Printf("Review %d: %s - %s", i, band, title)
+          fmt.Printf("Review %d: %s - %s.\n", i, band, title)
         } else {
           // Print all, including score
           fmt.Printf("Review %d: %s - %s (%2.1f).\n", i, band, title, score)
@@ -79,7 +79,6 @@ Taken from example_test.go:
 ## TODOs
 
 *    Implement NextUntil() and PrevUntil().
-*    Fix Prev...() functions to return nodes in the same order as jQuery (starting with the immediately preceding node, up until first child of the parent).
 *    Benchmarks so that future changes have a baseline to compare to.
 *    Add jQuery's `Closest()`? Other missing functions?
 *    Support negative indices in `Slice()`, like jQuery.
