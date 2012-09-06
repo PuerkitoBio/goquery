@@ -112,6 +112,29 @@ func TestParents(t *testing.T) {
 	AssertLength(t, sel.Nodes, 8)
 }
 
+func TestParentsOrder(t *testing.T) {
+	sel := Doc().Root.Find("#cf2").Parents()
+	AssertLength(t, sel.Nodes, 6)
+	if !sel.Eq(0).HasClass("hero-unit") {
+		t.Errorf("Element at 0 should be hero-unit, found %+v.", sel.Get(0))
+	}
+	if !sel.Eq(1).HasClass("pvk-content") {
+		t.Errorf("Element at 1 should be pvk-content, found %+v.", sel.Get(1))
+	}
+	if !sel.Eq(2).Is("div.row-fluid") {
+		t.Errorf("Element at 2 should be row-fluid, found %+v.", sel.Get(2))
+	}
+	if !sel.Eq(3).Is("#cf1") {
+		t.Errorf("Element at 3 should be cf1, found %+v.", sel.Get(3))
+	}
+	if !sel.Eq(4).Is("body") {
+		t.Errorf("Element at 4 should be body, found %+v.", sel.Get(4))
+	}
+	if !sel.Eq(5).Is("html") {
+		t.Errorf("Element at 5 should be html, found %+v.", sel.Get(5))
+	}
+}
+
 func TestParentsRollback(t *testing.T) {
 	sel := Doc().Root.Find(".container-fluid")
 	sel2 := sel.Parents().End()
@@ -349,6 +372,17 @@ func TestNextAllFiltered2(t *testing.T) {
 func TestPrevAll(t *testing.T) {
 	sel := Doc().Root.Find("[ng-view]").PrevAll()
 	AssertLength(t, sel.Nodes, 2)
+}
+
+func TestPrevAllOrder(t *testing.T) {
+	sel := Doc().Root.Find("[ng-view]").PrevAll()
+	AssertLength(t, sel.Nodes, 2)
+	if !sel.Eq(0).Is("#cf4") {
+		t.Errorf("Element at 0 should be cf4, found %+v.", sel.Get(0))
+	}
+	if !sel.Eq(1).Is("#cf3") {
+		t.Errorf("Element at 1 should be cf3, found %+v.", sel.Get(1))
+	}
 }
 
 func TestPrevAllRollback(t *testing.T) {

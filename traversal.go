@@ -2,7 +2,9 @@ package goquery
 
 import (
 	"code.google.com/p/cascadia"
+	"errors"
 	"exp/html"
+	"fmt"
 )
 
 type siblingType int
@@ -272,7 +274,18 @@ func getSiblingNodes(nodes []*html.Node, st siblingType) []*html.Node {
 
 		// Get the parent and loop through all children
 		if p := n.Parent; p != nil {
-			return getChildrenWithSiblingType(p, st, n)
+			if st == siblingPrevAll || st == siblingPrevUntil {
+				// Find the index of this node
+				for i, c := range p.Child {
+					if c == n {
+						// Looking for previous nodes, so start at index - 1 upwards
+						return getChildrenWithSiblingType(p, st, n, i-1, -1)
+					}
+				}
+				panic(errors.New(fmt.Sprintf("Could not find node %+v in his parent's Child slice.", n)))
+			} else {
+				return getChildrenWithSiblingType(p, st, n, 0, 1)
+			}
 		}
 		return nil
 	})
@@ -282,18 +295,23 @@ func getSiblingNodes(nodes []*html.Node, st siblingType) []*html.Node {
 // based on the sibling type request.
 func getChildrenNodes(nodes []*html.Node, st siblingType) []*html.Node {
 	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
-		return getChildrenWithSiblingType(n, st, nil)
+		return getChildrenWithSiblingType(n, st, nil, 0, 1)
 	})
 }
 
 // Gets the children of the specified parent, based on the requested sibling
 // type, skipping a specified node if required.
-func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *html.Node) (result []*html.Node) {
+func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *html.Node,
+	startIndex int, increment int) (result []*html.Node) {
+
 	var prev *html.Node
 	var nFound bool
+	var end = len(parent.Child)
 
-	for _, c := range parent.Child {
-		// Care only about elements
+	for i := startIndex; i >= 0 && i < end; i += increment {
+		c := parent.Child[i]
+
+		// Care only about elements unless we explicitly request all types of elements
 		if c.Type == html.ElementNode || st == siblingAllIncludingNonElements {
 			// Is it the existing node?
 			if c == skipNode {
