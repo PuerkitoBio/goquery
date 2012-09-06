@@ -407,6 +407,76 @@ func TestPrevAllFilteredRollback(t *testing.T) {
 	AssertEqual(t, sel, sel2)
 }
 
+func TestNextUntil(t *testing.T) {
+	sel := Doc().Root.Find(".alert a").NextUntil("p")
+	AssertLength(t, sel.Nodes, 1)
+	if !sel.Eq(0).Is("h4") {
+		t.Errorf("Expected node 0 to be h4, found %+v.", sel.Get(0))
+	}
+}
+
+func TestNextUntil2(t *testing.T) {
+	sel := Doc().Root.Find("#cf2-1").NextUntil("[ng-cloak]")
+	AssertLength(t, sel.Nodes, 1)
+	if !sel.Eq(0).Is("#cf2-2") {
+		t.Errorf("Expected node 0 to be cf2-2, found %+v.", sel.Get(0))
+	}
+}
+
+func TestNextUntilOrder(t *testing.T) {
+	sel := Doc().Root.Find("#cf2-1").NextUntil("#cf2-4")
+	AssertLength(t, sel.Nodes, 2)
+	if !sel.Eq(0).Is("#cf2-2") {
+		t.Errorf("Expected node 0 to be cf2-2, found %+v.", sel.Get(0))
+	}
+	if !sel.Eq(1).Is("#cf2-3") {
+		t.Errorf("Expected node 1 to be cf2-3, found %+v.", sel.Get(1))
+	}
+}
+
+func TestNextUntilRollback(t *testing.T) {
+	sel := Doc().Root.Find("#cf2-1")
+	sel2 := sel.PrevUntil("#cf2-4").End()
+	AssertEqual(t, sel, sel2)
+}
+
+func TestNextUntilSelection(t *testing.T) {
+	sel := Doc2().Root.Find("#n2")
+	sel2 := Doc2().Root.Find("#n4")
+	sel2 = sel.NextUntilSelection(sel2)
+	AssertLength(t, sel2.Nodes, 1)
+	if !sel2.Eq(0).Is("#n3") {
+		t.Errorf("Expected node 0 to be n3, found %+v.", sel2.Get(0))
+	}
+}
+
+func TestNextUntilSelectionRollback(t *testing.T) {
+	sel := Doc2().Root.Find("#n2")
+	sel2 := Doc2().Root.Find("#n4")
+	sel2 = sel.NextUntilSelection(sel2).End()
+	AssertEqual(t, sel, sel2)
+}
+
+func TestNextUntilNodes(t *testing.T) {
+	sel := Doc2().Root.Find("#n2")
+	sel2 := Doc2().Root.Find("#n5")
+	sel2 = sel.NextUntilNodes(sel2.Nodes...)
+	AssertLength(t, sel2.Nodes, 2)
+	if !sel2.Eq(0).Is("#n3") {
+		t.Errorf("Expected node 0 to be n3, found %+v.", sel2.Get(0))
+	}
+	if !sel2.Eq(1).Is("#n4") {
+		t.Errorf("Expected node 1 to be n4, found %+v.", sel2.Get(1))
+	}
+}
+
+func TestNextUntilNodesRollback(t *testing.T) {
+	sel := Doc2().Root.Find("#n2")
+	sel2 := Doc2().Root.Find("#n5")
+	sel2 = sel.NextUntilNodes(sel2.Nodes...).End()
+	AssertEqual(t, sel, sel2)
+}
+
 func TestPrevUntil(t *testing.T) {
 	sel := Doc().Root.Find(".alert p").PrevUntil("a")
 	AssertLength(t, sel.Nodes, 1)

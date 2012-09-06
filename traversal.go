@@ -220,6 +220,32 @@ func (this *Selection) PrevAllFiltered(selector string) *Selection {
 	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingPrevAll, "", nil), selector)
 }
 
+// NextUntil() gets all following siblings of each element up to but not
+// including the element matched by the selector. It returns a new Selection
+// object containing the matched elements.
+func (this *Selection) NextUntil(selector string) *Selection {
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingNextUntil,
+		selector, nil))
+}
+
+// NextUntilSelection() gets all following siblings of each element up to but not
+// including the element matched by the Selection. It returns a new Selection
+// object containing the matched elements.
+func (this *Selection) NextUntilSelection(sel *Selection) *Selection {
+	if sel == nil {
+		return this.NextAll()
+	}
+	return this.NextUntilNodes(sel.Nodes...)
+}
+
+// NextUntilNodes() gets all following siblings of each element up to but not
+// including the element matched by the nodes. It returns a new Selection
+// object containing the matched elements.
+func (this *Selection) NextUntilNodes(nodes ...*html.Node) *Selection {
+	return pushStack(this, getSiblingNodes(this.Nodes, siblingNextUntil,
+		"", nodes))
+}
+
 // PrevUntil() gets all preceding siblings of each element up to but not
 // including the element matched by the selector. It returns a new Selection
 // object containing the matched elements.
