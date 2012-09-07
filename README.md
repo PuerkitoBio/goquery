@@ -10,6 +10,13 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 Since this library (and cascadia) depends on the experimental branch, this package must be installed first. Both GoQuery and Cascadia expect to find the experimental library with the `"exp/html"` import statement. To install it at this location, please [follow this guide][wikiexp].
 
+**TEMP** : Due to recent breaking changes in the experimental HTML package (which is to be expected, being experimental and all...), user Zippoxer mentions this on golang-nuts mailing list:
+
+> Had to clone revision e17cd42dcc09 of Go to get cascadia [and GoQuery] to compile.
+
+I'll try to bring things up to date Sep. 10th, along with cascadia's author.
+**END TEMP**
+
 Once this is done, install GoQuery:
 
 `go get github.com/PuerkitoBio/goquery`
