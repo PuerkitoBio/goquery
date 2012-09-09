@@ -45,7 +45,7 @@ func (this *Selection) Html() (ret string, e error) {
 	var buf bytes.Buffer
 
 	if len(this.Nodes) > 0 {
-		for _, c := range this.Nodes[0].Child {
+		for c := this.Nodes[0].FirstChild; c != nil; c = c.NextSibling {
 			e = html.Render(&buf, c)
 			if e != nil {
 				return
@@ -62,9 +62,9 @@ func getNodeText(node *html.Node) string {
 	if node.Type == html.TextNode {
 		// Keep newlines and spaces, like jQuery
 		return node.Data
-	} else if len(node.Child) > 0 {
+	} else if node.FirstChild != nil {
 		var buf bytes.Buffer
-		for _, c := range node.Child {
+		for c := node.FirstChild; c != nil; c = c.NextSibling {
 			buf.WriteString(getNodeText(c))
 		}
 		return buf.String()

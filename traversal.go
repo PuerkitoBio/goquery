@@ -288,7 +288,7 @@ func findWithSelector(nodes []*html.Node, selector string) []*html.Node {
 	// Map nodes to find the matches within the children of each node
 	return mapNodes(nodes, func(i int, n *html.Node) (result []*html.Node) {
 		// Go down one level, becausejQuery's Find() selects only within descendants
-		for _, c := range n.Child {
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
 			if c.Type == html.ElementNode {
 				result = append(result, sel.MatchAll(c)...)
 			}
@@ -354,11 +354,13 @@ func getSiblingNodes(nodes []*html.Node, st siblingType, untilSelector string,
 			// from the start and stop once it is found.
 			if st == siblingPrevAll || st == siblingPrevUntil {
 				// Find the index of this node within its parent's children
-				for i, c := range p.Child {
+				var i = 0
+				for c := p.FirstChild; c != nil; c = c.NextSibling {
 					if c == n {
 						// Looking for previous nodes, so start at index - 1 backwards
 						return getChildrenWithSiblingType(p, st, n, i-1, -1, f)
 					}
+					i++
 				}
 				// Should never get here.
 				panic(errors.New(fmt.Sprintf("Could not find node %+v in his parent's Child slice.", n)))
@@ -386,10 +388,11 @@ func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *htm
 
 	var prev *html.Node
 	var nFound bool
-	var end = len(parent.Child)
+	var children = getChildren(parent)
+	var end = len(children)
 
 	for i := startIndex; i >= 0 && i < end; i += increment {
-		c := parent.Child[i]
+		c := children[i]
 
 		// Care only about elements unless we explicitly request all types of elements
 		if c.Type == html.ElementNode || st == siblingAllIncludingNonElements {

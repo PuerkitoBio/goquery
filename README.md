@@ -10,13 +10,6 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 Since this library (and cascadia) depends on the experimental branch, this package must be installed first. Both GoQuery and Cascadia expect to find the experimental library with the `"exp/html"` import statement. To install it at this location, please [follow this guide][wikiexp].
 
-**TEMP** : Due to recent breaking changes in the experimental HTML package (which is to be expected, being experimental and all...), user Zippoxer mentions this on golang-nuts mailing list:
-
-> Had to clone revision e17cd42dcc09 of Go to get cascadia [and GoQuery] to compile.
-
-I'll try to bring things up to date Sep. 10th, along with cascadia's author.
-**END TEMP**
-
 Once this is done, install GoQuery:
 
 `go get github.com/PuerkitoBio/goquery`
@@ -86,6 +79,7 @@ Taken from example_test.go:
 ## TODOs
 
 *    Implement NextFilteredUntil...() and PrevFilteredUntil...().
+*    Refactor Next...() and Prev...() to use the new NextSibling/PrevSibling fields.
 *    Benchmarks so that future changes have a baseline to compare to.
 *    Add jQuery's `Closest()`? Other missing functions?
 *    Support negative indices in `Slice()`, like jQuery.
