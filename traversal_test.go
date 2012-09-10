@@ -534,3 +534,45 @@ func TestNextFilteredUntilNodesRollback(t *testing.T) {
 	sel3 := sel.NextFilteredUntilNodes(".odd", sel2.Nodes...).End()
 	AssertEqual(t, sel, sel3)
 }
+
+func TestPrevFilteredUntil(t *testing.T) {
+	sel := Doc2().Root.Find(".five").PrevFilteredUntil(".odd", ".one")
+	AssertLength(t, sel.Nodes, 4)
+	AssertSelectionIs(t, sel, "#n4", "#n2", "#nf4", "#nf2")
+}
+
+func TestPrevFilteredUntilRollback(t *testing.T) {
+	sel := Doc2().Root.Find(".four")
+	sel2 := sel.PrevFilteredUntil(".odd", ".one").End()
+	AssertEqual(t, sel, sel2)
+}
+
+func TestPrevFilteredUntilSelection(t *testing.T) {
+	sel := Doc2().Root.Find(".odd")
+	sel2 := Doc2().Root.Find(".two")
+	sel = sel.PrevFilteredUntilSelection(".odd", sel2)
+	AssertLength(t, sel.Nodes, 2)
+	AssertSelectionIs(t, sel, "#n4", "#nf4")
+}
+
+func TestPrevFilteredUntilSelectionRollback(t *testing.T) {
+	sel := Doc2().Root.Find(".even")
+	sel2 := Doc2().Root.Find(".five")
+	sel3 := sel.PrevFilteredUntilSelection(".even", sel2).End()
+	AssertEqual(t, sel, sel3)
+}
+
+func TestPrevFilteredUntilNodes(t *testing.T) {
+	sel := Doc2().Root.Find(".even")
+	sel2 := Doc2().Root.Find(".four")
+	sel = sel.PrevFilteredUntilNodes(".odd", sel2.Nodes...)
+	AssertLength(t, sel.Nodes, 2)
+	AssertSelectionIs(t, sel, "#n2", "#nf2")
+}
+
+func TestPrevFilteredUntilNodesRollback(t *testing.T) {
+	sel := Doc2().Root.Find(".even")
+	sel2 := Doc2().Root.Find(".four")
+	sel3 := sel.PrevFilteredUntilNodes(".odd", sel2.Nodes...).End()
+	AssertEqual(t, sel, sel3)
+}

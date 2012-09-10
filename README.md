@@ -78,9 +78,8 @@ Taken from example_test.go:
 
 ## TODOs
 
-*    Implement PrevFilteredUntil...().
-*    Refactor Next...() and Prev...() to use the new NextSibling/PrevSibling fields.
 *    Benchmarks so that future changes have a baseline to compare to.
+*    Refactor Next...() and Prev...() to use the new NextSibling/PrevSibling fields.
 *    Add jQuery's `Closest()`? Other missing functions?
 *    Support negative indices in `Slice()`, like jQuery.
 

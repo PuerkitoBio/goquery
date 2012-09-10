@@ -298,6 +298,32 @@ func (this *Selection) NextFilteredUntilNodes(filterSelector string, nodes ...*h
 		"", nodes), filterSelector)
 }
 
+// PrevFilteredUntil() is like PrevUntil(), with the option to filter
+// the results based on a selector string.
+// It returns a new Selection object containing the matched elements.
+func (this *Selection) PrevFilteredUntil(filterSelector string, untilSelector string) *Selection {
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingPrevUntil,
+		untilSelector, nil), filterSelector)
+}
+
+// PrevFilteredUntilSelection() is like PrevUntilSelection(), with the
+// option to filter the results based on a selector string. It returns a new
+// Selection object containing the matched elements.
+func (this *Selection) PrevFilteredUntilSelection(filterSelector string, sel *Selection) *Selection {
+	if sel == nil {
+		return this.PrevFiltered(filterSelector)
+	}
+	return this.PrevFilteredUntilNodes(filterSelector, sel.Nodes...)
+}
+
+// PrevFilteredUntilNodes() is like PrevUntilNodes(), with the
+// option to filter the results based on a selector string. It returns a new
+// Selection object containing the matched elements.
+func (this *Selection) PrevFilteredUntilNodes(filterSelector string, nodes ...*html.Node) *Selection {
+	return filterAndPush(this, getSiblingNodes(this.Nodes, siblingPrevUntil,
+		"", nodes), filterSelector)
+}
+
 // Filter and push filters the nodes based on a selector, and pushes the results
 // on the stack, with the srcSel as previous selection.
 func filterAndPush(srcSel *Selection, nodes []*html.Node, selector string) *Selection {
