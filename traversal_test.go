@@ -115,24 +115,7 @@ func TestParents(t *testing.T) {
 func TestParentsOrder(t *testing.T) {
 	sel := Doc().Root.Find("#cf2").Parents()
 	AssertLength(t, sel.Nodes, 6)
-	if !sel.Eq(0).HasClass("hero-unit") {
-		t.Errorf("Element at 0 should be hero-unit, found %+v.", sel.Get(0))
-	}
-	if !sel.Eq(1).HasClass("pvk-content") {
-		t.Errorf("Element at 1 should be pvk-content, found %+v.", sel.Get(1))
-	}
-	if !sel.Eq(2).Is("div.row-fluid") {
-		t.Errorf("Element at 2 should be row-fluid, found %+v.", sel.Get(2))
-	}
-	if !sel.Eq(3).Is("#cf1") {
-		t.Errorf("Element at 3 should be cf1, found %+v.", sel.Get(3))
-	}
-	if !sel.Eq(4).Is("body") {
-		t.Errorf("Element at 4 should be body, found %+v.", sel.Get(4))
-	}
-	if !sel.Eq(5).Is("html") {
-		t.Errorf("Element at 5 should be html, found %+v.", sel.Get(5))
-	}
+	AssertSelectionIs(t, sel, ".hero-unit", ".pvk-content", "div.row-fluid", "#cf1", "body", "html")
 }
 
 func TestParentsRollback(t *testing.T) {
@@ -377,12 +360,7 @@ func TestPrevAll(t *testing.T) {
 func TestPrevAllOrder(t *testing.T) {
 	sel := Doc().Root.Find("[ng-view]").PrevAll()
 	AssertLength(t, sel.Nodes, 2)
-	if !sel.Eq(0).Is("#cf4") {
-		t.Errorf("Element at 0 should be cf4, found %+v.", sel.Get(0))
-	}
-	if !sel.Eq(1).Is("#cf3") {
-		t.Errorf("Element at 1 should be cf3, found %+v.", sel.Get(1))
-	}
+	AssertSelectionIs(t, sel, "#cf4", "#cf3")
 }
 
 func TestPrevAllRollback(t *testing.T) {
@@ -410,28 +388,19 @@ func TestPrevAllFilteredRollback(t *testing.T) {
 func TestNextUntil(t *testing.T) {
 	sel := Doc().Root.Find(".alert a").NextUntil("p")
 	AssertLength(t, sel.Nodes, 1)
-	if !sel.Eq(0).Is("h4") {
-		t.Errorf("Expected node 0 to be h4, found %+v.", sel.Get(0))
-	}
+	AssertSelectionIs(t, sel, "h4")
 }
 
 func TestNextUntil2(t *testing.T) {
 	sel := Doc().Root.Find("#cf2-1").NextUntil("[ng-cloak]")
 	AssertLength(t, sel.Nodes, 1)
-	if !sel.Eq(0).Is("#cf2-2") {
-		t.Errorf("Expected node 0 to be cf2-2, found %+v.", sel.Get(0))
-	}
+	AssertSelectionIs(t, sel, "#cf2-2")
 }
 
 func TestNextUntilOrder(t *testing.T) {
 	sel := Doc().Root.Find("#cf2-1").NextUntil("#cf2-4")
 	AssertLength(t, sel.Nodes, 2)
-	if !sel.Eq(0).Is("#cf2-2") {
-		t.Errorf("Expected node 0 to be cf2-2, found %+v.", sel.Get(0))
-	}
-	if !sel.Eq(1).Is("#cf2-3") {
-		t.Errorf("Expected node 1 to be cf2-3, found %+v.", sel.Get(1))
-	}
+	AssertSelectionIs(t, sel, "#cf2-2", "#cf2-3")
 }
 
 func TestNextUntilRollback(t *testing.T) {
@@ -445,9 +414,7 @@ func TestNextUntilSelection(t *testing.T) {
 	sel2 := Doc2().Root.Find("#n4")
 	sel2 = sel.NextUntilSelection(sel2)
 	AssertLength(t, sel2.Nodes, 1)
-	if !sel2.Eq(0).Is("#n3") {
-		t.Errorf("Expected node 0 to be n3, found %+v.", sel2.Get(0))
-	}
+	AssertSelectionIs(t, sel2, "#n3")
 }
 
 func TestNextUntilSelectionRollback(t *testing.T) {
@@ -462,12 +429,7 @@ func TestNextUntilNodes(t *testing.T) {
 	sel2 := Doc2().Root.Find("#n5")
 	sel2 = sel.NextUntilNodes(sel2.Nodes...)
 	AssertLength(t, sel2.Nodes, 2)
-	if !sel2.Eq(0).Is("#n3") {
-		t.Errorf("Expected node 0 to be n3, found %+v.", sel2.Get(0))
-	}
-	if !sel2.Eq(1).Is("#n4") {
-		t.Errorf("Expected node 1 to be n4, found %+v.", sel2.Get(1))
-	}
+	AssertSelectionIs(t, sel2, "#n3", "#n4")
 }
 
 func TestNextUntilNodesRollback(t *testing.T) {
@@ -480,28 +442,19 @@ func TestNextUntilNodesRollback(t *testing.T) {
 func TestPrevUntil(t *testing.T) {
 	sel := Doc().Root.Find(".alert p").PrevUntil("a")
 	AssertLength(t, sel.Nodes, 1)
-	if !sel.Eq(0).Is("h4") {
-		t.Errorf("Expected node 0 to be h4, found %+v.", sel.Get(0))
-	}
+	AssertSelectionIs(t, sel, "h4")
 }
 
 func TestPrevUntil2(t *testing.T) {
 	sel := Doc().Root.Find("[ng-cloak]").PrevUntil(":not([ng-cloak])")
 	AssertLength(t, sel.Nodes, 1)
-	if !sel.Eq(0).Is("[ng-cloak]") {
-		t.Errorf("Expected node 0 to be [ng-cloak], found %+v.", sel.Get(0))
-	}
+	AssertSelectionIs(t, sel, "[ng-cloak]")
 }
 
 func TestPrevUntilOrder(t *testing.T) {
 	sel := Doc().Root.Find("#cf2-4").PrevUntil("#cf2-1")
 	AssertLength(t, sel.Nodes, 2)
-	if !sel.Eq(0).Is("#cf2-3") {
-		t.Errorf("Expected node 0 to be cf2-3, found %+v.", sel.Get(0))
-	}
-	if !sel.Eq(1).Is("#cf2-2") {
-		t.Errorf("Expected node 1 to be cf2-2, found %+v.", sel.Get(1))
-	}
+	AssertSelectionIs(t, sel, "#cf2-3", "#cf2-2")
 }
 
 func TestPrevUntilRollback(t *testing.T) {
@@ -515,9 +468,7 @@ func TestPrevUntilSelection(t *testing.T) {
 	sel2 := Doc2().Root.Find("#n2")
 	sel2 = sel.PrevUntilSelection(sel2)
 	AssertLength(t, sel2.Nodes, 1)
-	if !sel2.Eq(0).Is("#n3") {
-		t.Errorf("Expected node 0 to be n3, found %+v.", sel2.Get(0))
-	}
+	AssertSelectionIs(t, sel2, "#n3")
 }
 
 func TestPrevUntilSelectionRollback(t *testing.T) {
@@ -532,12 +483,7 @@ func TestPrevUntilNodes(t *testing.T) {
 	sel2 := Doc2().Root.Find("#n2")
 	sel2 = sel.PrevUntilNodes(sel2.Nodes...)
 	AssertLength(t, sel2.Nodes, 2)
-	if !sel2.Eq(0).Is("#n4") {
-		t.Errorf("Expected node 0 to be n4, found %+v.", sel2.Get(0))
-	}
-	if !sel2.Eq(1).Is("#n3") {
-		t.Errorf("Expected node 1 to be n3, found %+v.", sel2.Get(1))
-	}
+	AssertSelectionIs(t, sel2, "#n4", "#n3")
 }
 
 func TestPrevUntilNodesRollback(t *testing.T) {
@@ -545,4 +491,46 @@ func TestPrevUntilNodesRollback(t *testing.T) {
 	sel2 := Doc2().Root.Find("#n2")
 	sel2 = sel.PrevUntilNodes(sel2.Nodes...).End()
 	AssertEqual(t, sel, sel2)
+}
+
+func TestNextFilteredUntil(t *testing.T) {
+	sel := Doc2().Root.Find(".two").NextFilteredUntil(".even", ".six")
+	AssertLength(t, sel.Nodes, 4)
+	AssertSelectionIs(t, sel, "#n3", "#n5", "#nf3", "#nf5")
+}
+
+func TestNextFilteredUntilRollback(t *testing.T) {
+	sel := Doc2().Root.Find(".two")
+	sel2 := sel.NextFilteredUntil(".even", ".six").End()
+	AssertEqual(t, sel, sel2)
+}
+
+func TestNextFilteredUntilSelection(t *testing.T) {
+	sel := Doc2().Root.Find(".even")
+	sel2 := Doc2().Root.Find(".five")
+	sel = sel.NextFilteredUntilSelection(".even", sel2)
+	AssertLength(t, sel.Nodes, 2)
+	AssertSelectionIs(t, sel, "#n3", "#nf3")
+}
+
+func TestNextFilteredUntilSelectionRollback(t *testing.T) {
+	sel := Doc2().Root.Find(".even")
+	sel2 := Doc2().Root.Find(".five")
+	sel3 := sel.NextFilteredUntilSelection(".even", sel2).End()
+	AssertEqual(t, sel, sel3)
+}
+
+func TestNextFilteredUntilNodes(t *testing.T) {
+	sel := Doc2().Root.Find(".even")
+	sel2 := Doc2().Root.Find(".four")
+	sel = sel.NextFilteredUntilNodes(".odd", sel2.Nodes...)
+	AssertLength(t, sel.Nodes, 4)
+	AssertSelectionIs(t, sel, "#n2", "#n6", "#nf2", "#nf6")
+}
+
+func TestNextFilteredUntilNodesRollback(t *testing.T) {
+	sel := Doc2().Root.Find(".even")
+	sel2 := Doc2().Root.Find(".four")
+	sel3 := sel.NextFilteredUntilNodes(".odd", sel2.Nodes...).End()
+	AssertEqual(t, sel, sel3)
 }

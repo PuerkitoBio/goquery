@@ -35,7 +35,7 @@ func AssertLength(t *testing.T, nodes []*html.Node, length int) {
 
 func AssertClass(t *testing.T, sel *Selection, class string) {
 	if !sel.HasClass(class) {
-		t.Errorf("Expected node to have class %s.", class)
+		t.Errorf("Expected node to have class %s, found %+v.", class, sel.Get(0))
 	}
 }
 
@@ -48,6 +48,14 @@ func AssertPanic(t *testing.T) {
 func AssertEqual(t *testing.T, s1 *Selection, s2 *Selection) {
 	if s1 != s2 {
 		t.Error("Expected selection objects to be the same.")
+	}
+}
+
+func AssertSelectionIs(t *testing.T, sel *Selection, is ...string) {
+	for i := 0; i < sel.Length(); i++ {
+		if !sel.Eq(i).Is(is[i]) {
+			t.Errorf("Expected node %d to be %s, found %+v", i, is[i], sel.Get(i))
+		}
 	}
 }
 

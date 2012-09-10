@@ -78,7 +78,7 @@ Taken from example_test.go:
 
 ## TODOs
 
-*    Implement NextFilteredUntil...() and PrevFilteredUntil...().
+*    Implement PrevFilteredUntil...().
 *    Refactor Next...() and Prev...() to use the new NextSibling/PrevSibling fields.
 *    Benchmarks so that future changes have a baseline to compare to.
 *    Add jQuery's `Closest()`? Other missing functions?
