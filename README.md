@@ -16,7 +16,7 @@ Once this is done, install GoQuery:
 
 ## Changelog
 
-*    **v0.1** : Initial release. See <a href="#a1">TODOs</a> for a list of upcoming features.
+*    **v0.1** : Initial release. See [TODOs](#a1) for a list of upcoming features.
 
 ## API
 
@@ -81,7 +81,7 @@ Taken from example_test.go:
 
 
 ## TODOs
-<a id="a1"></a>
+<a name="a1" />
 
 *    Benchmarks so that future changes have a baseline to compare to.
 *    Refactor Next...() and Prev...() to use the new NextSibling/PrevSibling fields.
