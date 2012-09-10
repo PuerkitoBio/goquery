@@ -14,6 +14,10 @@ Once this is done, install GoQuery:
 
 `go get github.com/PuerkitoBio/goquery`
 
+## Changelog
+
+*    **v0.1** : Initial release. See <a href="#a1">TODOs</a> for a list of upcoming features.
+
 ## API
 
 GoQuery exposes two classes, `Document` and `Selection`. Unlike jQuery, which is loaded as part of a DOM document, and thus acts on its containing document, GoQuery doesn't know which HTML document to act upon. So it needs to be told, and that's what the `Document` class is for. It holds the root document node as the initial Selection object to manipulate.
@@ -77,6 +81,7 @@ Taken from example_test.go:
 
 
 ## TODOs
+<a id="a1"></a>
 
 *    Benchmarks so that future changes have a baseline to compare to.
 *    Refactor Next...() and Prev...() to use the new NextSibling/PrevSibling fields.
