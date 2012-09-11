@@ -65,12 +65,12 @@ func BenchmarkIndex(b *testing.B) {
 	var j int
 
 	b.StopTimer()
-	sel := DocB().Root.Find("#main")
+	sel := DocB().Root.Find("#Main")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		j = sel.Index()
 	}
-	b.Logf("Index=%d\n", j)
+	b.Logf("Index=%d", j)
 }
 
 func BenchmarkIndexSelector(b *testing.B) {
@@ -82,7 +82,7 @@ func BenchmarkIndexSelector(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		j = sel.IndexSelector("dd")
 	}
-	b.Logf("IndexSelector=%d\n", j)
+	b.Logf("IndexSelector=%d", j)
 }
 
 func BenchmarkIndexOfNode(b *testing.B) {
@@ -96,7 +96,7 @@ func BenchmarkIndexOfNode(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		j = sel.IndexOfNode(n)
 	}
-	b.Logf("IndexOfNode=%d\n", j)
+	b.Logf("IndexOfNode=%d", j)
 }
 
 func BenchmarkIndexOfSelection(b *testing.B) {
@@ -108,5 +108,5 @@ func BenchmarkIndexOfSelection(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		j = sel.IndexOfSelection(sel2)
 	}
-	b.Logf("IndexOfSelection=%d\n", j)
+	b.Logf("IndexOfSelection=%d", j)
 }
