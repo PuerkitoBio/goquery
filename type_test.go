@@ -11,6 +11,7 @@ import (
 var doc *Document
 var doc2 *Document
 var docB *Document
+var docW *Document
 
 func Doc() *Document {
 	if doc == nil {
@@ -29,6 +30,12 @@ func DocB() *Document {
 		docB = LoadDoc("gotesting.html")
 	}
 	return docB
+}
+func DocW() *Document {
+	if docW == nil {
+		docW = LoadDoc("gowiki.html")
+	}
+	return docW
 }
 
 func AssertLength(t *testing.T, nodes []*html.Node, length int) {
