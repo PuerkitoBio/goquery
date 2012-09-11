@@ -14,6 +14,7 @@ func ExampleScrape_MetalReview() {
 	// Load the HTML document (in real use, the type would be *goquery.Document)
 	var doc *Document
 	var e error
+
 	if doc, e = NewDocument("http://metalreview.com"); e != nil {
 		panic(e.Error())
 	}

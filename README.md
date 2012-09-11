@@ -14,6 +14,14 @@ Once this is done, install GoQuery:
 
 `go get github.com/PuerkitoBio/goquery`
 
+To run unit tests, run this command in goquery's source directory (`$GOPATH/src/github.com/PuerkitoBio/goquery`):
+
+`go test`
+
+To run benchmarks, run this command in goquery's source directory:
+
+`go test -bench=".*"`
+
 ## Changelog
 
 *    **v0.1** : Initial release. See [TODOs](#a1) for a list of upcoming features.

@@ -10,6 +10,7 @@ import (
 // Test helper functions and members
 var doc *Document
 var doc2 *Document
+var docB *Document
 
 func Doc() *Document {
 	if doc == nil {
@@ -22,6 +23,12 @@ func Doc2() *Document {
 		doc2 = LoadDoc("page2.html")
 	}
 	return doc2
+}
+func DocB() *Document {
+	if docB == nil {
+		docB = LoadDoc("gotesting.html")
+	}
+	return docB
 }
 
 func AssertLength(t *testing.T, nodes []*html.Node, length int) {
