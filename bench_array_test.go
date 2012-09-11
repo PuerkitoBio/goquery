@@ -62,10 +62,51 @@ func BenchmarkGet(b *testing.B) {
 }
 
 func BenchmarkIndex(b *testing.B) {
+	var j int
+
 	b.StopTimer()
 	sel := DocB().Root.Find("#main")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		sel.Index()
+		j = sel.Index()
 	}
+	b.Logf("Index=%d\n", j)
+}
+
+func BenchmarkIndexSelector(b *testing.B) {
+	var j int
+
+	b.StopTimer()
+	sel := DocB().Root.Find("#manual-nav dl dd:nth-child(1)")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		j = sel.IndexSelector("dd")
+	}
+	b.Logf("IndexSelector=%d\n", j)
+}
+
+func BenchmarkIndexOfNode(b *testing.B) {
+	var j int
+
+	b.StopTimer()
+	sel := DocB().Root.Find("span a")
+	sel2 := DocB().Root.Find("span a:nth-child(3)")
+	n := sel2.Get(0)
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		j = sel.IndexOfNode(n)
+	}
+	b.Logf("IndexOfNode=%d\n", j)
+}
+
+func BenchmarkIndexOfSelection(b *testing.B) {
+	var j int
+	b.StopTimer()
+	sel := DocB().Root.Find("span a")
+	sel2 := DocB().Root.Find("span a:nth-child(3)")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		j = sel.IndexOfSelection(sel2)
+	}
+	b.Logf("IndexOfSelection=%d\n", j)
 }
