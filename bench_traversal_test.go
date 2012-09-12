@@ -330,3 +330,133 @@ func BenchmarkSiblingsFiltered(b *testing.B) {
 	}
 	b.Logf("SiblingsFiltered=%d", n)
 }
+
+func BenchmarkNext(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li:nth-child(1)")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.Next().Length()
+		} else {
+			sel.Next()
+		}
+	}
+	b.Logf("Next=%d", n)
+}
+
+func BenchmarkNextFiltered(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li:nth-child(1)")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.NextFiltered("[class]").Length()
+		} else {
+			sel.NextFiltered("[class]")
+		}
+	}
+	b.Logf("NextFiltered=%d", n)
+}
+
+func BenchmarkNextAll(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li:nth-child(3)")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.NextAll().Length()
+		} else {
+			sel.NextAll()
+		}
+	}
+	b.Logf("NextAll=%d", n)
+}
+
+func BenchmarkNextAllFiltered(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li:nth-child(3)")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.NextAllFiltered("[class]").Length()
+		} else {
+			sel.NextAllFiltered("[class]")
+		}
+	}
+	b.Logf("NextAllFiltered=%d", n)
+}
+
+func BenchmarkPrev(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li:last-child")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.Prev().Length()
+		} else {
+			sel.Prev()
+		}
+	}
+	b.Logf("Prev=%d", n)
+}
+
+func BenchmarkPrevFiltered(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li:last-child")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.PrevFiltered("[class]").Length()
+		} else {
+			sel.PrevFiltered("[class]")
+		}
+	}
+	// There is one more Prev li with a class, compared to Next li with a class
+	// (confirmed by looking at the HTML, this is ok)
+	b.Logf("PrevFiltered=%d", n)
+}
+
+func BenchmarkPrevAll(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li:nth-child(4)")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.PrevAll().Length()
+		} else {
+			sel.PrevAll()
+		}
+	}
+	b.Logf("PrevAll=%d", n)
+}
+
+func BenchmarkPrevAllFiltered(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li:nth-child(4)")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.PrevAllFiltered("[class]").Length()
+		} else {
+			sel.PrevAllFiltered("[class]")
+		}
+	}
+	b.Logf("PrevAllFiltered=%d", n)
+}
