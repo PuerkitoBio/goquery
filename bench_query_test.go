@@ -16,7 +16,7 @@ func BenchmarkIs(b *testing.B) {
 	b.Logf("Is=%v", y)
 }
 
-func BenchmarkIsRequiresContext(b *testing.B) {
+func BenchmarkIsPositional(b *testing.B) {
 	var y bool
 
 	b.StopTimer()
@@ -25,7 +25,7 @@ func BenchmarkIsRequiresContext(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		y = sel.Is("li:nth-child(2)")
 	}
-	b.Logf("IsRequiresContext=%v", y)
+	b.Logf("IsPositional=%v", y)
 }
 
 func BenchmarkIsFunction(b *testing.B) {
