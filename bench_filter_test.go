@@ -75,5 +75,138 @@ func BenchmarkNotFunction(b *testing.B) {
 }
 
 func BenchmarkFilterNodes(b *testing.B) {
+	var n int
 
+	b.StopTimer()
+	sel := DocW().Root.Find("li")
+	sel2 := DocW().Root.Find(".toclevel-2")
+	nodes := sel2.Nodes
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.FilterNodes(nodes...).Length()
+		} else {
+			sel.FilterNodes(nodes...)
+		}
+	}
+	b.Logf("FilterNodes=%d", n)
+}
+
+func BenchmarkNotNodes(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li")
+	sel2 := DocW().Root.Find(".toclevel-1")
+	nodes := sel2.Nodes
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.NotNodes(nodes...).Length()
+		} else {
+			sel.NotNodes(nodes...)
+		}
+	}
+	b.Logf("NotNodes=%d", n)
+}
+
+func BenchmarkFilterSelection(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li")
+	sel2 := DocW().Root.Find(".toclevel-2")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.FilterSelection(sel2).Length()
+		} else {
+			sel.FilterSelection(sel2)
+		}
+	}
+	b.Logf("FilterSelection=%d", n)
+}
+
+func BenchmarkNotSelection(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li")
+	sel2 := DocW().Root.Find(".toclevel-1")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.NotSelection(sel2).Length()
+		} else {
+			sel.NotSelection(sel2)
+		}
+	}
+	b.Logf("NotSelection=%d", n)
+}
+
+func BenchmarkHas(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("h2")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.Has(".editsection").Length()
+		} else {
+			sel.Has(".editsection")
+		}
+	}
+	b.Logf("Has=%d", n)
+}
+
+func BenchmarkHasNodes(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li")
+	sel2 := DocW().Root.Find(".tocnumber")
+	nodes := sel2.Nodes
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.HasNodes(nodes...).Length()
+		} else {
+			sel.HasNodes(nodes...)
+		}
+	}
+	b.Logf("HasNodes=%d", n)
+}
+
+func BenchmarkHasSelection(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li")
+	sel2 := DocW().Root.Find(".tocnumber")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.HasSelection(sel2).Length()
+		} else {
+			sel.HasSelection(sel2)
+		}
+	}
+	b.Logf("HasSelection=%d", n)
+}
+
+func BenchmarkEnd(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Root.Find("li").Has(".tocnumber")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.End().Length()
+		} else {
+			sel.End()
+		}
+	}
+	b.Logf("End=%d", n)
 }
