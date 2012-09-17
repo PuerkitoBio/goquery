@@ -91,7 +91,6 @@ Taken from example_test.go:
 ## TODOs
 <a name="a1" />
 
-*    Refactor Next...() and Prev...() to use the new NextSibling/PrevSibling fields.
 *    Add jQuery's `Closest()`? Other missing functions?
 *    Support negative indices in `Slice()`, like jQuery.
 

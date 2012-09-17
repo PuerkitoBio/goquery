@@ -2,9 +2,7 @@ package goquery
 
 import (
 	"code.google.com/p/cascadia"
-	"errors"
 	"exp/html"
-	"fmt"
 )
 
 type siblingType int
@@ -373,8 +371,7 @@ func getParentsNodes(nodes []*html.Node, stopSelector string, stopNodes []*html.
 }
 
 // Internal implementation of sibling nodes that return a raw slice of matches.
-func getSiblingNodes(nodes []*html.Node, st siblingType, untilSelector string,
-	untilNodes []*html.Node) []*html.Node {
+func getSiblingNodes(nodes []*html.Node, st siblingType, untilSelector string, untilNodes []*html.Node) []*html.Node {
 
 	var f func(*html.Node) bool
 
@@ -396,32 +393,7 @@ func getSiblingNodes(nodes []*html.Node, st siblingType, untilSelector string,
 	}
 
 	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
-
-		// Get the parent and loop through all children
-		if p := n.Parent; p != nil {
-			// For Prev() calls that may return more than one node (unlike Prev()),
-			// start at the current node, and work backwards from there. Since
-			// Prev() returns only one node, no advantage to find the current node
-			// first and loop backwards to find the previous one. Better to just loop
-			// from the start and stop once it is found.
-			if st == siblingPrevAll || st == siblingPrevUntil {
-				// Find the index of this node within its parent's children
-				var i = 0
-				for c := p.FirstChild; c != nil; c = c.NextSibling {
-					if c == n {
-						// Looking for previous nodes, so start at index - 1 backwards
-						return getChildrenWithSiblingType(p, st, n, i-1, -1, f)
-					}
-					i++
-				}
-				// Should never get here.
-				panic(errors.New(fmt.Sprintf("Could not find node %+v in his parent's Child slice.", n)))
-			} else {
-				// Standard loop from start moving forwards.
-				return getChildrenWithSiblingType(p, st, n, 0, 1, f)
-			}
-		}
-		return nil
+		return getChildrenWithSiblingType(n.Parent, st, n, f)
 	})
 }
 
@@ -429,61 +401,72 @@ func getSiblingNodes(nodes []*html.Node, st siblingType, untilSelector string,
 // based on the sibling type request.
 func getChildrenNodes(nodes []*html.Node, st siblingType) []*html.Node {
 	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
-		return getChildrenWithSiblingType(n, st, nil, 0, 1, nil)
+		return getChildrenWithSiblingType(n, st, nil, nil)
 	})
 }
 
 // Gets the children of the specified parent, based on the requested sibling
 // type, skipping a specified node if required.
 func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *html.Node,
-	startIndex int, increment int, untilFunc func(*html.Node) bool) (result []*html.Node) {
+	untilFunc func(*html.Node) bool) (result []*html.Node) {
 
-	var prev *html.Node
-	var nFound bool
-	var children = getChildren(parent)
-	var end = len(children)
-
-	for i := startIndex; i >= 0 && i < end; i += increment {
-		c := children[i]
-
-		// Care only about elements unless we explicitly request all types of elements
-		if c.Type == html.ElementNode || st == siblingAllIncludingNonElements {
-			// Is it the existing node?
-			if c == skipNode {
-				// Found the current node
-				nFound = true
-				if st == siblingPrev {
-					// We want the previous node only, so append it and return
-					if prev != nil {
-						result = append(result, prev)
+	// Create the iterator function
+	var iter = func(cur *html.Node) (ret *html.Node) {
+		// Based on the sibling type requested, iterate the right way
+		for {
+			switch st {
+			case siblingAll, siblingAllIncludingNonElements:
+				if cur == nil {
+					// First iteration, start with first child of parent
+					// Skip node if required
+					if ret = parent.FirstChild; ret == skipNode && skipNode != nil {
+						ret = skipNode.NextSibling
 					}
-					return
+				} else {
+					// Skip node if required
+					if ret = cur.NextSibling; ret == skipNode && skipNode != nil {
+						ret = skipNode.NextSibling
+					}
 				}
-			} else if prev == skipNode && st == siblingNext {
-				// We want only the next node and this is it, so append it and return
-				result = append(result, c)
+			case siblingPrev, siblingPrevAll, siblingPrevUntil:
+				if cur == nil {
+					// Start with previous sibling of the skip node
+					ret = skipNode.PrevSibling
+				} else {
+					ret = cur.PrevSibling
+				}
+			case siblingNext, siblingNextAll, siblingNextUntil:
+				if cur == nil {
+					// Start with next sibling of the skip node
+					ret = skipNode.NextSibling
+				} else {
+					ret = cur.NextSibling
+				}
+			default:
+				panic("Invalid sibling type.")
+			}
+			if ret == nil || ret.Type == html.ElementNode || st == siblingAllIncludingNonElements {
+				return
+			} else {
+				// Not a valid node, try again from this one
+				cur = ret
+			}
+		}
+		panic("Unreachable code reached.")
+	}
+
+	for c := iter(nil); c != nil; c = iter(c) {
+		// If this is an ...Until() case, test before append (returns true
+		// if the until condition is reached)
+		if st == siblingNextUntil || st == siblingPrevUntil {
+			if untilFunc(c) {
 				return
 			}
-			// Keep child as previous
-			prev = c
-
-			// If child is not the current node, check if sibling type requires
-			// to add it to the result.
-			if c != skipNode &&
-				(st == siblingAll ||
-					st == siblingAllIncludingNonElements ||
-					((st == siblingPrevAll || st == siblingPrevUntil) && !nFound) ||
-					((st == siblingNextAll || st == siblingNextUntil) && nFound)) {
-
-				// If this is an ...Until() case, test before append (returns true
-				// if the until condition is reached)
-				if st == siblingNextUntil || st == siblingPrevUntil {
-					if untilFunc(c) {
-						return
-					}
-				}
-				result = append(result, c)
-			}
+		}
+		result = append(result, c)
+		if st == siblingNext || st == siblingPrev {
+			// Only one node was requested (immediate next or previous), so exit
+			return
 		}
 	}
 	return
@@ -504,12 +487,10 @@ func getParentNodes(nodes []*html.Node) []*html.Node {
 // Returns an array of nodes mapped by calling the callback function once for
 // each node in the source nodes.
 func mapNodes(nodes []*html.Node, f func(int, *html.Node) []*html.Node) (result []*html.Node) {
-
 	for i, n := range nodes {
 		if vals := f(i, n); len(vals) > 0 {
 			result = appendWithoutDuplicates(result, vals)
 		}
 	}
-
 	return
 }
