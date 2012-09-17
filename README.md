@@ -24,7 +24,8 @@ To run benchmarks, run this command in goquery's source directory:
 
 ## Changelog
 
-*    **v0.1** : Initial release. See [TODOs](#a1) for a list of upcoming features.
+*    **v0.1.0** : Initial release. See [TODOs](#a1) for a list of upcoming features.
+*    **v0.1.1** : Add benchmarks to use as baseline for refactorings, refactor Next...() and Prev...() methods to use the new html package's linked list features (Next/PrevSibling, FirstChild). Good performance boost (40+% in some cases).
 
 ## API
 
