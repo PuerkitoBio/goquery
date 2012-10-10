@@ -70,6 +70,31 @@ func TestSliceOutOfBounds(t *testing.T) {
 	Doc().Root.Find(".pvk-content").Slice(2, 12)
 }
 
+func TestNegativeSliceStart(t *testing.T) {
+	sel := Doc().Root.Find(".container-fluid").Slice(-2, 3)
+	AssertLength(t, sel.Nodes, 1)
+	AssertSelectionIs(t, sel.Eq(0), "#cf3")
+}
+
+func TestNegativeSliceEnd(t *testing.T) {
+	sel := Doc().Root.Find(".container-fluid").Slice(1, -1)
+	AssertLength(t, sel.Nodes, 2)
+	AssertSelectionIs(t, sel.Eq(0), "#cf2")
+	AssertSelectionIs(t, sel.Eq(1), "#cf3")
+}
+
+func TestNegativeSliceBoth(t *testing.T) {
+	sel := Doc().Root.Find(".container-fluid").Slice(-3, -1)
+	AssertLength(t, sel.Nodes, 2)
+	AssertSelectionIs(t, sel.Eq(0), "#cf2")
+	AssertSelectionIs(t, sel.Eq(1), "#cf3")
+}
+
+func TestNegativeSliceOutOfBounds(t *testing.T) {
+	defer AssertPanic(t)
+	Doc().Root.Find(".container-fluid").Slice(-12, -7)
+}
+
 func TestSliceRollback(t *testing.T) {
 	sel := Doc().Root.Find(".pvk-content")
 	sel2 := sel.Slice(0, 2).End()

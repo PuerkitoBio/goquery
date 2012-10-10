@@ -30,7 +30,12 @@ func (this *Selection) Eq(index int) *Selection {
 // Slice() reduces the set of matched elements to a subset specified by a range
 // of indices. At the moment, negative indices are not supported.
 func (this *Selection) Slice(start int, end int) *Selection {
-	// TODO : Negative indices, like jQuery
+	if start < 0 {
+		start += len(this.Nodes)
+	}
+	if end < 0 {
+		end += len(this.Nodes)
+	}
 	return pushStack(this, this.Nodes[start:end])
 }
 

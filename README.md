@@ -24,8 +24,9 @@ To run benchmarks, run this command in goquery's source directory:
 
 ## Changelog
 
-*    **v0.1.0** : Initial release. See [TODOs](#a1) for a list of upcoming features.
+*    **v0.2.0** : Add support for negative indices in Slice(). *Upcoming* : add jQuery's Closest() method.
 *    **v0.1.1** : Add benchmarks to use as baseline for refactorings, refactor Next...() and Prev...() methods to use the new html package's linked list features (Next/PrevSibling, FirstChild). Good performance boost (40+% in some cases).
+*    **v0.1.0** : Initial release. See [TODOs](#a1) for a list of upcoming features.
 
 ## API
 
@@ -93,7 +94,6 @@ Taken from example_test.go:
 <a name="a1" />
 
 *    Add jQuery's `Closest()`? Other missing functions?
-*    Support negative indices in `Slice()`, like jQuery.
 
 ## License
 
