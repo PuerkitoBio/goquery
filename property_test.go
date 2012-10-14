@@ -7,7 +7,7 @@ import (
 )
 
 func TestAttrExists(t *testing.T) {
-	if val, ok := Doc().Root.Find("a").Attr("href"); !ok {
+	if val, ok := Doc().Find("a").Attr("href"); !ok {
 		t.Error("Expected a value for the href attribute.")
 	} else {
 		t.Logf("Href of first anchor: %v.", val)
@@ -15,20 +15,20 @@ func TestAttrExists(t *testing.T) {
 }
 
 func TestAttrNotExist(t *testing.T) {
-	if val, ok := Doc().Root.Find("div.row-fluid").Attr("href"); ok {
+	if val, ok := Doc().Find("div.row-fluid").Attr("href"); ok {
 		t.Errorf("Expected no value for the href attribute, got %v.", val)
 	}
 }
 
 func TestText(t *testing.T) {
-	txt := Doc().Root.Find("h1").Text()
+	txt := Doc().Find("h1").Text()
 	if strings.Trim(txt, " \n\r\t") != "Provok.in" {
 		t.Errorf("Expected text to be Provok.in, found %s.", txt)
 	}
 }
 
 func TestText2(t *testing.T) {
-	txt := Doc().Root.Find(".hero-unit .container-fluid .row-fluid:nth-child(1)").Text()
+	txt := Doc().Find(".hero-unit .container-fluid .row-fluid:nth-child(1)").Text()
 	if ok, e := regexp.MatchString(`^\s+Provok\.in\s+Prove your point.\s+$`, txt); !ok || e != nil {
 		t.Errorf("Expected text to be Provok.in Prove your point., found %s.", txt)
 		if e != nil {
@@ -38,7 +38,7 @@ func TestText2(t *testing.T) {
 }
 
 func TestText3(t *testing.T) {
-	txt := Doc().Root.Find(".pvk-gutter").First().Text()
+	txt := Doc().Find(".pvk-gutter").First().Text()
 	// There's an &nbsp; character in there...
 	if ok, e := regexp.MatchString(`^[\s\x{00A0}]+$`, txt); !ok || e != nil {
 		t.Errorf("Expected spaces, found <%v>.", txt)
@@ -49,7 +49,7 @@ func TestText3(t *testing.T) {
 }
 
 func TestHtml(t *testing.T) {
-	txt, e := Doc().Root.Find("h1").Html()
+	txt, e := Doc().Find("h1").Html()
 	if e != nil {
 		t.Errorf("Error: %s.", e)
 	}

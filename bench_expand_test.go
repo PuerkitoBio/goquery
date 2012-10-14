@@ -8,7 +8,7 @@ func BenchmarkAdd(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocB().Root.Find("dd")
+	sel := DocB().Find("dd")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -24,8 +24,8 @@ func BenchmarkAddSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocB().Root.Find("dd")
-	sel2 := DocB().Root.Find("h2[title]")
+	sel := DocB().Find("dd")
+	sel2 := DocB().Find("h2[title]")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -41,8 +41,8 @@ func BenchmarkAddNodes(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocB().Root.Find("dd")
-	sel2 := DocB().Root.Find("h2[title]")
+	sel := DocB().Find("dd")
+	sel2 := DocB().Find("h2[title]")
 	nodes := sel2.Nodes
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -59,7 +59,7 @@ func BenchmarkAndSelf(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocB().Root.Find("dd").Parent()
+	sel := DocB().Find("dd").Parent()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {

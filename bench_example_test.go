@@ -15,7 +15,7 @@ func BenchmarkMetalReviewExample(b *testing.B) {
 	doc := LoadDoc("metalreview.html")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		doc.Root.Find(".slider-row:nth-child(1) .slider-item").Each(func(i int, s *Selection) {
+		doc.Find(".slider-row:nth-child(1) .slider-item").Each(func(i int, s *Selection) {
 			var band, title string
 			var score float64
 			var e error

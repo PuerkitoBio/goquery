@@ -8,7 +8,7 @@ func BenchmarkEach(b *testing.B) {
 	var tmp, n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("td")
+	sel := DocW().Find("td")
 	f := func(i int, s *Selection) {
 		tmp++
 	}
@@ -26,7 +26,7 @@ func BenchmarkMap(b *testing.B) {
 	var tmp, n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("td")
+	sel := DocW().Find("td")
 	f := func(i int, s *Selection) string {
 		tmp++
 		return string(tmp)

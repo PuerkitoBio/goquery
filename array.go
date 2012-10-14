@@ -63,7 +63,7 @@ func (this *Selection) Index() int {
 // not found.
 func (this *Selection) IndexSelector(selector string) int {
 	if len(this.Nodes) > 0 {
-		sel := this.document.Root.Find(selector)
+		sel := this.document.Find(selector)
 		return indexInSlice(sel.Nodes, this.Nodes[0])
 	}
 	return -1

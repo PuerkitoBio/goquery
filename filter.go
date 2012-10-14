@@ -70,7 +70,7 @@ func (this *Selection) Intersection(s *Selection) *Selection {
 // that matches the selector.
 // It returns a new Selection object with the matching elements.
 func (this *Selection) Has(selector string) *Selection {
-	return this.HasSelection(this.document.Root.Find(selector))
+	return this.HasSelection(this.document.Find(selector))
 }
 
 // HasNodes() reduces the set of matched elements to those that have a

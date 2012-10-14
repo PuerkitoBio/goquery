@@ -9,10 +9,10 @@ func BenchmarkFind(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
-			n = DocB().Root.Find("dd").Length()
+			n = DocB().Find("dd").Length()
 
 		} else {
-			DocB().Root.Find("dd")
+			DocB().Find("dd")
 		}
 	}
 	b.Logf("Find=%d", n)
@@ -22,7 +22,7 @@ func BenchmarkFindWithinSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("ul")
+	sel := DocW().Find("ul")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -38,8 +38,8 @@ func BenchmarkFindSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("ul")
-	sel2 := DocW().Root.Find("span")
+	sel := DocW().Find("ul")
+	sel2 := DocW().Find("span")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -55,8 +55,8 @@ func BenchmarkFindNodes(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("ul")
-	sel2 := DocW().Root.Find("span")
+	sel := DocW().Find("ul")
+	sel2 := DocW().Find("span")
 	nodes := sel2.Nodes
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -73,7 +73,7 @@ func BenchmarkContents(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find(".toclevel-1")
+	sel := DocW().Find(".toclevel-1")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -89,7 +89,7 @@ func BenchmarkContentsFiltered(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find(".toclevel-1")
+	sel := DocW().Find(".toclevel-1")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -105,7 +105,7 @@ func BenchmarkChildren(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find(".toclevel-2")
+	sel := DocW().Find(".toclevel-2")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -121,7 +121,7 @@ func BenchmarkChildrenFiltered(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h3")
+	sel := DocW().Find("h3")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -137,7 +137,7 @@ func BenchmarkParent(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
+	sel := DocW().Find("li")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -153,7 +153,7 @@ func BenchmarkParentFiltered(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
+	sel := DocW().Find("li")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -169,7 +169,7 @@ func BenchmarkParents(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("th a")
+	sel := DocW().Find("th a")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -185,7 +185,7 @@ func BenchmarkParentsFiltered(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("th a")
+	sel := DocW().Find("th a")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -201,7 +201,7 @@ func BenchmarkParentsUntil(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("th a")
+	sel := DocW().Find("th a")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -217,8 +217,8 @@ func BenchmarkParentsUntilSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("th a")
-	sel2 := DocW().Root.Find("#content")
+	sel := DocW().Find("th a")
+	sel2 := DocW().Find("#content")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -234,8 +234,8 @@ func BenchmarkParentsUntilNodes(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("th a")
-	sel2 := DocW().Root.Find("#content")
+	sel := DocW().Find("th a")
+	sel2 := DocW().Find("#content")
 	nodes := sel2.Nodes
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -252,7 +252,7 @@ func BenchmarkParentsFilteredUntil(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find(".toclevel-1 a")
+	sel := DocW().Find(".toclevel-1 a")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -268,8 +268,8 @@ func BenchmarkParentsFilteredUntilSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find(".toclevel-1 a")
-	sel2 := DocW().Root.Find("ul")
+	sel := DocW().Find(".toclevel-1 a")
+	sel2 := DocW().Find("ul")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -285,8 +285,8 @@ func BenchmarkParentsFilteredUntilNodes(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find(".toclevel-1 a")
-	sel2 := DocW().Root.Find("ul")
+	sel := DocW().Find(".toclevel-1 a")
+	sel2 := DocW().Find("ul")
 	nodes := sel2.Nodes
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -303,7 +303,7 @@ func BenchmarkSiblings(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("ul li:nth-child(1)")
+	sel := DocW().Find("ul li:nth-child(1)")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -319,7 +319,7 @@ func BenchmarkSiblingsFiltered(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("ul li:nth-child(1)")
+	sel := DocW().Find("ul li:nth-child(1)")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -335,7 +335,7 @@ func BenchmarkNext(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li:nth-child(1)")
+	sel := DocW().Find("li:nth-child(1)")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -351,7 +351,7 @@ func BenchmarkNextFiltered(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li:nth-child(1)")
+	sel := DocW().Find("li:nth-child(1)")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -367,7 +367,7 @@ func BenchmarkNextAll(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li:nth-child(3)")
+	sel := DocW().Find("li:nth-child(3)")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -383,7 +383,7 @@ func BenchmarkNextAllFiltered(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li:nth-child(3)")
+	sel := DocW().Find("li:nth-child(3)")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -399,7 +399,7 @@ func BenchmarkPrev(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li:last-child")
+	sel := DocW().Find("li:last-child")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -415,7 +415,7 @@ func BenchmarkPrevFiltered(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li:last-child")
+	sel := DocW().Find("li:last-child")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -433,7 +433,7 @@ func BenchmarkPrevAll(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li:nth-child(4)")
+	sel := DocW().Find("li:nth-child(4)")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -449,7 +449,7 @@ func BenchmarkPrevAllFiltered(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li:nth-child(4)")
+	sel := DocW().Find("li:nth-child(4)")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -465,7 +465,7 @@ func BenchmarkNextUntil(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li:first-child")
+	sel := DocW().Find("li:first-child")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -481,8 +481,8 @@ func BenchmarkNextUntilSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
-	sel2 := DocW().Root.Find("ul")
+	sel := DocW().Find("h2")
+	sel2 := DocW().Find("ul")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -498,8 +498,8 @@ func BenchmarkNextUntilNodes(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
-	sel2 := DocW().Root.Find("p")
+	sel := DocW().Find("h2")
+	sel2 := DocW().Find("p")
 	nodes := sel2.Nodes
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -516,7 +516,7 @@ func BenchmarkPrevUntil(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li:last-child")
+	sel := DocW().Find("li:last-child")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -532,8 +532,8 @@ func BenchmarkPrevUntilSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
-	sel2 := DocW().Root.Find("ul")
+	sel := DocW().Find("h2")
+	sel2 := DocW().Find("ul")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -549,8 +549,8 @@ func BenchmarkPrevUntilNodes(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
-	sel2 := DocW().Root.Find("p")
+	sel := DocW().Find("h2")
+	sel2 := DocW().Find("p")
 	nodes := sel2.Nodes
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -567,7 +567,7 @@ func BenchmarkNextFilteredUntil(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
+	sel := DocW().Find("h2")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -583,8 +583,8 @@ func BenchmarkNextFilteredUntilSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
-	sel2 := DocW().Root.Find("div")
+	sel := DocW().Find("h2")
+	sel2 := DocW().Find("div")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -600,8 +600,8 @@ func BenchmarkNextFilteredUntilNodes(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
-	sel2 := DocW().Root.Find("div")
+	sel := DocW().Find("h2")
+	sel2 := DocW().Find("div")
 	nodes := sel2.Nodes
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -618,7 +618,7 @@ func BenchmarkPrevFilteredUntil(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
+	sel := DocW().Find("h2")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -634,8 +634,8 @@ func BenchmarkPrevFilteredUntilSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
-	sel2 := DocW().Root.Find("div")
+	sel := DocW().Find("h2")
+	sel2 := DocW().Find("div")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -651,8 +651,8 @@ func BenchmarkPrevFilteredUntilNodes(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
-	sel2 := DocW().Root.Find("div")
+	sel := DocW().Find("h2")
+	sel2 := DocW().Find("div")
 	nodes := sel2.Nodes
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {

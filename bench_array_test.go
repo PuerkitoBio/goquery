@@ -6,7 +6,7 @@ import (
 
 func BenchmarkFirst(b *testing.B) {
 	b.StopTimer()
-	sel := DocB().Root.Find("dd")
+	sel := DocB().Find("dd")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		sel.First()
@@ -15,7 +15,7 @@ func BenchmarkFirst(b *testing.B) {
 
 func BenchmarkLast(b *testing.B) {
 	b.StopTimer()
-	sel := DocB().Root.Find("dd")
+	sel := DocB().Find("dd")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		sel.Last()
@@ -24,7 +24,7 @@ func BenchmarkLast(b *testing.B) {
 
 func BenchmarkEq(b *testing.B) {
 	b.StopTimer()
-	sel := DocB().Root.Find("dd")
+	sel := DocB().Find("dd")
 	j := 0
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -37,7 +37,7 @@ func BenchmarkEq(b *testing.B) {
 
 func BenchmarkSlice(b *testing.B) {
 	b.StopTimer()
-	sel := DocB().Root.Find("dd")
+	sel := DocB().Find("dd")
 	j := 0
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -50,7 +50,7 @@ func BenchmarkSlice(b *testing.B) {
 
 func BenchmarkGet(b *testing.B) {
 	b.StopTimer()
-	sel := DocB().Root.Find("dd")
+	sel := DocB().Find("dd")
 	j := 0
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -65,7 +65,7 @@ func BenchmarkIndex(b *testing.B) {
 	var j int
 
 	b.StopTimer()
-	sel := DocB().Root.Find("#Main")
+	sel := DocB().Find("#Main")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		j = sel.Index()
@@ -77,7 +77,7 @@ func BenchmarkIndexSelector(b *testing.B) {
 	var j int
 
 	b.StopTimer()
-	sel := DocB().Root.Find("#manual-nav dl dd:nth-child(1)")
+	sel := DocB().Find("#manual-nav dl dd:nth-child(1)")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		j = sel.IndexSelector("dd")
@@ -89,8 +89,8 @@ func BenchmarkIndexOfNode(b *testing.B) {
 	var j int
 
 	b.StopTimer()
-	sel := DocB().Root.Find("span a")
-	sel2 := DocB().Root.Find("span a:nth-child(3)")
+	sel := DocB().Find("span a")
+	sel2 := DocB().Find("span a:nth-child(3)")
 	n := sel2.Get(0)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -102,8 +102,8 @@ func BenchmarkIndexOfNode(b *testing.B) {
 func BenchmarkIndexOfSelection(b *testing.B) {
 	var j int
 	b.StopTimer()
-	sel := DocB().Root.Find("span a")
-	sel2 := DocB().Root.Find("span a:nth-child(3)")
+	sel := DocB().Find("span a")
+	sel2 := DocB().Find("span a:nth-child(3)")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		j = sel.IndexOfSelection(sel2)

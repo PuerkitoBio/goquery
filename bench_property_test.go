@@ -8,7 +8,7 @@ func BenchmarkAttr(b *testing.B) {
 	var s string
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h1")
+	sel := DocW().Find("h1")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		s, _ = sel.Attr("id")
@@ -18,7 +18,7 @@ func BenchmarkAttr(b *testing.B) {
 
 func BenchmarkText(b *testing.B) {
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
+	sel := DocW().Find("h2")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		sel.Text()
@@ -29,7 +29,7 @@ func BenchmarkLength(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
+	sel := DocW().Find("h2")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		n = sel.Length()
@@ -39,7 +39,7 @@ func BenchmarkLength(b *testing.B) {
 
 func BenchmarkHtml(b *testing.B) {
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
+	sel := DocW().Find("h2")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		sel.Html()

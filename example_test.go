@@ -20,7 +20,7 @@ func ExampleScrape_MetalReview() {
 	}
 
 	// Find the review items (the type of the Selection would be *goquery.Selection)
-	doc.Root.Find(".slider-row:nth-child(1) .slider-item").Each(func(i int, s *Selection) {
+	doc.Find(".slider-row:nth-child(1) .slider-item").Each(func(i int, s *Selection) {
 		var band, title string
 		var score float64
 

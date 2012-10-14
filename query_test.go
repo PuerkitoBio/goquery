@@ -5,28 +5,28 @@ import (
 )
 
 func TestIs(t *testing.T) {
-	sel := Doc().Root.Find(".footer p:nth-child(1)")
+	sel := Doc().Find(".footer p:nth-child(1)")
 	if !sel.Is("p") {
 		t.Error("Expected .footer p:nth-child(1) to be p.")
 	}
 }
 
 func TestIsPositional(t *testing.T) {
-	sel := Doc().Root.Find(".footer p:nth-child(2)")
+	sel := Doc().Find(".footer p:nth-child(2)")
 	if !sel.Is("p:nth-child(2)") {
 		t.Error("Expected .footer p:nth-child(2) to be p:nth-child(2).")
 	}
 }
 
 func TestIsPositionalNot(t *testing.T) {
-	sel := Doc().Root.Find(".footer p:nth-child(1)")
+	sel := Doc().Find(".footer p:nth-child(1)")
 	if sel.Is("p:nth-child(2)") {
 		t.Error("Expected .footer p:nth-child(1) NOT to be p:nth-child(2).")
 	}
 }
 
 func TestIsFunction(t *testing.T) {
-	ok := Doc().Root.Find("div").IsFunction(func(i int, s *Selection) bool {
+	ok := Doc().Find("div").IsFunction(func(i int, s *Selection) bool {
 		return s.HasClass("container-fluid")
 	})
 
@@ -36,7 +36,7 @@ func TestIsFunction(t *testing.T) {
 }
 
 func TestIsFunctionRollback(t *testing.T) {
-	ok := Doc().Root.Find("div").IsFunction(func(i int, s *Selection) bool {
+	ok := Doc().Find("div").IsFunction(func(i int, s *Selection) bool {
 		return s.HasClass("container-fluid")
 	})
 
@@ -46,8 +46,8 @@ func TestIsFunctionRollback(t *testing.T) {
 }
 
 func TestIsSelection(t *testing.T) {
-	sel := Doc().Root.Find("div")
-	sel2 := Doc().Root.Find(".pvk-gutter")
+	sel := Doc().Find("div")
+	sel2 := Doc().Find(".pvk-gutter")
 
 	if !sel.IsSelection(sel2) {
 		t.Error("Expected some div to have a pvk-gutter class.")
@@ -55,8 +55,8 @@ func TestIsSelection(t *testing.T) {
 }
 
 func TestIsSelectionNot(t *testing.T) {
-	sel := Doc().Root.Find("div")
-	sel2 := Doc().Root.Find("a")
+	sel := Doc().Find("div")
+	sel2 := Doc().Find("a")
 
 	if sel.IsSelection(sel2) {
 		t.Error("Expected some div NOT to be an anchor.")
@@ -64,8 +64,8 @@ func TestIsSelectionNot(t *testing.T) {
 }
 
 func TestIsNodes(t *testing.T) {
-	sel := Doc().Root.Find("div")
-	sel2 := Doc().Root.Find(".footer")
+	sel := Doc().Find("div")
+	sel2 := Doc().Find(".footer")
 
 	if !sel.IsNodes(sel2.Nodes[0]) {
 		t.Error("Expected some div to have a footer class.")
@@ -73,44 +73,44 @@ func TestIsNodes(t *testing.T) {
 }
 
 func TestHasClass(t *testing.T) {
-	sel := Doc().Root.Find("div")
+	sel := Doc().Find("div")
 	if !sel.HasClass("span12") {
 		t.Error("Expected at least one div to have class span12.")
 	}
 }
 
 func TestHasClassNone(t *testing.T) {
-	sel := Doc().Root.Find("h2")
+	sel := Doc().Find("h2")
 	if sel.HasClass("toto") {
 		t.Error("Expected h1 to have no class.")
 	}
 }
 
 func TestHasClassNotFirst(t *testing.T) {
-	sel := Doc().Root.Find(".alert")
+	sel := Doc().Find(".alert")
 	if !sel.HasClass("alert-error") {
 		t.Error("Expected .alert to also have class .alert-error.")
 	}
 }
 
 func TestDocContains(t *testing.T) {
-	sel := Doc().Root.Find("h1")
-	if !Doc().Root.Contains(sel.Nodes[0]) {
+	sel := Doc().Find("h1")
+	if !Doc().Contains(sel.Nodes[0]) {
 		t.Error("Expected document to contain H1 tag.")
 	}
 }
 
 func TestSelContains(t *testing.T) {
-	sel := Doc().Root.Find(".row-fluid")
-	sel2 := Doc().Root.Find("a[ng-click]")
+	sel := Doc().Find(".row-fluid")
+	sel2 := Doc().Find("a[ng-click]")
 	if !sel.Contains(sel2.Nodes[0]) {
 		t.Error("Expected .row-fluid to contain a[ng-click] tag.")
 	}
 }
 
 func TestSelNotContains(t *testing.T) {
-	sel := Doc().Root.Find("a.link")
-	sel2 := Doc().Root.Find("span")
+	sel := Doc().Find("a.link")
+	sel2 := Doc().Find("span")
 	if sel.Contains(sel2.Nodes[0]) {
 		t.Error("Expected a.link to NOT contain span tag.")
 	}

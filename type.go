@@ -12,7 +12,7 @@ import (
 // to be told, and that's what the Document class is for. It holds the root
 // document node to manipulate, and can make selections on this document.
 type Document struct {
-	Root     *Selection
+	*Selection
 	Url      *url.URL
 	rootNode *html.Node
 }
@@ -49,7 +49,7 @@ func NewDocument(url string) (d *Document, e error) {
 func newDocument(root *html.Node, url *url.URL) (d *Document) {
 	// Create and fill the document
 	d = &Document{nil, url, root}
-	d.Root = newSingleSelection(root, d)
+	d.Selection = newSingleSelection(root, d)
 	return
 }
 

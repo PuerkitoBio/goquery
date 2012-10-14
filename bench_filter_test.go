@@ -8,7 +8,7 @@ func BenchmarkFilter(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
+	sel := DocW().Find("li")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -24,7 +24,7 @@ func BenchmarkNot(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
+	sel := DocW().Find("li")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -40,7 +40,7 @@ func BenchmarkFilterFunction(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
+	sel := DocW().Find("li")
 	f := func(i int, s *Selection) bool {
 		return len(s.Get(0).Attr) > 0
 	}
@@ -59,7 +59,7 @@ func BenchmarkNotFunction(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
+	sel := DocW().Find("li")
 	f := func(i int, s *Selection) bool {
 		return len(s.Get(0).Attr) > 0
 	}
@@ -78,8 +78,8 @@ func BenchmarkFilterNodes(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
-	sel2 := DocW().Root.Find(".toclevel-2")
+	sel := DocW().Find("li")
+	sel2 := DocW().Find(".toclevel-2")
 	nodes := sel2.Nodes
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -96,8 +96,8 @@ func BenchmarkNotNodes(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
-	sel2 := DocW().Root.Find(".toclevel-1")
+	sel := DocW().Find("li")
+	sel2 := DocW().Find(".toclevel-1")
 	nodes := sel2.Nodes
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -114,8 +114,8 @@ func BenchmarkFilterSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
-	sel2 := DocW().Root.Find(".toclevel-2")
+	sel := DocW().Find("li")
+	sel2 := DocW().Find(".toclevel-2")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -131,8 +131,8 @@ func BenchmarkNotSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
-	sel2 := DocW().Root.Find(".toclevel-1")
+	sel := DocW().Find("li")
+	sel2 := DocW().Find(".toclevel-1")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -148,7 +148,7 @@ func BenchmarkHas(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("h2")
+	sel := DocW().Find("h2")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -164,8 +164,8 @@ func BenchmarkHasNodes(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
-	sel2 := DocW().Root.Find(".tocnumber")
+	sel := DocW().Find("li")
+	sel2 := DocW().Find(".tocnumber")
 	nodes := sel2.Nodes
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -182,8 +182,8 @@ func BenchmarkHasSelection(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li")
-	sel2 := DocW().Root.Find(".tocnumber")
+	sel := DocW().Find("li")
+	sel2 := DocW().Find(".tocnumber")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
@@ -199,7 +199,7 @@ func BenchmarkEnd(b *testing.B) {
 	var n int
 
 	b.StopTimer()
-	sel := DocW().Root.Find("li").Has(".tocnumber")
+	sel := DocW().Find("li").Has(".tocnumber")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		if n == 0 {
