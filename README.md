@@ -24,9 +24,9 @@ To run benchmarks, run this command in goquery's source directory:
 
 ## Changelog
 
-*    **v0.2.0** : (*in progress on master branch*) Add support for negative indices in Slice(). *Upcoming* : add jQuery's Closest() method.
+*    **v0.2.0** : (*in progress on master branch*) Add support for negative indices in Slice(). **BREAKING CHANGE** `Document.Root` is removed, `Document` is now a `Selection` itself (a selection of one, the root element, just like `Document.Root` was before). *Upcoming* : add jQuery's Closest() method.
 *    **v0.1.1** : Add benchmarks to use as baseline for refactorings, refactor Next...() and Prev...() methods to use the new html package's linked list features (Next/PrevSibling, FirstChild). Good performance boost (40+% in some cases).
-*    **v0.1.0** : Initial release. See [TODOs](#a1) for a list of upcoming features.
+*    **v0.1.0** : Initial release.
 
 ## API
 
@@ -48,52 +48,49 @@ Please note that Cascadia's selectors do NOT necessarily match all supported sel
 
 Taken from example_test.go:
 
-    import (
-      "fmt"
-      // In real use, this import would be required (not in this example, since it
-      // is part of the goquery package)
-      //"github.com/PuerkitoBio/goquery"
-      "strconv"
-    )
+```Go
+import (
+  "fmt"
+  // In real use, this import would be required (not in this example, since it
+  // is part of the goquery package)
+  //"github.com/PuerkitoBio/goquery"
+  "strconv"
+)
 
-    // This example scrapes the 10 reviews shown on the home page of MetalReview.com,
-    // the best metal review site on the web :) (and no, I'm not affiliated to them!)
-    func ExampleScrape_MetalReview() {
-      // Load the HTML document (in real use, the type would be *goquery.Document)
-      var doc *Document
-      var e error
-      if doc, e = NewDocument("http://metalreview.com"); e != nil {
-        panic(e.Error())
-      }
+// This example scrapes the 10 reviews shown on the home page of MetalReview.com,
+// the best metal review site on the web :) (and no, I'm not affiliated to them!)
+func ExampleScrape_MetalReview() {
+  // Load the HTML document (in real use, the type would be *goquery.Document)
+  var doc *Document
+  var e error
 
-      // Find the review items (the type of the Selection would be *goquery.Selection)
-      doc.Root.Find(".slider-row:nth-child(1) .slider-item").Each(func(i int, s *Selection) {
-        var band, title string
-        var score float64
+  if doc, e = NewDocument("http://metalreview.com"); e != nil {
+    panic(e.Error())
+  }
 
-        // For each item found, get the band, title and score, and print it
-        band = s.Find("strong").Text()
-        title = s.Find("em").Text()
-        if score, e = strconv.ParseFloat(s.Find(".score").Text(), 64); e != nil {
-          // Not a valid float, ignore score
-          fmt.Printf("Review %d: %s - %s.\n", i, band, title)
-        } else {
-          // Print all, including score
-          fmt.Printf("Review %d: %s - %s (%2.1f).\n", i, band, title, score)
-        }
-      })
-      // To see the output of the Example while running the test suite (go test), simply
-      // remove the leading "x" before Output on the next line. This will cause the
-      // example to fail (all the "real" tests should pass).
+  // Find the review items (the type of the Selection would be *goquery.Selection)
+  doc.Find(".slider-row:nth-child(1) .slider-item").Each(func(i int, s *Selection) {
+    var band, title string
+    var score float64
 
-      // xOutput: voluntarily fail the Example output.
+    // For each item found, get the band, title and score, and print it
+    band = s.Find("strong").Text()
+    title = s.Find("em").Text()
+    if score, e = strconv.ParseFloat(s.Find(".score").Text(), 64); e != nil {
+      // Not a valid float, ignore score
+      fmt.Printf("Review %d: %s - %s.\n", i, band, title)
+    } else {
+      // Print all, including score
+      fmt.Printf("Review %d: %s - %s (%2.1f).\n", i, band, title, score)
     }
+  })
+  // To see the output of the Example while running the test suite (go test), simply
+  // remove the leading "x" before Output on the next line. This will cause the
+  // example to fail (all the "real" tests should pass).
 
-
-## TODOs
-<a name="a1" />
-
-*    Add jQuery's `Closest()`? Other missing functions?
+  // xOutput: voluntarily fail the Example output.
+}
+```
 
 ## License
 
