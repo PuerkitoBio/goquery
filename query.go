@@ -7,30 +7,10 @@ import (
 	"strings"
 )
 
-//var rxNeedsContext = `^[\x20\t\r\n\f]*[>+~]|:(nth|eq|gt|lt|first|last|even|odd)(-child)?(?:\((\d*)\)|)(?:[^-]|$)`
-
 // Is() checks the current matched set of elements against a selector and
 // returns true if at least one of these elements matches.
 func (this *Selection) Is(selector string) bool {
 	if len(this.Nodes) > 0 {
-		// The selector must be done on the document if it has positional criteria
-
-		// TODO : Not sure it is required, as Cascadia's selector checks within the parent of the
-		// node when there is such a positionaly selector... In jQuery, this is for the 
-		// non-css selectors (Sizzle-implemented selectors, an extension of CSS)
-
-		/*if ok, e := regexp.MatchString(rxNeedsContext, selector); ok {
-			sel := this.document.Root.Find(selector)
-			for _, n := range this.Nodes {
-				if sel.IndexOfNode(n) > -1 {
-					return true
-				}
-			}
-
-		} else if e != nil {
-			panic(e.Error())
-
-		} else {*/
 		// Attempt a match with the selector
 		cs := cascadia.MustCompile(selector)
 		if len(this.Nodes) == 1 {
@@ -38,7 +18,6 @@ func (this *Selection) Is(selector string) bool {
 		} else {
 			return len(cs.Filter(this.Nodes)) > 0
 		}
-		//}
 	}
 
 	return false

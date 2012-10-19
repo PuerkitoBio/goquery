@@ -372,7 +372,6 @@ func getParentsNodes(nodes []*html.Node, stopSelector string, stopNodes []*html.
 
 // Internal implementation of sibling nodes that return a raw slice of matches.
 func getSiblingNodes(nodes []*html.Node, st siblingType, untilSelector string, untilNodes []*html.Node) []*html.Node {
-
 	var f func(*html.Node) bool
 
 	// If the requested siblings are ...Until(), create the test function to 
