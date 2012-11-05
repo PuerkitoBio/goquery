@@ -93,6 +93,23 @@ func (this *Selection) ParentFiltered(selector string) *Selection {
 	return filterAndPush(this, getParentNodes(this.Nodes), selector)
 }
 
+// Closest() gets the first element that matches the selector by testing the
+// element itself and traversing up through its ancestors in the DOM tree.
+func (this *Selection) Closest(selector string) *Selection {
+	cs := cascadia.MustCompile(selector)
+
+	return pushStack(this, mapNodes(this.Nodes, func(i int, n *html.Node) []*html.Node {
+		// For each node in the selection, test the node itself, then each parent
+		// until a match is found.
+		for ; n != nil; n = n.Parent {
+			if cs.Match(n) {
+				return []*html.Node{n}
+			}
+		}
+		return nil
+	}))
+}
+
 // Parents() gets the ancestors of each element in the current Selection. It
 // returns a new Selection object with the matched elements.
 func (this *Selection) Parents() *Selection {
