@@ -576,3 +576,36 @@ func TestPrevFilteredUntilNodesRollback(t *testing.T) {
 	sel3 := sel.PrevFilteredUntilNodes(".odd", sel2.Nodes...).End()
 	AssertEqual(t, sel, sel3)
 }
+
+func TestClosestItself(t *testing.T) {
+	sel := Doc2().Find(".three")
+	sel2 := sel.Closest(".row")
+	AssertLength(t, sel2.Nodes, sel.Length())
+	AssertSelectionIs(t, sel2, "#n3", "#nf3")
+}
+
+func TestClosestNoDupes(t *testing.T) {
+	sel := Doc().Find(".span12")
+	sel2 := sel.Closest(".pvk-content")
+	AssertLength(t, sel2.Nodes, 1)
+	AssertClass(t, sel2, "pvk-content")
+}
+
+func TestClosestNone(t *testing.T) {
+	sel := Doc().Find("h4")
+	sel2 := sel.Closest("a")
+	AssertLength(t, sel2.Nodes, 0)
+}
+
+func TestClosestMany(t *testing.T) {
+	sel := Doc().Find(".container-fluid")
+	sel2 := sel.Closest(".pvk-content")
+	AssertLength(t, sel2.Nodes, 2)
+	AssertSelectionIs(t, sel2, "#pc1", "#pc2")
+}
+
+func TestClosestRollback(t *testing.T) {
+	sel := Doc().Find(".container-fluid")
+	sel2 := sel.Closest(".pvk-content").End()
+	AssertEqual(t, sel, sel2)
+}
