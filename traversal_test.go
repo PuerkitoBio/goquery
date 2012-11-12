@@ -609,3 +609,67 @@ func TestClosestRollback(t *testing.T) {
 	sel2 := sel.Closest(".pvk-content").End()
 	AssertEqual(t, sel, sel2)
 }
+
+func TestClosestSelectionItself(t *testing.T) {
+	sel := Doc2().Find(".three")
+	sel2 := sel.ClosestSelection(Doc2().Find(".row"))
+	AssertLength(t, sel2.Nodes, sel.Length())
+}
+
+func TestClosestSelectionNoDupes(t *testing.T) {
+	sel := Doc().Find(".span12")
+	sel2 := sel.ClosestSelection(Doc().Find(".pvk-content"))
+	AssertLength(t, sel2.Nodes, 1)
+	AssertClass(t, sel2, "pvk-content")
+}
+
+func TestClosestSelectionNone(t *testing.T) {
+	sel := Doc().Find("h4")
+	sel2 := sel.ClosestSelection(Doc().Find("a"))
+	AssertLength(t, sel2.Nodes, 0)
+}
+
+func TestClosestSelectionMany(t *testing.T) {
+	sel := Doc().Find(".container-fluid")
+	sel2 := sel.ClosestSelection(Doc().Find(".pvk-content"))
+	AssertLength(t, sel2.Nodes, 2)
+	AssertSelectionIs(t, sel2, "#pc1", "#pc2")
+}
+
+func TestClosestSelectionRollback(t *testing.T) {
+	sel := Doc().Find(".container-fluid")
+	sel2 := sel.ClosestSelection(Doc().Find(".pvk-content")).End()
+	AssertEqual(t, sel, sel2)
+}
+
+func TestClosestNodesItself(t *testing.T) {
+	sel := Doc2().Find(".three")
+	sel2 := sel.ClosestNodes(Doc2().Find(".row").Nodes...)
+	AssertLength(t, sel2.Nodes, sel.Length())
+}
+
+func TestClosestNodesNoDupes(t *testing.T) {
+	sel := Doc().Find(".span12")
+	sel2 := sel.ClosestNodes(Doc().Find(".pvk-content").Nodes...)
+	AssertLength(t, sel2.Nodes, 1)
+	AssertClass(t, sel2, "pvk-content")
+}
+
+func TestClosestNodesNone(t *testing.T) {
+	sel := Doc().Find("h4")
+	sel2 := sel.ClosestNodes(Doc().Find("a").Nodes...)
+	AssertLength(t, sel2.Nodes, 0)
+}
+
+func TestClosestNodesMany(t *testing.T) {
+	sel := Doc().Find(".container-fluid")
+	sel2 := sel.ClosestNodes(Doc().Find(".pvk-content").Nodes...)
+	AssertLength(t, sel2.Nodes, 2)
+	AssertSelectionIs(t, sel2, "#pc1", "#pc2")
+}
+
+func TestClosestNodesRollback(t *testing.T) {
+	sel := Doc().Find(".container-fluid")
+	sel2 := sel.ClosestNodes(Doc().Find(".pvk-content").Nodes...).End()
+	AssertEqual(t, sel, sel2)
+}

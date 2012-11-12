@@ -664,3 +664,53 @@ func BenchmarkPrevFilteredUntilNodes(b *testing.B) {
 	}
 	b.Logf("PrevFilteredUntilNodes=%d", n)
 }
+
+func BenchmarkClosest(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := Doc().Find(".container-fluid")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.Closest(".pvk-content").Length()
+		} else {
+			sel.Closest(".pvk-content")
+		}
+	}
+	b.Logf("Closest=%d", n)
+}
+
+func BenchmarkClosestSelection(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := Doc().Find(".container-fluid")
+	sel2 := Doc().Find(".pvk-content")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.ClosestSelection(sel2).Length()
+		} else {
+			sel.ClosestSelection(sel2)
+		}
+	}
+	b.Logf("ClosestSelection=%d", n)
+}
+
+func BenchmarkClosestNodes(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := Doc().Find(".container-fluid")
+	nodes := Doc().Find(".pvk-content").Nodes
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.ClosestNodes(nodes...).Length()
+		} else {
+			sel.ClosestNodes(nodes...)
+		}
+	}
+	b.Logf("ClosestNodes=%d", n)
+}
