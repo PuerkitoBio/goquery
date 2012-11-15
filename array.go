@@ -28,7 +28,7 @@ func (this *Selection) Eq(index int) *Selection {
 }
 
 // Slice() reduces the set of matched elements to a subset specified by a range
-// of indices. At the moment, negative indices are not supported.
+// of indices.
 func (this *Selection) Slice(start int, end int) *Selection {
 	if start < 0 {
 		start += len(this.Nodes)
