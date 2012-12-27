@@ -68,6 +68,7 @@ The various methods are split into files based on the category of behavior:
     - Map()
 
 * mutate.go : methods for manipulating the DOM
+	- Remove(), removes all selected nodes from the DOM, returns nothing
 	- SetText(), like the jQuery .text() setter
 
 * property.go : methods that inspect and get the node's properties values.

@@ -5,6 +5,14 @@ import (
 	esc "html"
 )
 
+// Remove() removes all selected elements (and their decendents) from the DOM.
+// This is the same behavior as jQuery's remove() function.
+func (this *Selection) Remove() {
+	for _, n := range this.Nodes {
+		n.Parent.RemoveChild(n)
+	}
+}
+
 // SetText() replaces the children of each selected node with the given text 
 // (properly escaped of course).
 // This is the same behavior as jQuery's .text() function.
