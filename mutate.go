@@ -9,23 +9,22 @@ import (
 // (properly escaped of course).
 // This is the same behavior as jQuery's .text() function.
 func (this *Selection) SetText(s string) *Selection {
+	escapedText := esc.EscapeString(s)
 	for _, n := range this.Nodes {
-		setNodeText(n, esc.EscapeString(s))
+		setNodeText(n, escapedText)
 	}
 	return this
 }
 
 // Replace the given node's children with the given string.
 func setNodeText(node *html.Node, s string) {
+	// remove all existing children
 	for node.FirstChild != nil {
 		node.RemoveChild(node.FirstChild)
 	}
-	for c := node.FirstChild; c != nil; c = c.NextSibling {
-		println(c)
-	}
-	text := &html.Node{
+	// add the text
+	node.AppendChild(&html.Node{
 		Type: html.TextNode,
 		Data: s,
-	}
-	node.AppendChild(text)
+	})
 }
