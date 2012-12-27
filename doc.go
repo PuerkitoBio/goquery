@@ -67,6 +67,9 @@ The various methods are split into files based on the category of behavior:
     - Each()
     - Map()
 
+* mutate.go : methods for manipulating the DOM
+	- SetText(), like the jQuery .text() setter
+
 * property.go : methods that inspect and get the node's properties values.
     - Attr()
     - Html()

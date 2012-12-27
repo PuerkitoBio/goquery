@@ -6,6 +6,10 @@ Supported functions are query-oriented features (`hasClass()`, `attr()` and the 
 
 Syntax-wise, it is as close as possible to jQuery, with the same function names when possible, and that warm and fuzzy chainable interface. jQuery being the ultra-popular library that it is, I felt that writing a similar HTML-manipulating library was better to follow its API than to start anew (in the same spirit as Go's `fmt` package), even though some of its methods are less than intuitive (looking at you, [index()][index]...).
 
+## Why This Fork?
+
+I like PuerkitoBio's goquery, but I needed mutation functions for a templating project so I'm adding them as I need them.  If you have requests from the mutation oriented aspects of the jQuery API don't hesitate to shoot me a request (otherwise I might never get around to whatever feature you want).
+
 ## Installation
 
 Since this library (and cascadia) depends on the experimental branch, this package must be installed first. Both GoQuery and Cascadia expect to find the experimental library with the `"exp/html"` import statement. To install it at this location, please [follow this guide][wikiexp].

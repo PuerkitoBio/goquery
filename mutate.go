@@ -17,8 +17,11 @@ func (this *Selection) SetText(s string) *Selection {
 
 // Replace the given node's children with the given string.
 func setNodeText(node *html.Node, s string) {
+	for node.FirstChild != nil {
+		node.RemoveChild(node.FirstChild)
+	}
 	for c := node.FirstChild; c != nil; c = c.NextSibling {
-		node.RemoveChild(c)
+		println(c)
 	}
 	text := &html.Node{
 		Type: html.TextNode,
