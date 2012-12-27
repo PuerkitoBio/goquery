@@ -21,9 +21,8 @@ func setNodeText(node *html.Node, s string) {
 		node.RemoveChild(c)
 	}
 	text := &html.Node{
-		Parent: node,
-		Type:   html.TextNode,
-		Data:   s,
+		Type: html.TextNode,
+		Data: s,
 	}
 	node.AppendChild(text)
 }
