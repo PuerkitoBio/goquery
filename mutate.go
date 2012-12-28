@@ -3,6 +3,7 @@ package goquery
 import (
 	"exp/html"
 	esc "html"
+	"strings"
 )
 
 // Remove() removes all selected elements (and their decendents) from the DOM.
@@ -10,6 +11,30 @@ import (
 func (this *Selection) Remove() {
 	for _, n := range this.Nodes {
 		n.Parent.RemoveChild(n)
+	}
+}
+
+// RemoveAttr removes all references to all attributes in the attrs string
+// (space separated) in the selection.  Equivalent to jQuery's removeAttr.
+func (this *Selection) RemoveAttr(attrs string) *Selection {
+	names := strings.Split(attrs, " ")
+	for _, node := range this.Nodes {
+		for _, name := range names {
+			removeAttr(node, name)
+		}
+	}
+	return this
+}
+
+// removes an attribute from a node
+func removeAttr(node *html.Node, attrName string) {
+	for i := 0; i < len(node.Attr); i++ {
+		if node.Attr[i].Key == attrName {
+			last := len(node.Attr) - 1
+			node.Attr[i] = node.Attr[last] // overwrite the target with the last attribute
+			node.Attr = node.Attr[:last]   // then slice off the last attribute
+			i--
+		}
 	}
 }
 
