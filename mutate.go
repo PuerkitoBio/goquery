@@ -77,6 +77,15 @@ func removeAttr(node *html.Node, attrName string) {
 	}
 }
 
+// Adds an attribute key=value to each selected node.  Equivalent to jQuery's attr.
+func (this *Selection) SetAttr(key, value string) *Selection {
+	for _, node := range this.Nodes {
+		removeAttr(node, key)
+		node.Attr = append(node.Attr, html.Attribute{Key: key, Val: value})
+	}
+	return this
+}
+
 // SetText() replaces the children of each selected node with the given text 
 // (properly escaped of course).
 // This is the same behavior as jQuery's .text() function.
