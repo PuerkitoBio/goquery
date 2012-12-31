@@ -7,16 +7,23 @@ import (
 )
 
 // Clone() returns a deep copy of the set of selected elements.
-// This is the same behavior as jQuery's clone() function
+// This is the same behavior as jQuery's clone() function.
 func (this *Selection) Clone() *Selection {
 	// TODO: write me
 	return this
 }
 
-// InsertBefore() inserts "this" before futureNextSib in the DOM
-// This is the same behavior as jQuery's insertBefore function
+// InsertBefore() inserts "this" before futureNextSib in the DOM.
+// This is the same behavior as jQuery's insertBefore function.
 func (this *Selection) InsertBefore(futureNextSib *Selection) *Selection {
-	// TODO: write me
+	parent := futureNextSib.Parent().Nodes[0]
+	for _, n := range this.Nodes {
+		if futureNextSib == nil {
+			parent.AppendChild(n)
+		} else {
+			parent.InsertBefore(n, futureNextSib.Nodes[0])
+		}
+	}
 	return this
 }
 
