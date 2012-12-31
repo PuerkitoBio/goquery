@@ -68,6 +68,8 @@ The various methods are split into files based on the category of behavior:
     - Map()
 
 * mutate.go : methods for manipulating the DOM
+	- Clone(), returns a deep copy of the set of selected elements
+	- InsertBefore(), inserts the selected elements before the element in the argument
 	- Remove(), removes all selected nodes from the DOM, returns nothing
 	- RemoveAttr(), removes a space separated list of attributes from each selected element
 	- SetText(), like the jQuery .text() setter

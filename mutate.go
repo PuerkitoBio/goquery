@@ -6,6 +6,20 @@ import (
 	"strings"
 )
 
+// Clone() returns a deep copy of the set of selected elements.
+// This is the same behavior as jQuery's clone() function
+func (this *Selection) Clone() *Selection {
+	// TODO: write me
+	return this
+}
+
+// InsertBefore() inserts "this" before futureNextSib in the DOM
+// This is the same behavior as jQuery's insertBefore function
+func (this *Selection) InsertBefore(futureNextSib *Selection) *Selection {
+	// TODO: write me
+	return this
+}
+
 // Remove() removes all selected elements (and their decendents) from the DOM.
 // This is the same behavior as jQuery's remove() function.
 func (this *Selection) Remove() {
