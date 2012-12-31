@@ -71,3 +71,11 @@ func newEmptySelection(doc *Document) *Selection {
 func newSingleSelection(node *html.Node, doc *Document) *Selection {
 	return &Selection{[]*html.Node{node}, doc, nil}
 }
+
+// A little sugar to unwrap singleton selections
+func (this *Selection) Node() *html.Node {
+	if len(this.Nodes) == 1 {
+		return this.Nodes[0]
+	}
+	return nil
+}
