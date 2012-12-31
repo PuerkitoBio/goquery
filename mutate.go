@@ -46,10 +46,11 @@ func (this *Selection) InsertBefore(futureNextSib *Selection) *Selection {
 
 // Remove() removes all selected elements (and their decendents) from the DOM.
 // This is the same behavior as jQuery's remove() function.
-func (this *Selection) Remove() {
+func (this *Selection) Remove() *Selection {
 	for _, n := range this.Nodes {
 		n.Parent.RemoveChild(n)
 	}
+	return this
 }
 
 // RemoveAttr removes all references to all attributes in the attrs string
