@@ -2,7 +2,6 @@ package goquery
 
 import (
 	"exp/html"
-	esc "html"
 	"strings"
 )
 
@@ -114,9 +113,8 @@ func (this *Selection) SetHtml(s string) *Selection {
 // (properly escaped of course).
 // This is the same behavior as jQuery's .text() function.
 func (this *Selection) SetText(s string) *Selection {
-	escapedText := esc.EscapeString(s)
 	for _, n := range this.Nodes {
-		setNodeText(n, escapedText)
+		setNodeText(n, s)
 	}
 	return this
 }
