@@ -6,6 +6,15 @@ import (
 	"strings"
 )
 
+// Appends a clone of each element in the template to each selected parent.
+// AppendClones() isn't in the jQuery API, it was just handy.
+func (this *Selection) AppendClones(template *html.Node) *Selection {
+	for _, parent := range this.Nodes {
+		parent.AppendChild(cloneNode(template))
+	}
+	return this
+}
+
 // Clone() returns a deep copy of the set of selected elements.
 // This is the same behavior as jQuery's clone() function.
 func (this *Selection) Clone() *Selection {
