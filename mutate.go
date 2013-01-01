@@ -33,7 +33,7 @@ func cloneNode(node *html.Node) *html.Node {
 // InsertBefore() inserts "this" before futureNextSib in the DOM.
 // This is the same behavior as jQuery's insertBefore function.
 func (this *Selection) InsertBefore(futureNextSib *Selection) *Selection {
-	parent := futureNextSib.Node().Parent
+	parent := futureNextSib.Node().Parent // TODO: this is a nilref bug, come up with a better way of finding the parent
 	for _, n := range this.Nodes {
 		if futureNextSib == nil || len(futureNextSib.Nodes) == 0 {
 			parent.AppendChild(n)
@@ -84,6 +84,21 @@ func (this *Selection) SetAttr(key, value string) *Selection {
 		node.Attr = append(node.Attr, html.Attribute{Key: key, Val: value})
 	}
 	return this
+}
+
+// Just like jQuery's html() setter.
+func (this *Selection) SetHtml(s string) *Selection {
+	result := newEmptySelection(this.document)
+	for _, n := range this.Nodes {
+		newNodes, e := html.ParseFragment(strings.NewReader(s), n)
+		if e == nil {
+			for _, child := range newNodes {
+				n.AppendChild(child)
+			}
+			result.AddNodes(newNodes...)
+		}
+	}
+	return result
 }
 
 // SetText() replaces the children of each selected node with the given text 

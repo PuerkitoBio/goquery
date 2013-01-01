@@ -73,6 +73,7 @@ The various methods are split into files based on the category of behavior:
 	- Remove(), removes all selected nodes from the DOM, returns nothing
 	- RemoveAttr(), removes a space separated list of attributes from each selected element
 	- SetAttr(), like jQuery .attr() setter
+	- SetHtml()
 	- SetText(), like the jQuery .text() setter
 
 * property.go : methods that inspect and get the node's properties values.
