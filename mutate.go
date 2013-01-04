@@ -5,6 +5,27 @@ import (
 	"strings"
 )
 
+// Similar to append() in jQuery, except that it can only handle Selections.
+// Note: like the jQuery version, the first target being appended to will have
+// the node moved to it, and all subsequent targets will have clones inserted
+func (this *Selection) Append(newKids *Selection) *Selection {
+	for i, node := range this.Nodes {
+		if i == 0 { // move the kid(s)
+			for _, kid := range newKids.Nodes {
+				if kid.Parent != nil {
+					kid.Parent.RemoveChild(kid)
+				}
+				node.AppendChild(kid)
+			}
+		} else { // clone the kid(s)
+			for _, kid := range newKids.Nodes {
+				node.AppendChild(cloneNode(kid))
+			}
+		}
+	}
+	return this
+}
+
 // Appends a clone of each element in the template to each selected parent.
 // AppendClones() isn't in the jQuery API, it was just handy.
 func (this *Selection) AppendClones(template *html.Node) *Selection {

@@ -68,6 +68,7 @@ The various methods are split into files based on the category of behavior:
     - Map()
 
 * mutate.go : methods for manipulating the DOM
+	- Append()
 	- Clone(), returns a deep copy of the set of selected elements
 	- Empty()
 	- InsertBefore(), inserts the selected elements before the element in the argument
