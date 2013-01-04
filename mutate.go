@@ -38,6 +38,16 @@ func cloneNode(node *html.Node) *html.Node {
 	return result
 }
 
+// Remove all children from each selected node, just like empty() in jQuery.
+func (this *Selection) Empty() *Selection {
+	for _, node := range this.Nodes {
+		for node.FirstChild != nil {
+			node.RemoveChild(node.FirstChild)
+		}
+	}
+	return this
+}
+
 // InsertBefore() inserts "this" before futureNextSib in the DOM.
 // This is the same behavior as jQuery's insertBefore function.
 func (this *Selection) InsertBefore(futureNextSib *Selection) *Selection {

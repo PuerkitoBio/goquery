@@ -28,6 +28,7 @@ To run benchmarks, run this command in goquery's source directory:
 
 ## Changelog
 
+*    **v0.2.2** : Add Empty()
 *    **v0.2.1** : Add a few select mutation operations: Clone(), InsertBefore(), Remove(), RemoveAttr(), SetAttr(), and SetText
 *    **v0.2.0** : Add support for negative indices in Slice(). **BREAKING CHANGE** `Document.Root` is removed, `Document` is now a `Selection` itself (a selection of one, the root element, just like `Document.Root` was before). Add jQuery's Closest() method.
 *    **v0.1.1** : Add benchmarks to use as baseline for refactorings, refactor Next...() and Prev...() methods to use the new html package's linked list features (Next/PrevSibling, FirstChild). Good performance boost (40+% in some cases).
