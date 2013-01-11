@@ -8,7 +8,11 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 ## Installation
 
-Since this library (and cascadia) depends on the experimental branch, this package must be installed first. Both GoQuery and Cascadia expect to find the experimental library with the `"exp/html"` import statement. To install it at this location, please [follow this guide][wikiexp].
+Since this library (and cascadia) depends on the experimental branch, this package must be installed first. Both GoQuery and Cascadia expect to find the experimental library with the `"exp/html"` import statement. To install it at this location, there's [this guide][wikiexp], but since late December 2012, Go tip has evolved and `"exp/html"` won't build with Go1.0.3. So the last valid revision that will build with Go1 is `d9ff34d481bc`. Just replace the second step in [the guide][wikiexp] with this command:
+
+    hg clone -r d9ff34d481bc https://code.google.com/p/go go-exp
+
+The rest of the guide can be followed as-is (note that you can build just the `exp/html` package, you don't have to build `exp/...`).
 
 Once this is done, install GoQuery:
 
