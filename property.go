@@ -2,7 +2,7 @@ package goquery
 
 import (
 	"bytes"
-	"exp/html"
+	"code.google.com/p/go.net/html"
 )
 
 // Attr() gets the specified attribute's value for the first element in the

@@ -2,7 +2,7 @@ package goquery
 
 import (
 	"code.google.com/p/cascadia"
-	"exp/html"
+	"code.google.com/p/go.net/html"
 )
 
 type siblingType int

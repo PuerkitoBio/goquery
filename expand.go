@@ -1,7 +1,7 @@
 package goquery
 
 import (
-	"exp/html"
+	"code.google.com/p/go.net/html"
 )
 
 // Add() adds the selector string's matching nodes to those in the current
