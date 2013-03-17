@@ -1,6 +1,6 @@
 # goquery - a little like that j-thing, only in Go
 
-GoQuery brings a syntax and a set of features similar to [jQuery][] to the [Go language][go]. It is based on the [experimental html package][exphtml] and the CSS Selector library [cascadia][]. Since the experimental html parser returns tokens (nodes), and not a full-featured DOM object, jQuery's manipulation and modification functions have been left off (no point in modifying data in the parsed tree of the HTML, it has no effect).
+GoQuery brings a syntax and a set of features similar to [jQuery][] to the [Go language][go]. It is based on the experimental html package and the CSS Selector library [cascadia][]. Since the experimental html parser returns tokens (nodes), and not a full-featured DOM object, jQuery's manipulation and modification functions have been left off (no point in modifying data in the parsed tree of the HTML, it has no effect).
 
 Supported functions are query-oriented features (`hasClass()`, `attr()` and the likes), as well as traversing functions that make sense given what we have to work with. This makes GoQuery a great library for scraping web pages.
 
@@ -8,23 +8,41 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 ## Installation
 
-Since this library (and cascadia) depends on the experimental branch, this package must be installed first. Both GoQuery and Cascadia expect to find the experimental library with the `"exp/html"` import statement. To install it at this location, there's [this guide][wikiexp], but since late December 2012, Go tip has evolved and `"exp/html"` won't build with Go1.0.3. So the last valid revision that will build with Go1 is `d9ff34d481bc`. Just replace the second step in [the guide][wikiexp] with this command:
+**This is a temporary installation procedure until Go1.1 is released.**
 
-    hg clone -r d9ff34d481bc https://code.google.com/p/go go-exp
+1. Install the latest experimental packages version that compiles with Go1 :
 
-The rest of the guide can be followed as-is (note that you can build just the `exp/html` package, you don't have to build `exp/...`).
+```
+$ cd $GOPATH/src
+$ hg clone -r d9ff34d481bc https://code.google.com/p/go go-exp
+$ mv go-exp/src/pkg/exp .
+$ rm -rf go-exp
+$ go install exp/...
+```
 
-Once this is done, install GoQuery:
+2. Install the latest Cascadia version that compiles with Go1:
 
-`go get github.com/PuerkitoBio/goquery`
+```
+$ cd $GOPATH/src/code.google.com/p
+$ hg clone -r 58dc1fe4094a https://code.google.com/p/cascadia cascadia
+$ go install cascadia/...
+```
 
-To run unit tests, run this command in goquery's source directory (`$GOPATH/src/github.com/PuerkitoBio/goquery`):
+3. Install GoQuery:
 
-`go test`
+    $ go get github.com/PuerkitoBio/goquery
 
-To run benchmarks, run this command in goquery's source directory:
+4. (optional) To run unit tests:
+    
+    $ cd $GOPATH/src/github.com/PuerkitoBio/goquery
+    $ go test
 
-`go test -bench=".*"`
+5. (optional) To run benchmarks:
+
+    $ cd $GOPATH/src/github.com/PuerkitoBio/goquery
+    $ go test -bench=".*"
+
+**Once Go1.1 is released, goquery will be *gogetable* without the first 2 steps (see [issue #6][i6]).**
 
 ## Changelog
 
@@ -102,11 +120,10 @@ The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia'
 
 [jquery]: http://jquery.com/
 [go]: http://golang.org/
-[exphtml]: http://code.google.com/p/go/source/browse#hg%2Fsrc%2Fpkg%2Fexp
 [cascadia]: http://code.google.com/p/cascadia/
-[wikiexp]: http://code.google.com/p/go-wiki/wiki/InstallingExp
 [bsd]: http://opensource.org/licenses/BSD-3-Clause
 [golic]: http://golang.org/LICENSE
 [caslic]: http://code.google.com/p/cascadia/source/browse/LICENSE
-[doc]: http://go.pkgdoc.org/github.com/PuerkitoBio/goquery
+[doc]: http://godoc.org/github.com/PuerkitoBio/goquery
 [index]: http://api.jquery.com/index/
+[i6]: https://github.com/PuerkitoBio/goquery/issues/6
