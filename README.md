@@ -11,14 +11,11 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 **This is a temporary installation procedure until Go1.1 is released.**
 
 1. Install the latest experimental packages version that compiles with Go1 :
-
-```
-$ cd $GOPATH/src
-$ hg clone -r d9ff34d481bc https://code.google.com/p/go go-exp
-$ mv go-exp/src/pkg/exp .
-$ rm -rf go-exp
-$ go install exp/...
-```
+      $ cd $GOPATH/src
+      $ hg clone -r d9ff34d481bc https://code.google.com/p/go go-exp
+      $ mv go-exp/src/pkg/exp .
+      $ rm -rf go-exp
+      $ go install exp/...
 
 2. Install the latest Cascadia version that compiles with Go1:
 
