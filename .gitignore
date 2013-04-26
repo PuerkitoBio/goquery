@@ -1,2 +1,4 @@
 *.sublime-*
 .DS_Store
+*.swp
+#*.*#

@@ -8,37 +8,17 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 ## Installation
 
-**This is a temporary installation procedure until Go1.1 is released.**
+		$ go get github.com/PuerkitoBio/goquery
 
-1- Install the latest experimental packages version that compiles with Go1 :
-
-    $ cd $GOPATH/src
-    $ hg clone -r d9ff34d481bc https://code.google.com/p/go go-exp
-    $ mv go-exp/src/pkg/exp .
-    $ rm -rf go-exp
-    $ go install exp/...
-
-2- Install the latest Cascadia version that compiles with Go1:
-
-    $ cd $GOPATH/src/code.google.com/p
-    $ hg clone -r 58dc1fe4094a https://code.google.com/p/cascadia cascadia
-    $ go install cascadia/...
-
-3- Install GoQuery:
-
-    $ go get github.com/PuerkitoBio/goquery
-
-4- (optional) To run unit tests:
+(optional) To run unit tests:
     
     $ cd $GOPATH/src/github.com/PuerkitoBio/goquery
     $ go test
 
-5- (optional) To run benchmarks:
+(optional) To run benchmarks:
 
     $ cd $GOPATH/src/github.com/PuerkitoBio/goquery
     $ go test -bench=".*"
-
-**Once Go1.1 is released, goquery will be *gogetable* without the first 2 steps (see [issue #6][i6]).**
 
 ## Changelog
 
@@ -122,4 +102,3 @@ The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia'
 [caslic]: http://code.google.com/p/cascadia/source/browse/LICENSE
 [doc]: http://godoc.org/github.com/PuerkitoBio/goquery
 [index]: http://api.jquery.com/index/
-[i6]: https://github.com/PuerkitoBio/goquery/issues/6
