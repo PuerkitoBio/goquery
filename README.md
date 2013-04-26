@@ -8,7 +8,7 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 ## Installation
 
-		$ go get github.com/PuerkitoBio/goquery
+    $ go get github.com/PuerkitoBio/goquery
 
 (optional) To run unit tests:
     
@@ -22,6 +22,7 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 ## Changelog
 
+*    **v0.2.1** : Make go-getable, now that [go.net/html is Go1.0-compatible][gonet] (thanks to @matrixik for pointing this out).
 *    **v0.2.0** : Add support for negative indices in Slice(). **BREAKING CHANGE** `Document.Root` is removed, `Document` is now a `Selection` itself (a selection of one, the root element, just like `Document.Root` was before). Add jQuery's Closest() method.
 *    **v0.1.1** : Add benchmarks to use as baseline for refactorings, refactor Next...() and Prev...() methods to use the new html package's linked list features (Next/PrevSibling, FirstChild). Good performance boost (40+% in some cases).
 *    **v0.1.0** : Initial release.
@@ -102,3 +103,4 @@ The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia'
 [caslic]: http://code.google.com/p/cascadia/source/browse/LICENSE
 [doc]: http://godoc.org/github.com/PuerkitoBio/goquery
 [index]: http://api.jquery.com/index/
+[gonet]: http://code.google.com/p/go/source/detail?r=f7f5159120f51ba0070774d3c5907969b5fe7858&repo=net
