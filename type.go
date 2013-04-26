@@ -1,7 +1,7 @@
 package goquery
 
 import (
-	"exp/html"
+	"code.google.com/p/go.net/html"
 	"net/http"
 	"net/url"
 )
