@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+var rxClassTrim = regexp.MustCompile("[\t\r\n]")
+
 // Is() checks the current matched set of elements against a selector and
 // returns true if at least one of these elements matches.
 func (this *Selection) Is(selector string) bool {
@@ -44,14 +46,12 @@ func (this *Selection) IsNodes(nodes ...*html.Node) bool {
 // HasClass() determines whether any of the matched elements are assigned the
 // given class.
 func (this *Selection) HasClass(class string) bool {
-	var rx = regexp.MustCompile("[\t\r\n]")
-
 	class = " " + class + " "
 	for _, n := range this.Nodes {
 		// Applies only to element nodes
 		if n.Type == html.ElementNode {
 			if elClass, ok := getAttributeValue("class", n); ok {
-				elClass = rx.ReplaceAllString(" "+elClass+" ", " ")
+				elClass = rxClassTrim.ReplaceAllString(" "+elClass+" ", " ")
 				if strings.Index(elClass, class) > -1 {
 					return true
 				}
