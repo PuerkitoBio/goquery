@@ -25,17 +25,12 @@
 Package goquery implements features similar to jQuery, including the chainable
 syntax, to manipulate and query an HTML document (the modification functions of jQuery are not included).
 
-It depends on Go's experimental html package, which must be installed so that it
-can be imported as "code.google.com/p/go.net/html". See this tutorial on how to install it 
-accordingly: http://code.google.com/p/go-wiki/wiki/InstallingExp
-
-It uses Cascadia as CSS selector (similar to Sizzle for jQuery). This dependency
-is automatically installed when using "go get ..." to install GoQuery.
+It uses Cascadia as CSS selector (similar to Sizzle for jQuery).
 
 To provide a chainable interface, error management is strict, and goquery panics
 if an invalid Cascadia selector is used (this is consistent with the behavior of
 jQuery/Sizzle/document.querySelectorAll, where an error is thrown). This is
-necessary since multiple return values cannot be used to allow a chainable 
+necessary since multiple return values cannot be used to allow a chainable
 interface.
 
 It is hosted on GitHub, along with additional documentation in the README.md
