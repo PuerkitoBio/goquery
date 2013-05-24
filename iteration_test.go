@@ -19,6 +19,21 @@ func TestEach(t *testing.T) {
 	AssertLength(t, sel.Nodes, 6)
 }
 
+func TestEachWithBreak(t *testing.T) {
+	var cnt int
+
+	sel := Doc().Find(".hero-unit .row-fluid").EachWithBreak(func(i int, n *Selection) bool {
+		cnt++
+		t.Logf("At index %v, node %v", i, n.Nodes[0].Data)
+		return false
+	}).Find("a")
+
+	if cnt != 1 {
+		t.Errorf("Expected Each() to call function 1 time, got %v times.", cnt)
+	}
+	AssertLength(t, sel.Nodes, 6)
+}
+
 func TestEachEmptySelection(t *testing.T) {
 	var cnt int
 

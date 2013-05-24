@@ -1,4 +1,4 @@
-// Copyright (c) 2012, Martin Angers & Contributors
+// Copyright (c) 2012-2013, Martin Angers & Contributors
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -60,6 +60,7 @@ The various methods are split into files based on the category of behavior:
 
 * iteration.go : methods to loop over the selection's nodes.
     - Each()
+		- EachWithBreak()
     - Map()
 
 * property.go : methods that inspect and get the node's properties values.
