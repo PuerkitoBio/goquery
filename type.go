@@ -32,14 +32,13 @@ func NewDocument(url string) (d *Document, e error) {
 	if e != nil {
 		return
 	}
-	return NewDocumentWithHttpResponse(res)
+	return NewDocumentFromResponse(res)
 }
 
-// NewDocumentWithHttpResponse() is another Document constructor that takes a http resonse as argument.
-// If you want to get some page which need be authorized,this method may be helpful
-// It loads the specified document, parses it, and stores the root Document
+// NewDocumentFromResponse() is another Document constructor that takes an http resonse as argument.
+// It loads the specified response's document, parses it, and stores the root Document
 // node, ready to be manipulated.
-func NewDocumentWithHttpResponse(res *http.Response) (d *Document, e error) {
+func NewDocumentFromResponse(res *http.Response) (d *Document, e error) {
 	defer res.Body.Close()
 
 	// Parse the HTML into nodes
