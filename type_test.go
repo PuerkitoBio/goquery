@@ -1,6 +1,7 @@
 package goquery
 
 import (
+	"bytes"
 	"code.google.com/p/go.net/html"
 	"fmt"
 	"os"
@@ -96,6 +97,54 @@ func TestNewDocument(t *testing.T) {
 			t.Error(e.Error())
 		} else {
 			doc = NewDocumentFromNode(node)
+		}
+	}
+}
+
+func TestNewDocumentFromReader(t *testing.T) {
+	cases := []struct {
+		src string
+		err bool
+		sel string
+		cnt int
+	}{
+		0: {
+			src: `
+<html>
+<head>
+<title>Test</title>
+<body>
+<h1>Hi</h1>
+</body>
+</html>`,
+			sel: "h1",
+			cnt: 1,
+		},
+		1: {
+			// Actually pretty hard to make html.Parse return an error
+			// based on content...
+			src: `<html><body><aef<eqf>>>qq></body></ht>`,
+		},
+	}
+	buf := bytes.NewBuffer(nil)
+
+	for i, c := range cases {
+		buf.Reset()
+		buf.WriteString(c.src)
+
+		d, e := NewDocumentFromReader(buf)
+		if (e != nil) != c.err {
+			if c.err {
+				t.Errorf("[%d] - expected error, got none", i)
+			} else {
+				t.Errorf("[%d] - expected no error, got %s", i, e)
+			}
+		}
+		if c.sel != "" {
+			s := d.Find(c.sel)
+			if s.Length() != c.cnt {
+				t.Errorf("[%d] - expected %d nodes, found %d", i, c.cnt, s.Length())
+			}
 		}
 	}
 }

@@ -2,6 +2,7 @@ package goquery
 
 import (
 	"code.google.com/p/go.net/html"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -35,6 +36,19 @@ func NewDocument(url string) (d *Document, e error) {
 	return NewDocumentFromResponse(res)
 }
 
+// NewDocumentFromReader() returns a Document from a generic reader.
+// It returns an error as second value if the reader's data cannot be parsed
+// as html. It does *not* check if the reader is also an io.Closer, so the
+// provided reader is never closed by this call, it is the responsibility
+// of the caller to close it if required.
+func NewDocumentFromReader(r io.Reader) (d *Document, e error) {
+	root, e := html.Parse(r)
+	if e != nil {
+		return nil, e
+	}
+	return newDocument(root, nil), nil
+}
+
 // NewDocumentFromResponse() is another Document constructor that takes an http resonse as argument.
 // It loads the specified response's document, parses it, and stores the root Document
 // node, ready to be manipulated.
@@ -48,16 +62,15 @@ func NewDocumentFromResponse(res *http.Response) (d *Document, e error) {
 	}
 
 	// Create and fill the document
-	d = newDocument(root, res.Request.URL)
-	return
+	return newDocument(root, res.Request.URL), nil
 }
 
 // Private constructor, make sure all fields are correctly filled.
-func newDocument(root *html.Node, url *url.URL) (d *Document) {
+func newDocument(root *html.Node, url *url.URL) *Document {
 	// Create and fill the document
-	d = &Document{nil, url, root}
+	d := &Document{nil, url, root}
 	d.Selection = newSingleSelection(root, d)
-	return
+	return d
 }
 
 // Selection represents a collection of nodes matching some criteria. The
