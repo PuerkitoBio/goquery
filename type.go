@@ -23,10 +23,10 @@ func NewDocumentFromNode(root *html.Node) (d *Document) {
 	return newDocument(root)
 }
 
-// NewDocument() is a Document constructor that takes a string URL as argument.
+// NewDocumentFromUrl() is a Document constructor that takes a string URL as argument.
 // It loads the specified document, parses it, and stores the root Document
 // node, ready to be manipulated.
-func NewDocument(url string) (d *Document, e error) {
+func NewDocumentFromUrl(url string) (d *Document, e error) {
 	// Load the URL
 	res, e := http.Get(url)
 	if e != nil {
