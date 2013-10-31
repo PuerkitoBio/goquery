@@ -66,7 +66,7 @@ func ExampleScrape_MetalReview() {
   var doc *Document
   var e error
 
-  if doc, e = NewDocument("http://metalreview.com"); e != nil {
+  if doc, e = NewDocumentFromUrl("http://metalreview.com"); e != nil {
     panic(e.Error())
   }
 
