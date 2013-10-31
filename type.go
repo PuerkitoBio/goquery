@@ -4,6 +4,7 @@ import (
 	"code.google.com/p/go.net/html"
 	"io"
 	"net/http"
+	"strings"
 )
 
 // Document represents an HTML document to be manipulated. Unlike jQuery, which
@@ -34,17 +35,26 @@ func NewDocument(url string) (d *Document, e error) {
 	return NewDocumentFromResponse(res)
 }
 
+// NewDocumentFromText is Document constructor, allowing you to create a document from a simple string
+func NewDocumentFromText(text string) (d *Document, e error) {
+	strReader := strings.NewReader(text)
+
+	return NewDocumentFromReader(strReader)
+}
+
 // NewDocumentFromReader() returns a Document from a generic reader.
 // It returns an error as second value if the reader's data cannot be parsed
 // as html. It does *not* check if the reader is also an io.Closer, so the
 // provided reader is never closed by this call, it is the responsibility
 // of the caller to close it if required.
 func NewDocumentFromReader(r io.Reader) (d *Document, e error) {
-	root, e := html.Parse(r)
+	var htmlNode *html.Node
+
+	htmlNode, e = html.Parse(r)
 	if e != nil {
 		return nil, e
 	}
-	return newDocument(root), nil
+	return newDocument(htmlNode), nil
 }
 
 // NewDocumentFromResponse() is another Document constructor that takes an http resonse as argument.
@@ -53,14 +63,7 @@ func NewDocumentFromReader(r io.Reader) (d *Document, e error) {
 func NewDocumentFromResponse(res *http.Response) (d *Document, e error) {
 	defer res.Body.Close()
 
-	// Parse the HTML into nodes
-	root, e := html.Parse(res.Body)
-	if e != nil {
-		return
-	}
-
-	// Create and fill the document
-	return newDocument(root), nil
+	return NewDocumentFromReader(res.Body)
 }
 
 // Private constructor, make sure all fields are correctly filled.

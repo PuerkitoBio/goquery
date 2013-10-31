@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"code.google.com/p/go.net/html"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"testing"
 )
@@ -147,4 +148,34 @@ func TestNewDocumentFromReader(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestNewDocumentFromText(t *testing.T) {
+	// simple version
+	doc, e := NewDocumentFromText("<html><head><title>Test</title><body><h1>Hi</h1></body></html>")
+	if e != nil {
+		t.Error(e.Error())
+	}
+	if doc.Find("title").Text() != "Test" {
+		t.Error("Error parsing simple plain text version")
+	}
+
+	// real file
+	page1 := readFile(t, "./testdata/page.html")
+
+	doc, e = NewDocumentFromText(page1)
+	if e != nil {
+		t.Error(e.Error())
+	}
+	if doc.Find("div.span12 strong").Text() != "Beta Version." {
+		t.Error("Error parsing file 'testdata/page.html'")
+	}
+}
+
+func readFile(t *testing.T, file string) string {
+	fileBytes, e := ioutil.ReadFile(file)
+	if e != nil {
+		t.Error(e.Error())
+	}
+	return string(fileBytes)
 }
