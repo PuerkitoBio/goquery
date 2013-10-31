@@ -4,7 +4,6 @@ import (
 	"code.google.com/p/go.net/html"
 	"io"
 	"net/http"
-	"net/url"
 )
 
 // Document represents an HTML document to be manipulated. Unlike jQuery, which
@@ -14,14 +13,13 @@ import (
 // document node to manipulate, and can make selections on this document.
 type Document struct {
 	*Selection
-	Url      *url.URL
 	rootNode *html.Node
 }
 
 // NewDocumentFromNode() is a Document constructor that takes a root html Node
 // as argument.
 func NewDocumentFromNode(root *html.Node) (d *Document) {
-	return newDocument(root, nil)
+	return newDocument(root)
 }
 
 // NewDocument() is a Document constructor that takes a string URL as argument.
@@ -46,7 +44,7 @@ func NewDocumentFromReader(r io.Reader) (d *Document, e error) {
 	if e != nil {
 		return nil, e
 	}
-	return newDocument(root, nil), nil
+	return newDocument(root), nil
 }
 
 // NewDocumentFromResponse() is another Document constructor that takes an http resonse as argument.
@@ -62,13 +60,13 @@ func NewDocumentFromResponse(res *http.Response) (d *Document, e error) {
 	}
 
 	// Create and fill the document
-	return newDocument(root, res.Request.URL), nil
+	return newDocument(root), nil
 }
 
 // Private constructor, make sure all fields are correctly filled.
-func newDocument(root *html.Node, url *url.URL) *Document {
+func newDocument(root *html.Node) *Document {
 	// Create and fill the document
-	d := &Document{nil, url, root}
+	d := &Document{nil, root}
 	d.Selection = newSingleSelection(root, d)
 	return d
 }
