@@ -1,6 +1,7 @@
 package goquery
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -672,4 +673,25 @@ func TestClosestNodesRollback(t *testing.T) {
 	sel := Doc().Find(".container-fluid")
 	sel2 := sel.ClosestNodes(Doc().Find(".pvk-content").Nodes...).End()
 	AssertEqual(t, sel, sel2)
+}
+
+func TestIssue26(t *testing.T) {
+	img1 := `<img src="assets/images/gallery/thumb-1.jpg" alt="150x150" />`
+	img2 := `<img alt="150x150" src="assets/images/gallery/thumb-1.jpg" />`
+	cases := []struct {
+		s string
+		l int
+	}{
+		{s: img1 + img2, l: 2},
+		{s: img1, l: 1},
+		{s: img2, l: 1},
+	}
+	for _, c := range cases {
+		doc, err := NewDocumentFromReader(strings.NewReader(c.s))
+		if err != nil {
+			t.Fatal(err)
+		}
+		sel := doc.Find("img[src]")
+		AssertLength(t, sel.Nodes, c.l)
+	}
 }
