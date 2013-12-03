@@ -3,3 +3,5 @@
 *.swp
 #*.*#
 tags
+goquery.test
+
