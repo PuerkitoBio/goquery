@@ -31,6 +31,11 @@ func TestLast(t *testing.T) {
 	}
 }
 
+func TestLastEmpty(t *testing.T) {
+	sel := Doc().Find(".pvk-zzcontentzz").Last()
+	AssertLength(t, sel.Nodes, 0)
+}
+
 func TestLastRollback(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	sel2 := sel.Last().End()
