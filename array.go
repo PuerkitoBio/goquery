@@ -24,6 +24,11 @@ func (this *Selection) Eq(index int) *Selection {
 	if index < 0 {
 		index += len(this.Nodes)
 	}
+
+	if index >= len(this.Nodes) || index < 0 {
+		return newEmptySelection(this.document)
+	}
+
 	return this.Slice(index, index+1)
 }
 
