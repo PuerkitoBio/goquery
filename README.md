@@ -1,5 +1,7 @@
 # goquery - a little like that j-thing, only in Go
 
+[![build status](https://secure.travis-ci.org/PuerkitoBio/goquery.png)](http://travis-ci.org/PuerkitoBio/goquery)
+
 GoQuery brings a syntax and a set of features similar to [jQuery][] to the [Go language][go]. It is based on the experimental html package and the CSS Selector library [cascadia][]. Since the experimental html parser returns tokens (nodes), and not a full-featured DOM object, jQuery's manipulation and modification functions have been left off (no point in modifying data in the parsed tree of the HTML, it has no effect).
 
 Supported functions are query-oriented features (`hasClass()`, `attr()` and the likes), as well as traversing functions that make sense given what we have to work with. This makes GoQuery a great library for scraping web pages.
