@@ -10,8 +10,8 @@ func TestFirst(t *testing.T) {
 }
 
 func TestFirstEmpty(t *testing.T) {
-	defer AssertPanic(t)
-	Doc().Find(".pvk-zzcontentzz").First()
+	sel := Doc().Find(".pvk-zzcontentzz").First()
+	AssertLength(t, sel.Nodes, 0)
 }
 
 func TestFirstRollback(t *testing.T) {
@@ -29,6 +29,11 @@ func TestLast(t *testing.T) {
 	if !sel.Contains(foot.Nodes[0]) {
 		t.Error("Last .pvk-content should contain .footer.")
 	}
+}
+
+func TestLastEmpty(t *testing.T) {
+	sel := Doc().Find(".pvk-zzcontentzz").Last()
+	AssertLength(t, sel.Nodes, 0)
 }
 
 func TestLastRollback(t *testing.T) {
@@ -51,6 +56,21 @@ func TestEqNegative(t *testing.T) {
 	if !sel.Contains(foot.Nodes[0]) {
 		t.Error("Index -1 of .pvk-content should contain .footer.")
 	}
+}
+
+func TestEqEmpty(t *testing.T) {
+	sel := Doc().Find("something_random_that_does_not_exists").Eq(0)
+	AssertLength(t, sel.Nodes, 0)
+}
+
+func TestEqInvalidPositive(t *testing.T) {
+	sel := Doc().Find(".pvk-content").Eq(3)
+	AssertLength(t, sel.Nodes, 0)
+}
+
+func TestEqInvalidNegative(t *testing.T) {
+	sel := Doc().Find(".pvk-content").Eq(-4)
+	AssertLength(t, sel.Nodes, 0)
 }
 
 func TestEqRollback(t *testing.T) {

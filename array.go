@@ -5,13 +5,15 @@ import (
 )
 
 // First() reduces the set of matched elements to the first in the set.
-// It returns a new Selection object.
+// It returns a new Selection object, and an empty Selection object if the
+// the selection is empty.
 func (this *Selection) First() *Selection {
 	return this.Eq(0)
 }
 
 // Last() reduces the set of matched elements to the last in the set.
-// It returns a new Selection object.
+// It returns a new Selection object, and an empty Selection object if
+// the selection is empty.
 func (this *Selection) Last() *Selection {
 	return this.Eq(-1)
 }
@@ -24,6 +26,11 @@ func (this *Selection) Eq(index int) *Selection {
 	if index < 0 {
 		index += len(this.Nodes)
 	}
+
+	if index >= len(this.Nodes) || index < 0 {
+		return newEmptySelection(this.document)
+	}
+
 	return this.Slice(index, index+1)
 }
 
