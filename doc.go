@@ -60,7 +60,7 @@ The various methods are split into files based on the category of behavior:
 
 * iteration.go : methods to loop over the selection's nodes.
     - Each()
-		- EachWithBreak()
+    - EachWithBreak()
     - Map()
 
 * property.go : methods that inspect and get the node's properties values.
