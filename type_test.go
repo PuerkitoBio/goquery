@@ -2,10 +2,11 @@ package goquery
 
 import (
 	"bytes"
-	"code.google.com/p/go.net/html"
 	"fmt"
 	"os"
 	"testing"
+
+	"code.google.com/p/go.net/html"
 )
 
 // Test helper functions and members
@@ -75,17 +76,19 @@ func AssertSelectionIs(t *testing.T, sel *Selection, is ...string) {
 }
 
 func LoadDoc(page string) *Document {
-	if f, e := os.Open(fmt.Sprintf("./testdata/%s", page)); e != nil {
+	var f *os.File
+	var e error
+
+	if f, e = os.Open(fmt.Sprintf("./testdata/%s", page)); e != nil {
 		panic(e.Error())
-	} else {
-		defer f.Close()
-		if node, e := html.Parse(f); e != nil {
-			panic(e.Error())
-		} else {
-			return NewDocumentFromNode(node)
-		}
 	}
-	return nil
+	defer f.Close()
+
+	var node *html.Node
+	if node, e = html.Parse(f); e != nil {
+		panic(e.Error())
+	}
+	return NewDocumentFromNode(node)
 }
 
 func TestNewDocument(t *testing.T) {
