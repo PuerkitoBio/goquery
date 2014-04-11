@@ -488,10 +488,9 @@ func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *htm
 			}
 			if ret == nil || ret.Type == html.ElementNode || st == siblingAllIncludingNonElements {
 				return
-			} else {
-				// Not a valid node, try again from this one
-				cur = ret
 			}
+			// Not a valid node, try again from this one
+			cur = ret
 		}
 		panic("Unreachable code reached.")
 	}

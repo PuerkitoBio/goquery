@@ -18,9 +18,8 @@ func (s *Selection) Is(selector string) bool {
 		cs := cascadia.MustCompile(selector)
 		if len(s.Nodes) == 1 {
 			return cs.Match(s.Nodes[0])
-		} else {
-			return len(cs.Filter(s.Nodes)) > 0
 		}
+		return len(cs.Filter(s.Nodes)) > 0
 	}
 
 	return false

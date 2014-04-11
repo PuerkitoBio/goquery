@@ -23,7 +23,7 @@ func (s *Selection) FilterFunction(f func(int, *Selection) bool) *Selection {
 	return pushStack(s, winnowFunction(s, f, true))
 }
 
-// Not removes elements from the Selection that pass the function's test.
+// NotFunction removes elements from the Selection that pass the function's test.
 // It returns a new Selection object with the matching elements removed.
 func (s *Selection) NotFunction(f func(int, *Selection) bool) *Selection {
 	return pushStack(s, winnowFunction(s, f, false))
@@ -35,7 +35,7 @@ func (s *Selection) FilterNodes(nodes ...*html.Node) *Selection {
 	return pushStack(s, winnowNodes(s, nodes, true))
 }
 
-// Not removes elements from the Selection that match the specified nodes.
+// NotNodes removes elements from the Selection that match the specified nodes.
 // It returns a new Selection object with the matching elements removed.
 func (s *Selection) NotNodes(nodes ...*html.Node) *Selection {
 	return pushStack(s, winnowNodes(s, nodes, false))
@@ -51,9 +51,8 @@ func (s *Selection) FilterSelection(sel *Selection) *Selection {
 	return pushStack(s, winnowNodes(s, sel.Nodes, true))
 }
 
-// Not removes elements from the Selection that match a node in the specified
-// Selection object.
-// It returns a new Selection object with the matching elements removed.
+// NotSelection removes elements from the Selection that match a node in the specified
+// Selection object. It returns a new Selection object with the matching elements removed.
 func (s *Selection) NotSelection(sel *Selection) *Selection {
 	if sel == nil {
 		return pushStack(s, winnowNodes(s, nil, false))
@@ -115,13 +114,11 @@ func winnow(sel *Selection, selector string, keep bool) []*html.Node {
 	// Optimize if keep is requested
 	if keep {
 		return cs.Filter(sel.Nodes)
-	} else {
-		// Use grep
-		return grep(sel, func(i int, s *Selection) bool {
-			return !cs.Match(s.Get(0))
-		})
 	}
-	return nil
+	// Use grep
+	return grep(sel, func(i int, s *Selection) bool {
+		return !cs.Match(s.Get(0))
+	})
 }
 
 // Filter based on an array of nodes, and the indicator to keep (Filter) or
