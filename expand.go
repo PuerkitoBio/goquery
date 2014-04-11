@@ -4,37 +4,37 @@ import (
 	"code.google.com/p/go.net/html"
 )
 
-// Add() adds the selector string's matching nodes to those in the current
+// Add adds the selector string's matching nodes to those in the current
 // selection and returns a new Selection object.
 // The selector string is run in the context of the document of the current
 // Selection object.
-func (this *Selection) Add(selector string) *Selection {
-	return this.AddNodes(findWithSelector([]*html.Node{this.document.rootNode}, selector)...)
+func (s *Selection) Add(selector string) *Selection {
+	return s.AddNodes(findWithSelector([]*html.Node{s.document.rootNode}, selector)...)
 }
 
-// AddSelection() adds the specified Selection object's nodes to those in the
+// AddSelection adds the specified Selection object's nodes to those in the
 // current selection and returns a new Selection object.
-func (this *Selection) AddSelection(sel *Selection) *Selection {
+func (s *Selection) AddSelection(sel *Selection) *Selection {
 	if sel == nil {
-		return this.AddNodes()
+		return s.AddNodes()
 	}
-	return this.AddNodes(sel.Nodes...)
+	return s.AddNodes(sel.Nodes...)
 }
 
-// Union() is an alias for AddSelection().
-func (this *Selection) Union(sel *Selection) *Selection {
-	return this.AddSelection(sel)
+// Union is an alias for AddSelection.
+func (s *Selection) Union(sel *Selection) *Selection {
+	return s.AddSelection(sel)
 }
 
-// AddNodes() adds the specified nodes to those in the
+// AddNodes adds the specified nodes to those in the
 // current selection and returns a new Selection object.
-func (this *Selection) AddNodes(nodes ...*html.Node) *Selection {
-	return pushStack(this, appendWithoutDuplicates(this.Nodes, nodes))
+func (s *Selection) AddNodes(nodes ...*html.Node) *Selection {
+	return pushStack(s, appendWithoutDuplicates(s.Nodes, nodes))
 }
 
-// AndSelf() adds the previous set of elements on the stack to the current set.
+// AndSelf adds the previous set of elements on the stack to the current set.
 // It returns a new Selection object containing the current Selection combined
 // with the previous one.
-func (this *Selection) AndSelf() *Selection {
-	return this.AddSelection(this.prevSel)
+func (s *Selection) AndSelf() *Selection {
+	return s.AddSelection(s.prevSel)
 }

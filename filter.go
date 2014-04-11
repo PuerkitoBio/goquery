@@ -5,82 +5,82 @@ import (
 	"code.google.com/p/go.net/html"
 )
 
-// Filter() reduces the set of matched elements to those that match the selector string.
+// Filter reduces the set of matched elements to those that match the selector string.
 // It returns a new Selection object for this subset of matching elements.
-func (this *Selection) Filter(selector string) *Selection {
-	return pushStack(this, winnow(this, selector, true))
+func (s *Selection) Filter(selector string) *Selection {
+	return pushStack(s, winnow(s, selector, true))
 }
 
-// Not() removes elements from the Selection that match the selector string.
+// Not removes elements from the Selection that match the selector string.
 // It returns a new Selection object with the matching elements removed.
-func (this *Selection) Not(selector string) *Selection {
-	return pushStack(this, winnow(this, selector, false))
+func (s *Selection) Not(selector string) *Selection {
+	return pushStack(s, winnow(s, selector, false))
 }
 
-// FilterFunction() reduces the set of matched elements to those that pass the function's test.
+// FilterFunction reduces the set of matched elements to those that pass the function's test.
 // It returns a new Selection object for this subset of elements.
-func (this *Selection) FilterFunction(f func(int, *Selection) bool) *Selection {
-	return pushStack(this, winnowFunction(this, f, true))
+func (s *Selection) FilterFunction(f func(int, *Selection) bool) *Selection {
+	return pushStack(s, winnowFunction(s, f, true))
 }
 
-// Not() removes elements from the Selection that pass the function's test.
+// Not removes elements from the Selection that pass the function's test.
 // It returns a new Selection object with the matching elements removed.
-func (this *Selection) NotFunction(f func(int, *Selection) bool) *Selection {
-	return pushStack(this, winnowFunction(this, f, false))
+func (s *Selection) NotFunction(f func(int, *Selection) bool) *Selection {
+	return pushStack(s, winnowFunction(s, f, false))
 }
 
-// FilterNodes() reduces the set of matched elements to those that match the specified nodes.
+// FilterNodes reduces the set of matched elements to those that match the specified nodes.
 // It returns a new Selection object for this subset of elements.
-func (this *Selection) FilterNodes(nodes ...*html.Node) *Selection {
-	return pushStack(this, winnowNodes(this, nodes, true))
+func (s *Selection) FilterNodes(nodes ...*html.Node) *Selection {
+	return pushStack(s, winnowNodes(s, nodes, true))
 }
 
-// Not() removes elements from the Selection that match the specified nodes.
+// Not removes elements from the Selection that match the specified nodes.
 // It returns a new Selection object with the matching elements removed.
-func (this *Selection) NotNodes(nodes ...*html.Node) *Selection {
-	return pushStack(this, winnowNodes(this, nodes, false))
+func (s *Selection) NotNodes(nodes ...*html.Node) *Selection {
+	return pushStack(s, winnowNodes(s, nodes, false))
 }
 
-// FilterSelection() reduces the set of matched elements to those that match a
+// FilterSelection reduces the set of matched elements to those that match a
 // node in the specified Selection object.
 // It returns a new Selection object for this subset of elements.
-func (this *Selection) FilterSelection(s *Selection) *Selection {
-	if s == nil {
-		return pushStack(this, winnowNodes(this, nil, true))
+func (s *Selection) FilterSelection(sel *Selection) *Selection {
+	if sel == nil {
+		return pushStack(s, winnowNodes(s, nil, true))
 	}
-	return pushStack(this, winnowNodes(this, s.Nodes, true))
+	return pushStack(s, winnowNodes(s, sel.Nodes, true))
 }
 
-// Not() removes elements from the Selection that match a node in the specified
+// Not removes elements from the Selection that match a node in the specified
 // Selection object.
 // It returns a new Selection object with the matching elements removed.
-func (this *Selection) NotSelection(s *Selection) *Selection {
-	if s == nil {
-		return pushStack(this, winnowNodes(this, nil, false))
+func (s *Selection) NotSelection(sel *Selection) *Selection {
+	if sel == nil {
+		return pushStack(s, winnowNodes(s, nil, false))
 	}
-	return pushStack(this, winnowNodes(this, s.Nodes, false))
+	return pushStack(s, winnowNodes(s, sel.Nodes, false))
 }
 
-// Intersection() is an alias for FilterSelection().
-func (this *Selection) Intersection(s *Selection) *Selection {
-	return this.FilterSelection(s)
+// Intersection is an alias for FilterSelection.
+func (s *Selection) Intersection(sel *Selection) *Selection {
+	return s.FilterSelection(sel)
 }
 
-// Has() reduces the set of matched elements to those that have a descendant
+// Has reduces the set of matched elements to those that have a descendant
 // that matches the selector.
 // It returns a new Selection object with the matching elements.
-func (this *Selection) Has(selector string) *Selection {
-	return this.HasSelection(this.document.Find(selector))
+func (s *Selection) Has(selector string) *Selection {
+	return s.HasSelection(s.document.Find(selector))
 }
 
-// HasNodes() reduces the set of matched elements to those that have a
+// HasNodes reduces the set of matched elements to those that have a
 // descendant that matches one of the nodes.
 // It returns a new Selection object with the matching elements.
-func (this *Selection) HasNodes(nodes ...*html.Node) *Selection {
-	return this.FilterFunction(func(_ int, s *Selection) bool {
+func (s *Selection) HasNodes(nodes ...*html.Node) *Selection {
+	return s.FilterFunction(func(_ int, sel *Selection) bool {
 		// Add all nodes that contain one of the specified nodes
 		for _, n := range nodes {
-			if s.Contains(n) {
+			if sel.Contains(n) {
 				return true
 			}
 		}
@@ -88,23 +88,23 @@ func (this *Selection) HasNodes(nodes ...*html.Node) *Selection {
 	})
 }
 
-// HasSelection() reduces the set of matched elements to those that have a
+// HasSelection reduces the set of matched elements to those that have a
 // descendant that matches one of the nodes of the specified Selection object.
 // It returns a new Selection object with the matching elements.
-func (this *Selection) HasSelection(sel *Selection) *Selection {
+func (s *Selection) HasSelection(sel *Selection) *Selection {
 	if sel == nil {
-		return this.HasNodes()
+		return s.HasNodes()
 	}
-	return this.HasNodes(sel.Nodes...)
+	return s.HasNodes(sel.Nodes...)
 }
 
-// End() ends the most recent filtering operation in the current chain and
+// End ends the most recent filtering operation in the current chain and
 // returns the set of matched elements to its previous state.
-func (this *Selection) End() *Selection {
-	if this.prevSel != nil {
-		return this.prevSel
+func (s *Selection) End() *Selection {
+	if s.prevSel != nil {
+		return s.prevSel
 	}
-	return newEmptySelection(this.document)
+	return newEmptySelection(s.document)
 }
 
 // Filter based on a selector string, and the indicator to keep (Filter) or

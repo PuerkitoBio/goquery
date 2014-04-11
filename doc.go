@@ -23,15 +23,27 @@
 
 /*
 Package goquery implements features similar to jQuery, including the chainable
-syntax, to manipulate and query an HTML document (the modification functions of jQuery are not included).
+syntax, to manipulate and query an HTML document.
 
-It uses Cascadia as CSS selector (similar to Sizzle for jQuery).
+GoQuery brings a syntax and a set of features similar to jQuery to the Go language.
+It is based on Go's net/html package and the CSS Selector library cascadia. Since
+the net/html parser returns tokens (nodes), and not a full-featured DOM object,
+jQuery's manipulation and modification functions have been left off (no point in
+modifying data in the parsed tree of the HTML, it has no effect).
 
-To provide a chainable interface, error management is strict, and goquery panics
-if an invalid Cascadia selector is used (this is consistent with the behavior of
-jQuery/Sizzle/document.querySelectorAll, where an error is thrown). This is
-necessary since multiple return values cannot be used to allow a chainable
-interface.
+Also, because the net/html parser requires UTF-8 encoding, so does goquery: it is
+the caller's responsibility to ensure that the source document provides UTF-8 encoded HTML.
+
+Supported functions are query-oriented features (`hasClass()`, `attr()` and the likes),
+as well as traversing functions that make sense given what we have to work with.
+This makes GoQuery a great library for scraping web pages.
+
+Syntax-wise, it is as close as possible to jQuery, with the same function names when
+possible, and that warm and fuzzy chainable interface. jQuery being the
+ultra-popular library that it is, I felt that writing a similar HTML-manipulating
+library was better to follow its API than to start anew (in the same spirit as
+Go's fmt package), even though some of its methods are less than intuitive (looking
+at you, index()...).
 
 It is hosted on GitHub, along with additional documentation in the README.md
 file: https://github.com/puerkitobio/goquery

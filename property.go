@@ -2,50 +2,51 @@ package goquery
 
 import (
 	"bytes"
+
 	"code.google.com/p/go.net/html"
 )
 
-// Attr() gets the specified attribute's value for the first element in the
+// Attr gets the specified attribute's value for the first element in the
 // Selection. To get the value for each element individually, use a looping
-// construct such as Each() or Map() method.
-func (this *Selection) Attr(attrName string) (val string, exists bool) {
-	if len(this.Nodes) == 0 {
+// construct such as Each or Map method.
+func (s *Selection) Attr(attrName string) (val string, exists bool) {
+	if len(s.Nodes) == 0 {
 		return
 	}
-	return getAttributeValue(attrName, this.Nodes[0])
+	return getAttributeValue(attrName, s.Nodes[0])
 }
 
-// Text() gets the combined text contents of each element in the set of matched
+// Text gets the combined text contents of each element in the set of matched
 // elements, including their descendants.
-func (this *Selection) Text() string {
+func (s *Selection) Text() string {
 	var buf bytes.Buffer
 
-	// Slightly optimized vs calling Each(): no single selection object created
-	for _, n := range this.Nodes {
+	// Slightly optimized vs calling Each: no single selection object created
+	for _, n := range s.Nodes {
 		buf.WriteString(getNodeText(n))
 	}
 	return buf.String()
 }
 
-// Size() is an alias for Length().
-func (this *Selection) Size() int {
-	return this.Length()
+// Size is an alias for Length.
+func (s *Selection) Size() int {
+	return s.Length()
 }
 
-// Length() returns the number of elements in the Selection object.
-func (this *Selection) Length() int {
-	return len(this.Nodes)
+// Length returns the number of elements in the Selection object.
+func (s *Selection) Length() int {
+	return len(s.Nodes)
 }
 
-// Html() gets the HTML contents of the first element in the set of matched
+// Html gets the HTML contents of the first element in the set of matched
 // elements. It includes text and comment nodes.
-func (this *Selection) Html() (ret string, e error) {
+func (s *Selection) Html() (ret string, e error) {
 	// Since there is no .innerHtml, the HTML content must be re-created from
-	// the nodes usint html.Render().
+	// the nodes using html.Render.
 	var buf bytes.Buffer
 
-	if len(this.Nodes) > 0 {
-		for c := this.Nodes[0].FirstChild; c != nil; c = c.NextSibling {
+	if len(s.Nodes) > 0 {
+		for c := s.Nodes[0].FirstChild; c != nil; c = c.NextSibling {
 			e = html.Render(&buf, c)
 			if e != nil {
 				return

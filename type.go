@@ -1,10 +1,11 @@
 package goquery
 
 import (
-	"code.google.com/p/go.net/html"
 	"io"
 	"net/http"
 	"net/url"
+
+	"code.google.com/p/go.net/html"
 )
 
 // Document represents an HTML document to be manipulated. Unlike jQuery, which
@@ -18,30 +19,30 @@ type Document struct {
 	rootNode *html.Node
 }
 
-// NewDocumentFromNode() is a Document constructor that takes a root html Node
+// NewDocumentFromNode is a Document constructor that takes a root html Node
 // as argument.
-func NewDocumentFromNode(root *html.Node) (d *Document) {
+func NewDocumentFromNode(root *html.Node) *Document {
 	return newDocument(root, nil)
 }
 
-// NewDocument() is a Document constructor that takes a string URL as argument.
+// NewDocument is a Document constructor that takes a string URL as argument.
 // It loads the specified document, parses it, and stores the root Document
 // node, ready to be manipulated.
-func NewDocument(url string) (d *Document, e error) {
+func NewDocument(url string) (*Document, error) {
 	// Load the URL
 	res, e := http.Get(url)
 	if e != nil {
-		return
+		return nil, e
 	}
 	return NewDocumentFromResponse(res)
 }
 
-// NewDocumentFromReader() returns a Document from a generic reader.
+// NewDocumentFromReader returns a Document from a generic reader.
 // It returns an error as second value if the reader's data cannot be parsed
 // as html. It does *not* check if the reader is also an io.Closer, so the
 // provided reader is never closed by this call, it is the responsibility
 // of the caller to close it if required.
-func NewDocumentFromReader(r io.Reader) (d *Document, e error) {
+func NewDocumentFromReader(r io.Reader) (*Document, error) {
 	root, e := html.Parse(r)
 	if e != nil {
 		return nil, e
@@ -49,16 +50,16 @@ func NewDocumentFromReader(r io.Reader) (d *Document, e error) {
 	return newDocument(root, nil), nil
 }
 
-// NewDocumentFromResponse() is another Document constructor that takes an http resonse as argument.
+// NewDocumentFromResponse is another Document constructor that takes an http resonse as argument.
 // It loads the specified response's document, parses it, and stores the root Document
-// node, ready to be manipulated.
-func NewDocumentFromResponse(res *http.Response) (d *Document, e error) {
+// node, ready to be manipulated. The response's body is closed on return.
+func NewDocumentFromResponse(res *http.Response) (*Document, error) {
 	defer res.Body.Close()
 
 	// Parse the HTML into nodes
 	root, e := html.Parse(res.Body)
 	if e != nil {
-		return
+		return nil, e
 	}
 
 	// Create and fill the document
@@ -74,7 +75,7 @@ func newDocument(root *html.Node, url *url.URL) *Document {
 }
 
 // Selection represents a collection of nodes matching some criteria. The
-// initial Selection can be created by using Document.Find(), and then
+// initial Selection can be created by using Document.Find, and then
 // manipulated using the jQuery-like chainable syntax and methods.
 type Selection struct {
 	Nodes    []*html.Node

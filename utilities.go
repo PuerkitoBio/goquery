@@ -8,7 +8,7 @@ func getChildren(n *html.Node) (result []*html.Node) {
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		result = append(result, c)
 	}
-	return
+	return result
 }
 
 // Loop through all container nodes to search for the target node.
@@ -55,9 +55,7 @@ func indexInSlice(slice []*html.Node, node *html.Node) int {
 // There is no check to the original state of the target slice, so it may still
 // contain duplicates. The target slice is returned because append() may create
 // a new underlying array.
-func appendWithoutDuplicates(target []*html.Node,
-	nodes []*html.Node) []*html.Node {
-
+func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node) []*html.Node {
 	for _, n := range nodes {
 		if !isInSlice(target, n) {
 			target = append(target, n)
@@ -70,18 +68,17 @@ func appendWithoutDuplicates(target []*html.Node,
 // Loop through a selection, returning only those nodes that pass the predicate
 // function.
 func grep(sel *Selection, predicate func(i int, s *Selection) bool) (result []*html.Node) {
-
 	for i, n := range sel.Nodes {
 		if predicate(i, newSingleSelection(n, sel.document)) {
 			result = append(result, n)
 		}
 	}
-	return
+	return result
 }
 
 // Creates a new Selection object based on the specified nodes, and keeps the
 // source Selection object on the stack (linked list).
-func pushStack(fromSel *Selection, nodes []*html.Node) (result *Selection) {
-	result = &Selection{nodes, fromSel.document, fromSel}
-	return
+func pushStack(fromSel *Selection, nodes []*html.Node) *Selection {
+	result := &Selection{nodes, fromSel.document, fromSel}
+	return result
 }
