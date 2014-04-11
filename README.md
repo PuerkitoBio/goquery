@@ -2,7 +2,9 @@
 
 [![build status](https://secure.travis-ci.org/PuerkitoBio/goquery.png)](http://travis-ci.org/PuerkitoBio/goquery)
 
-GoQuery brings a syntax and a set of features similar to [jQuery][] to the [Go language][go]. It is based on the experimental html package and the CSS Selector library [cascadia][]. Since the experimental html parser returns tokens (nodes), and not a full-featured DOM object, jQuery's manipulation and modification functions have been left off (no point in modifying data in the parsed tree of the HTML, it has no effect).
+GoQuery brings a syntax and a set of features similar to [jQuery][] to the [Go language][go]. It is based on Go's [net/html package][html] and the CSS Selector library [cascadia][]. Since the net/html parser returns tokens (nodes), and not a full-featured DOM object, jQuery's manipulation and modification functions have been left off (no point in modifying data in the parsed tree of the HTML, it has no effect).
+
+Also, because the net/html parser requires UTF-8 encoding, so does goquery: it is the caller's responsibility to ensure that the source document provides UTF-8 encoded HTML.
 
 Supported functions are query-oriented features (`hasClass()`, `attr()` and the likes), as well as traversing functions that make sense given what we have to work with. This makes GoQuery a great library for scraping web pages.
 
@@ -17,12 +19,14 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
     $ cd $GOPATH/src/github.com/PuerkitoBio/goquery
     $ go test
 
-(optional) To run benchmarks:
+(optional) To run benchmarks (warning: it runs for a few minutes):
 
     $ cd $GOPATH/src/github.com/PuerkitoBio/goquery
     $ go test -bench=".*"
 
 ## Changelog
+
+**Note that goquery's API is stable, and will not break.**
 
 *    **v0.3.2** : Add `NewDocumentFromReader()` (thanks jweir) which allows creating a goquery document from an io.Reader.
 *    **v0.3.1** : Add `NewDocumentFromResponse()` (thanks assassingj) which allows creating a goquery document from an http response.
@@ -54,45 +58,36 @@ Taken from example_test.go:
 
 ```Go
 import (
-  "fmt"
-  // In real use, this import would be required (not in this example, since it
-  // is part of the goquery package)
-  //"github.com/PuerkitoBio/goquery"
-  "strconv"
+	"fmt"
+	"log"
+
+	// In real use, this import would be required (not in this example, since it
+	// is part of the goquery package)
+	//"github.com/PuerkitoBio/goquery"
 )
 
-// This example scrapes the 10 reviews shown on the home page of MetalReview.com,
-// the best metal review site on the web :) (and no, I'm not affiliated to them!)
-func ExampleScrape_MetalReview() {
-  // Load the HTML document (in real use, the type would be *goquery.Document)
-  var doc *Document
-  var e error
+// This example scrapes the reviews shown on the home page of metalsucks.net.
+func ExampleScrape_MetalSucks() {
+	// Load the HTML document (in real use, the type would be *goquery.Document)
+	var doc *Document
+	var e error
 
-  if doc, e = NewDocument("http://metalreview.com"); e != nil {
-    panic(e.Error())
-  }
+	if doc, e = NewDocument("http://metalsucks.net"); e != nil {
+		log.Fatal(e)
+	}
 
-  // Find the review items (the type of the Selection would be *goquery.Selection)
-  doc.Find(".slider-row:nth-child(1) .slider-item").Each(func(i int, s *Selection) {
-    var band, title string
-    var score float64
+	// Find the review items (the type of the Selection would be *goquery.Selection)
+	doc.Find(".reviews-wrap article .review-rhs").Each(func(i int, s *Selection) {
+		// For each item found, get the band and title
+		band := s.Find("h3").Text()
+		title := s.Find("i").Text()
+		fmt.Printf("Review %d: %s - %s\n", i, band, title)
+	})
+	// To see the output of the Example while running the test suite (go test), simply
+	// remove the leading "x" before Output on the next line. This will cause the
+	// example to fail (all the "real" tests should pass).
 
-    // For each item found, get the band, title and score, and print it
-    band = s.Find("strong").Text()
-    title = s.Find("em").Text()
-    if score, e = strconv.ParseFloat(s.Find(".score").Text(), 64); e != nil {
-      // Not a valid float, ignore score
-      fmt.Printf("Review %d: %s - %s.\n", i, band, title)
-    } else {
-      // Print all, including score
-      fmt.Printf("Review %d: %s - %s (%2.1f).\n", i, band, title, score)
-    }
-  })
-  // To see the output of the Example while running the test suite (go test), simply
-  // remove the leading "x" before Output on the next line. This will cause the
-  // example to fail (all the "real" tests should pass).
-
-  // xOutput: voluntarily fail the Example output.
+	// xOutput: voluntarily fail the Example output.
 }
 ```
 
@@ -109,3 +104,4 @@ The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia'
 [doc]: http://godoc.org/github.com/PuerkitoBio/goquery
 [index]: http://api.jquery.com/index/
 [gonet]: http://code.google.com/p/go/source/detail?r=f7f5159120f51ba0070774d3c5907969b5fe7858&repo=net
+[html]: http://godoc.org/code.google.com/p/go.net/html
