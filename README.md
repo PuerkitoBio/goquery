@@ -26,7 +26,7 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 ## Changelog
 
-**Note that goquery's API is stable, and will not break.**
+**Note that goquery's API is now stable, and will not break.**
 
 *    **v0.3.2** : Add `NewDocumentFromReader()` (thanks jweir) which allows creating a goquery document from an io.Reader.
 *    **v0.3.1** : Add `NewDocumentFromResponse()` (thanks assassingj) which allows creating a goquery document from an http response.
