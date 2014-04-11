@@ -48,6 +48,8 @@ at you, index()...).
 It is hosted on GitHub, along with additional documentation in the README.md
 file: https://github.com/puerkitobio/goquery
 
+Please note that because of the net/html dependency, goquery requires Go1.1+.
+
 The various methods are split into files based on the category of behavior:
 
 * array.go : array-like positional manipulation of the selection.

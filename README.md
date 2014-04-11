@@ -12,6 +12,8 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 ## Installation
 
+Please note that because of the net/html dependency, goquery requires Go1.1+.
+
     $ go get github.com/PuerkitoBio/goquery
 
 (optional) To run unit tests:
