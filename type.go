@@ -1,11 +1,11 @@
 package goquery
 
 import (
+	"code.google.com/p/go.net/html"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
-	"errors"
-	"code.google.com/p/go.net/html"
 )
 
 // Document represents an HTML document to be manipulated. Unlike jQuery, which
