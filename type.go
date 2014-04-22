@@ -1,11 +1,11 @@
 package goquery
 
 import (
+	"code.google.com/p/go.net/html"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
-
-	"code.google.com/p/go.net/html"
 )
 
 // Document represents an HTML document to be manipulated. Unlike jQuery, which
@@ -54,6 +54,10 @@ func NewDocumentFromReader(r io.Reader) (*Document, error) {
 // It loads the specified response's document, parses it, and stores the root Document
 // node, ready to be manipulated. The response's body is closed on return.
 func NewDocumentFromResponse(res *http.Response) (*Document, error) {
+	if res == nil {
+		return nil, errors.New("Response is nil pointer")
+	}
+
 	defer res.Body.Close()
 
 	// Parse the HTML into nodes
