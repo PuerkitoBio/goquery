@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-
+	"errors"
 	"code.google.com/p/go.net/html"
 )
 
@@ -54,6 +54,10 @@ func NewDocumentFromReader(r io.Reader) (*Document, error) {
 // It loads the specified response's document, parses it, and stores the root Document
 // node, ready to be manipulated. The response's body is closed on return.
 func NewDocumentFromResponse(res *http.Response) (*Document, error) {
+	if res == nil {
+		return nil, errors.New("Response is nil pointer")
+	}
+
 	defer res.Body.Close()
 
 	// Parse the HTML into nodes
