@@ -151,3 +151,10 @@ func TestNewDocumentFromReader(t *testing.T) {
 		}
 	}
 }
+
+func TestNewDocumentFromResponseNil(t *testing.T) {
+	_, e := NewDocumentFromResponse(nil)
+	if e == nil {
+		t.Error("Expected error, got none")
+	}
+}
