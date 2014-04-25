@@ -61,3 +61,16 @@ func TestHtml(t *testing.T) {
 		}
 	}
 }
+
+func TestNbsp(t *testing.T) {
+	src := `<p>Some&nbsp;text</p>`
+	d, err := NewDocumentFromReader(strings.NewReader(src))
+	if err != nil {
+		t.Fatal(err)
+	}
+	txt := d.Find("p").Text()
+	ix := strings.Index(txt, "\u00a0")
+	if ix != 4 {
+		t.Errorf("expected a non-breaking space at index 4, got %d", ix)
+	}
+}

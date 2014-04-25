@@ -492,8 +492,6 @@ func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *htm
 			// Not a valid node, try again from this one
 			cur = ret
 		}
-		// For Go 1.0 compatibility
-		panic("Unreachable code reached.")
 	}
 
 	for c := iter(nil); c != nil; c = iter(c) {
