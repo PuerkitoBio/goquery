@@ -71,6 +71,15 @@ func TestNbsp(t *testing.T) {
 	txt := d.Find("p").Text()
 	ix := strings.Index(txt, "\u00a0")
 	if ix != 4 {
-		t.Errorf("expected a non-breaking space at index 4, got %d", ix)
+		t.Errorf("Text: expected a non-breaking space at index 4, got %d", ix)
+	}
+
+	h, err := d.Find("p").Html()
+	if err != nil {
+		t.Fatal(err)
+	}
+	ix = strings.Index(h, "\u00a0")
+	if ix != 4 {
+		t.Errorf("Html: expected a non-breaking space at index 4, got %d", ix)
 	}
 }
