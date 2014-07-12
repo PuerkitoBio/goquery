@@ -73,7 +73,8 @@ func ExampleScrape_MetalSucks() {
 	// Load the HTML document (in real use, the type would be *goquery.Document)
 	var doc *Document
 	var e error
-
+	
+        // Initialize doc, (in real use, the method would be goquery.NewDocument)
 	if doc, e = NewDocument("http://metalsucks.net"); e != nil {
 		log.Fatal(e)
 	}
