@@ -9,6 +9,16 @@ func (s *Selection) Each(f func(int, *Selection)) *Selection {
 	return s
 }
 
+// All returns all matched nodes as Selection objects, allowing you to iterate
+// over each matched element with with a loop.
+func (s *Selection) All() []*Selection {
+	l := make([]*Selection, 0, len(s.Nodes))
+	for i := range s.Nodes {
+		l = append(l, newSingleSelection(s.Nodes[i], s.document))
+	}
+	return l
+}
+
 // EachWithBreak iterates over a Selection object, executing a function for each
 // matched element. It is identical to Each except that it is possible to break
 // out of the loop by returning false in the callback function. It returns the
