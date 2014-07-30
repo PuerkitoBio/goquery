@@ -71,7 +71,7 @@ func TestMap(t *testing.T) {
 func TestForRange(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	initLen := sel.Length()
-	for i, l := 0, sel.Length(); i < l; i++ {
+	for i := range sel.Nodes {
 		single := sel.Eq(i)
 		//h, err := single.Html()
 		//if err != nil {
