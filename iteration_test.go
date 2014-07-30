@@ -1,8 +1,9 @@
 package goquery
 
 import (
-	"code.google.com/p/go.net/html"
 	"testing"
+
+	"code.google.com/p/go.net/html"
 )
 
 func TestEach(t *testing.T) {
@@ -64,5 +65,24 @@ func TestMap(t *testing.T) {
 	}
 	if len(vals) != 3 {
 		t.Errorf("Expected Map array result to have a length of 3, found %v.", len(vals))
+	}
+}
+
+func TestForRange(t *testing.T) {
+	sel := Doc().Find(".pvk-content")
+	initLen := sel.Length()
+	for i, l := 0, sel.Length(); i < l; i++ {
+		single := sel.Eq(i)
+		//h, err := single.Html()
+		//if err != nil {
+		//	t.Fatal(err)
+		//}
+		//fmt.Println(i, h)
+		if single.Length() != 1 {
+			t.Errorf("%d: expected length of 1, got %d", i, single.Length())
+		}
+	}
+	if sel.Length() != initLen {
+		t.Errorf("expected initial selection to still have length %d, got %d", initLen, sel.Length())
 	}
 }
