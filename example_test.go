@@ -12,11 +12,9 @@ import (
 // This example scrapes the reviews shown on the home page of metalsucks.net.
 func ExampleScrape_MetalSucks() {
 	// Load the HTML document (in real use, the type would be *goquery.Document)
-	var doc *Document
-	var e error
-
-	if doc, e = NewDocument("http://metalsucks.net"); e != nil {
-		log.Fatal(e)
+	doc, err := NewDocument("http://metalsucks.net")
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// Find the review items (the type of the Selection would be *goquery.Selection)
