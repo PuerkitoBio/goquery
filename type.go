@@ -3,6 +3,7 @@ package goquery
 import (
 	"code.google.com/p/go.net/html"
 	"errors"
+	"github.com/djimenez/iconv-go"
 	"io"
 	"net/http"
 	"net/url"
@@ -37,6 +38,19 @@ func NewDocument(url string) (*Document, error) {
 	return NewDocumentFromResponse(res)
 }
 
+// NewConvertedDocument is a Document constructor that takes a string URL and a string charset as argument.
+// It loads the specified document, converts the designated charset document to utf-8,
+// parses it, and stores the root Document
+// node, ready to be manipulated.
+func NewConvertedDocument(url string, charset string) (*Document, error) {
+	// Load the URL
+	res, e := http.Get(url)
+	if e != nil {
+		return nil, e
+	}
+	return NewConvertedDocumentFromResponse(res, charset)
+}
+
 // NewDocumentFromReader returns a Document from a generic reader.
 // It returns an error as second value if the reader's data cannot be parsed
 // as html. It does *not* check if the reader is also an io.Closer, so the
@@ -62,6 +76,33 @@ func NewDocumentFromResponse(res *http.Response) (*Document, error) {
 
 	// Parse the HTML into nodes
 	root, e := html.Parse(res.Body)
+	if e != nil {
+		return nil, e
+	}
+
+	// Create and fill the document
+	return newDocument(root, res.Request.URL), nil
+}
+
+// NewConvertedDocumentFromResponse is another Document constructor that takes an http resonse as argument.
+// It loads the specified response's document, converts the designated charset document to utf-8,
+// parses it, and stores the root Document
+// node, ready to be manipulated. The response's body is closed on return.
+func NewConvertedDocumentFromResponse(res *http.Response, charset string) (*Document, error) {
+	if res == nil {
+		return nil, errors.New("Response is nil pointer")
+	}
+
+	defer res.Body.Close()
+
+	// Convert the designated charset HTML to utf-8 encoded HTML
+	converted_body, err := iconv.NewReader(res.Body, charset, "utf-8")
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the HTML into nodes
+	root, e := html.Parse(converted_body)
 	if e != nil {
 		return nil, e
 	}

@@ -24,6 +24,14 @@ func ExampleScrape_MetalSucks() {
 		title := s.Find("i").Text()
 		fmt.Printf("Review %d: %s - %s\n", i, band, title)
 	})
+
+	// In case of HTML except utf-8, use NewConvertedDocument method
+	other_doc, _ := NewConvertedDocument("http://mixi.jp/", "euc-jp")
+	other_doc.Find(".loginButton").Each(func(_ int, s *Selection) {
+		text, _ := s.Find("input").Attr("alt")
+		fmt.Printf("output: %s \n", text)
+	})
+
 	// To see the output of the Example while running the test suite (go test), simply
 	// remove the leading "x" before Output on the next line. This will cause the
 	// example to fail (all the "real" tests should pass).
