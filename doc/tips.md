@@ -35,6 +35,9 @@ if err != nil {
 
 Thanks to github user @YuheiNakasaka.
 
+Actually, the official go.text repository covers this use case too, see its [godoc page][text] for the details.
+
+
 ## Handle Javascript-based Pages
 
 `goquery` is great to handle normal html pages, but when most of the page is build dynamically using javascript, there's not much it can do. There are various options when faced with this problem:
@@ -62,3 +65,4 @@ Thanks to github user @jmoiron.
 [otto]: https://github.com/robertkrimen/otto
 [exotto]: https://gist.github.com/cryptix/87127f76a94183747b53
 [iconv]: http://godoc.org/?q=iconv
+[text]: http://godoc.org/code.google.com/p/go.text/encoding
