@@ -58,6 +58,8 @@ Please note that Cascadia's selectors do NOT necessarily match all supported sel
 
 ## Examples
 
+See some tips and tricks in the [wiki][].
+
 Taken (and adapted as if executed from outside the goquery package) from example_test.go:
 
 ```Go
@@ -102,3 +104,4 @@ The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia'
 [index]: http://api.jquery.com/index/
 [gonet]: http://code.google.com/p/go/source/detail?r=f7f5159120f51ba0070774d3c5907969b5fe7858&repo=net
 [html]: http://godoc.org/code.google.com/p/go.net/html
+[wiki]: https://github.com/PuerkitoBio/goquery/wiki/Tips-and-tricks

@@ -2,7 +2,7 @@
 
 ## Handle Non-UTF8 html Pages
 
-The `go.net/html` package used by `goquery` requires that the html document is UTF-8 encoded. When you know the encoding of the html page is not UTF-8, you can use the `iconv` package to convert it to UTF-8 (there are various implementation of the `iconv` API, see godoc.org for other options):
+The `go.net/html` package used by `goquery` requires that the html document is UTF-8 encoded. When you know the encoding of the html page is not UTF-8, you can use the `iconv` package to convert it to UTF-8 (there are various implementation of the `iconv` API, see [godoc.org][iconv] for other options):
 
 ```
 $ go get -u github.com/djimenez/iconv-go
@@ -46,7 +46,7 @@ You can find a code example using `otto` [in this gist][exotto]. Thanks to githu
 
 ## For Loop
 
-If all you need is a normal `for` loop over all nodes in the current selection, where `Map` is not necessary, you can use the following:
+If all you need is a normal `for` loop over all nodes in the current selection, where `Map/Each`-style iteration is not necessary, you can use the following:
 
 ```
 sel := Doc().Find(".selector")
@@ -61,4 +61,4 @@ Thanks to github user @jmoiron.
 [webloop]: https://github.com/sourcegraph/webloop
 [otto]: https://github.com/robertkrimen/otto
 [exotto]: https://gist.github.com/cryptix/87127f76a94183747b53
-
+[iconv]: http://godoc.org/?q=iconv
