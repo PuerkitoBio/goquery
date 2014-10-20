@@ -70,6 +70,11 @@ func NewDocumentFromResponse(res *http.Response) (*Document, error) {
 	return newDocument(root, res.Request.URL), nil
 }
 
+// Create a deep-clone of a document
+func NewDocumentFromDocument(doc *Document) *Document {
+	return newDocument(cloneNode(doc.rootNode), doc.Url)
+}
+
 // Private constructor, make sure all fields are correctly filled.
 func newDocument(root *html.Node, url *url.URL) *Document {
 	// Create and fill the document

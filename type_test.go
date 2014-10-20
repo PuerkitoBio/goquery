@@ -21,11 +21,17 @@ func Doc() *Document {
 	}
 	return doc
 }
+func DocClone() *Document {
+	return NewDocumentFromDocument(Doc())
+}
 func Doc2() *Document {
 	if doc2 == nil {
 		doc2 = LoadDoc("page2.html")
 	}
 	return doc2
+}
+func Doc2Clone() *Document {
+	return NewDocumentFromDocument(Doc2())
 }
 func DocB() *Document {
 	if docB == nil {
@@ -33,11 +39,17 @@ func DocB() *Document {
 	}
 	return docB
 }
+func DocBClone() *Document {
+	return NewDocumentFromDocument(DocB())
+}
 func DocW() *Document {
 	if docW == nil {
 		docW = LoadDoc("gowiki.html")
 	}
 	return docW
+}
+func DocWClone() *Document {
+	return NewDocumentFromDocument(DocW())
 }
 
 func AssertLength(t *testing.T, nodes []*html.Node, length int) {
