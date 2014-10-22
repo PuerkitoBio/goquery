@@ -370,7 +370,7 @@ func filterAndPush(srcSel *Selection, nodes []*html.Node, selector string) *Sele
 	// Create a temporary Selection with the specified nodes to filter using winnow
 	sel := &Selection{nodes, srcSel.document, nil}
 	// Filter based on selector and push on stack
-	return pushStack(srcSel, winnow(sel, selector, true))
+	return pushStack(srcSel, winnow(sel, cascadia.MustCompile(selector), true))
 }
 
 // Internal implementation of Find that return raw nodes.

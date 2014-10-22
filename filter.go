@@ -8,13 +8,25 @@ import (
 // Filter reduces the set of matched elements to those that match the selector string.
 // It returns a new Selection object for this subset of matching elements.
 func (s *Selection) Filter(selector string) *Selection {
-	return pushStack(s, winnow(s, selector, true))
+	return s.FilterSelector(cascadia.MustCompile(selector))
+}
+
+// Filter the set of matched elements by the given cascadia selector.
+func (s *Selection) FilterSelector(cs cascadia.Selector) *Selection {
+	return pushStack(s, winnow(s, cs, true))
 }
 
 // Not removes elements from the Selection that match the selector string.
 // It returns a new Selection object with the matching elements removed.
 func (s *Selection) Not(selector string) *Selection {
-	return pushStack(s, winnow(s, selector, false))
+	return s.NotSelector(cascadia.MustCompile(selector))
+}
+
+// Not removes elements from the Selection that match the given cascadia
+// selector.
+// It returns a new Selection object with the matching elements removed.
+func (s *Selection) NotSelector(cs cascadia.Selector) *Selection {
+	return pushStack(s, winnow(s, cs, false))
 }
 
 // FilterFunction reduces the set of matched elements to those that pass the function's test.
@@ -106,11 +118,9 @@ func (s *Selection) End() *Selection {
 	return newEmptySelection(s.document)
 }
 
-// Filter based on a selector string, and the indicator to keep (Filter) or
+// Filter based on the cascadia selector, and the indicator to keep (Filter) or
 // to get rid of (Not) the matching elements.
-func winnow(sel *Selection, selector string, keep bool) []*html.Node {
-	cs := cascadia.MustCompile(selector)
-
+func winnow(sel *Selection, cs cascadia.Selector, keep bool) []*html.Node {
 	// Optimize if keep is requested
 	if keep {
 		return cs.Filter(sel.Nodes)
