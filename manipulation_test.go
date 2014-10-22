@@ -45,3 +45,36 @@ func TestAppendHtml(t *testing.T) {
 
 	AssertLength(t, doc.Find("strong").Nodes, 14)
 }
+
+func TestRemove(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#nf1").Remove()
+
+	AssertLength(t, doc.Find("#foot #nf1").Nodes, 0)
+}
+
+func TestRemoveAll(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("*").Remove()
+
+	AssertLength(t, doc.Find("*").Nodes, 0)
+}
+
+func TestRemoveRoot(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("html").Remove()
+
+	AssertLength(t, doc.Find("html").Nodes, 0)
+}
+
+func TestRemoveFilter(t *testing.T) {
+	doc := Doc2Clone()
+	nf6 := doc.Find("#nf6")
+	s := doc.Find("div").RemoveFilter("#nf6")
+
+	AssertLength(t, doc.Find("#nf6").Nodes, 0)
+	AssertLength(t, s.Nodes, 1)
+	if nf6.Nodes[0] != s.Nodes[0] {
+		t.Error("Removed node does not match original")
+	}
+}

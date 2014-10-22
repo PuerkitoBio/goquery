@@ -130,3 +130,27 @@ func (s *Selection) Clone() *Selection {
 	ns.Nodes = cloneNodes(s.Nodes)
 	return ns
 }
+
+// Remove the set of matched elements from the document.
+// Returns the same selection, now consisting of nodes not in the document.
+func (s *Selection) Remove() *Selection {
+	for _, n := range s.Nodes {
+		if n.Parent != nil {
+			n.Parent.RemoveChild(n)
+		}
+	}
+
+	return s
+}
+
+// Filter the set of matched elements by selector before removing.
+// Returns the filtered Selection.
+func (s *Selection) RemoveFilter(selector string) *Selection {
+	return s.RemoveFilterSelector(cascadia.MustCompile(selector))
+}
+
+// Filter the set of matched elements by cascadia selector before removing.
+// Returns the filtered Selection.
+func (s *Selection) RemoveFilterSelector(cs cascadia.Selector) *Selection {
+	return s.FilterSelector(cs).Remove()
+}
