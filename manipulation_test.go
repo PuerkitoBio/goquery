@@ -45,6 +45,13 @@ func TestAppendHtml(t *testing.T) {
 
 	AssertLength(t, doc.Find("strong").Nodes, 14)
 }
+func TestEmpty(t *testing.T) {
+	doc := Doc2Clone()
+	s := doc.Find("#main").Empty()
+
+	AssertLength(t, doc.Find("#main").Children().Nodes, 0)
+	AssertLength(t, s.Filter("div").Nodes, 6)
+}
 
 func TestRemove(t *testing.T) {
 	doc := Doc2Clone()

@@ -131,6 +131,21 @@ func (s *Selection) Clone() *Selection {
 	return ns
 }
 
+// Remove all children nodes from the set of matched elements.
+// Returns the children nodes in a new Selection on the current Selection stack.
+func (s *Selection) Empty() *Selection {
+	nodes := make([]*html.Node, 0)
+
+	for _, n := range s.Nodes {
+		for c := n.FirstChild; c != nil; c = n.FirstChild {
+			n.RemoveChild(c)
+			nodes = append(nodes, c)
+		}
+	}
+
+	return pushStack(s, nodes)
+}
+
 // Remove the set of matched elements from the document.
 // Returns the same selection, now consisting of nodes not in the document.
 func (s *Selection) Remove() *Selection {
