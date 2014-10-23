@@ -4,6 +4,40 @@ import (
 	"testing"
 )
 
+func TestAfter(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#main").After("#nf6")
+
+	AssertLength(t, doc.Find("#main #nf6").Nodes, 0)
+	AssertLength(t, doc.Find("#foot #nf6").Nodes, 0)
+	AssertLength(t, doc.Find("#main + #nf6").Nodes, 1)
+}
+
+func TestAfterWithRemoved(t *testing.T) {
+	doc := Doc2Clone()
+	s := doc.Find("#main").Remove()
+	s.After("#nf6")
+
+	AssertLength(t, s.Find("#nf6").Nodes, 0)
+	AssertLength(t, doc.Find("#nf6").Nodes, 0)
+}
+
+func TestAfterSelection(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#main").AfterSelection(doc.Find("#nf1, #nf2"))
+
+	AssertLength(t, doc.Find("#main #nf1, #main #nf2").Nodes, 0)
+	AssertLength(t, doc.Find("#foot #nf1, #foot #nf2").Nodes, 0)
+	AssertLength(t, doc.Find("#main + #nf1, #nf1 + #nf2").Nodes, 2)
+}
+
+func TestAfterHtml(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#main").AfterHtml("<strong>new node</strong>")
+
+	AssertLength(t, doc.Find("#main + strong").Nodes, 1)
+}
+
 func TestAppend(t *testing.T) {
 	doc := Doc2Clone()
 	doc.Find("#main").Append("#nf6")

@@ -79,6 +79,47 @@ func (s *Selection) manipulateNodes(
 	return s
 }
 
+// From the root document, apply the selector, and insert the matched elements
+// after element in the set of matched elements.
+//
+// If one of the matched elements in the selection is not currently in the
+// document, it's impossible to insert nodes after it, so it will be ignored.
+//
+// This follows the same rules as Selection.Append().
+func (s *Selection) After(selector string) *Selection {
+	return s.AfterSelector(cascadia.MustCompile(selector))
+}
+
+// From the root document, apply the cascadia selector, and insert the matched
+// elements after each element in the set of matched elements.
+// This follows the same rules as Selection.After().
+func (s *Selection) AfterSelector(cs cascadia.Selector) *Selection {
+	return s.AfterNodes(cs.MatchAll(s.document.rootNode)...)
+}
+
+// Insert the elements in the selection after each element in the set of matched
+// elements.
+// This follows the same rules as Selection.After().
+func (s *Selection) AfterSelection(sel *Selection) *Selection {
+	return s.AfterNodes(sel.Nodes...)
+}
+
+// Parse the html and insert it after the set of matched elements
+// This follows the same rules as Selection.After().
+func (s *Selection) AfterHtml(html string) *Selection {
+	return s.AfterSelection(parseHtml(html))
+}
+
+// Insert the nodes after each element in the set of matched elements.
+// This follows the same rules as Selection.After().
+func (s *Selection) AfterNodes(ns ...*html.Node) *Selection {
+	return s.manipulateNodes(ns, true, func(sn *html.Node, n *html.Node) {
+		if sn.Parent != nil {
+			sn.Parent.InsertBefore(n, sn.NextSibling)
+		}
+	})
+}
+
 // Append the elements, specified by the selector, to the end of each element
 // in the set of matched elements.
 //
