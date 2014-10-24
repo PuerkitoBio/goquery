@@ -164,6 +164,43 @@ func (s *Selection) AppendNodes(ns ...*html.Node) *Selection {
 	})
 }
 
+// From the root document, apply the selector, and insert the matched elements
+// before each element in the set of matched elements.
+// This follows the same rules as Selection.After().
+func (s *Selection) Before(selector string) *Selection {
+	return s.BeforeSelector(cascadia.MustCompile(selector))
+}
+
+// From the root document, apply the cascadia selector, and insert the matched
+// elements before each element in the set of matched elements.
+// This follows the same rules as Selection.After().
+func (s *Selection) BeforeSelector(cs cascadia.Selector) *Selection {
+	return s.BeforeNodes(cs.MatchAll(s.document.rootNode)...)
+}
+
+// Insert the elements in the selection before each element in the set of matched
+// elements.
+// This follows the same rules as Selection.After().
+func (s *Selection) BeforeSelection(sel *Selection) *Selection {
+	return s.BeforeNodes(sel.Nodes...)
+}
+
+// Parse the html and insert it before the set of matched elements
+// This follows the same rules as Selection.After().
+func (s *Selection) BeforeHtml(html string) *Selection {
+	return s.BeforeSelection(parseHtml(html))
+}
+
+// Insert the nodes before each element in the set of matched elements.
+// This follows the same rules as Selection.After().
+func (s *Selection) BeforeNodes(ns ...*html.Node) *Selection {
+	return s.manipulateNodes(ns, false, func(sn *html.Node, n *html.Node) {
+		if sn.Parent != nil {
+			sn.Parent.InsertBefore(n, sn)
+		}
+	})
+}
+
 // Create a deep copy of the set of matched nodes. The new nodes will not be
 // attached to the document.
 func (s *Selection) Clone() *Selection {

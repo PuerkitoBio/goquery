@@ -79,6 +79,41 @@ func TestAppendHtml(t *testing.T) {
 
 	AssertLength(t, doc.Find("strong").Nodes, 14)
 }
+
+func TestBefore(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#main").Before("#nf6")
+
+	AssertLength(t, doc.Find("#main #nf6").Nodes, 0)
+	AssertLength(t, doc.Find("#foot #nf6").Nodes, 0)
+	AssertLength(t, doc.Find("body > #nf6:first-child").Nodes, 1)
+}
+
+func TestBeforeWithRemoved(t *testing.T) {
+	doc := Doc2Clone()
+	s := doc.Find("#main").Remove()
+	s.Before("#nf6")
+
+	AssertLength(t, s.Find("#nf6").Nodes, 0)
+	AssertLength(t, doc.Find("#nf6").Nodes, 0)
+}
+
+func TestBeforeSelection(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#main").BeforeSelection(doc.Find("#nf1, #nf2"))
+
+	AssertLength(t, doc.Find("#main #nf1, #main #nf2").Nodes, 0)
+	AssertLength(t, doc.Find("#foot #nf1, #foot #nf2").Nodes, 0)
+	AssertLength(t, doc.Find("body > #nf1:first-child, #nf1 + #nf2").Nodes, 2)
+}
+
+func TestBeforeHtml(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#main").BeforeHtml("<strong>new node</strong>")
+
+	AssertLength(t, doc.Find("body > strong:first-child").Nodes, 1)
+}
+
 func TestEmpty(t *testing.T) {
 	doc := Doc2Clone()
 	s := doc.Find("#main").Empty()
