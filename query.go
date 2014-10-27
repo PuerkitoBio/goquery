@@ -1,14 +1,9 @@
 package goquery
 
 import (
-	"regexp"
-	"strings"
-
 	"code.google.com/p/cascadia"
 	"code.google.com/p/go.net/html"
 )
-
-var rxClassTrim = regexp.MustCompile("[\t\r\n]")
 
 // Is checks the current matched set of elements against a selector and
 // returns true if at least one of these elements matches.
@@ -41,24 +36,6 @@ func (s *Selection) IsSelection(sel *Selection) bool {
 // and returns true if at least one of these elements matches.
 func (s *Selection) IsNodes(nodes ...*html.Node) bool {
 	return s.FilterNodes(nodes...).Length() > 0
-}
-
-// HasClass determines whether any of the matched elements are assigned the
-// given class.
-func (s *Selection) HasClass(class string) bool {
-	class = " " + class + " "
-	for _, n := range s.Nodes {
-		// Applies only to element nodes
-		if n.Type == html.ElementNode {
-			if elClass, ok := getAttributeValue("class", n); ok {
-				elClass = rxClassTrim.ReplaceAllString(" "+elClass+" ", " ")
-				if strings.Index(elClass, class) > -1 {
-					return true
-				}
-			}
-		}
-	}
-	return false
 }
 
 // Contains returns true if the specified Node is within,

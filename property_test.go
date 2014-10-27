@@ -83,3 +83,98 @@ func TestNbsp(t *testing.T) {
 		t.Errorf("Html: expected a non-breaking space at index 4, got %d", ix)
 	}
 }
+
+func TestAddClass(t *testing.T) {
+	sel := Doc2Clone().Find("#main")
+	sel.AddClass("main main main")
+
+	// Make sure that class was only added once
+	if a, ok := sel.Attr("class"); !ok || a != "main" {
+		t.Error("Expected #main to have class main")
+	}
+}
+
+func TestAddEmptyClass(t *testing.T) {
+	sel := Doc2Clone().Find("#main")
+	sel.AddClass("")
+
+	// Make sure that class was only added once
+	if a, ok := sel.Attr("class"); ok {
+		t.Errorf("Expected #main to not to have a class, have: %s", a)
+	}
+}
+
+func TestAddClasses(t *testing.T) {
+	sel := Doc2Clone().Find("#main")
+	sel.AddClass("a b")
+
+	// Make sure that class was only added once
+	if !sel.HasClass("a") || !sel.HasClass("b") {
+		t.Errorf("#main does not have classes")
+	}
+}
+
+func TestHasClass(t *testing.T) {
+	sel := Doc().Find("div")
+	if !sel.HasClass("span12") {
+		t.Error("Expected at least one div to have class span12.")
+	}
+}
+
+func TestHasClassNone(t *testing.T) {
+	sel := Doc().Find("h2")
+	if sel.HasClass("toto") {
+		t.Error("Expected h1 to have no class.")
+	}
+}
+
+func TestHasClassNotFirst(t *testing.T) {
+	sel := Doc().Find(".alert")
+	if !sel.HasClass("alert-error") {
+		t.Error("Expected .alert to also have class .alert-error.")
+	}
+}
+
+func TestRemoveClass(t *testing.T) {
+	sel := Doc2Clone().Find("#nf1")
+	sel.RemoveClass("one row")
+
+	if !sel.HasClass("even") || sel.HasClass("one") || sel.HasClass("row") {
+		classes, _ := sel.Attr("class")
+		t.Error("Expected #nf1 to have class even, has ", classes)
+	}
+}
+
+func TestRemoveAllClasses(t *testing.T) {
+	sel := Doc2Clone().Find("#nf1")
+	sel.RemoveClasses()
+
+	if a, ok := sel.Attr("class"); ok {
+		t.Error("All classes were not removed, has ", a)
+	}
+
+	sel = Doc2Clone().Find("#main")
+	sel.RemoveClasses()
+	if a, ok := sel.Attr("class"); ok {
+		t.Error("All classes were not removed, has ", a)
+	}
+}
+
+func TestToggleClass(t *testing.T) {
+	sel := Doc2Clone().Find("#nf1")
+
+	sel.ToggleClass("one")
+	if sel.HasClass("one") {
+		t.Error("Expected #nf1 to not have class one")
+	}
+
+	sel.ToggleClass("one")
+	if !sel.HasClass("one") {
+		t.Error("Expected #nf1 to have class one")
+	}
+
+	sel.ToggleClass("one even row")
+	if a, ok := sel.Attr("class"); ok {
+		t.Error("Expected #nf1 to have no classes, have ", a)
+	}
+}

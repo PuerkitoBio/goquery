@@ -2,9 +2,13 @@ package goquery
 
 import (
 	"bytes"
+	"regexp"
+	"strings"
 
 	"code.google.com/p/go.net/html"
 )
+
+var rxClassTrim = regexp.MustCompile("[\t\r\n]")
 
 // Attr gets the specified attribute's value for the first element in the
 // Selection. To get the value for each element individually, use a looping
@@ -58,6 +62,83 @@ func (s *Selection) Html() (ret string, e error) {
 	return
 }
 
+// Add the given class(es) to each element in the set of matched elements.
+func (s *Selection) AddClass(class string) *Selection {
+	rclasses := getClassesSlice(class)
+
+	for _, n := range s.Nodes {
+		classes, attr := getClassesAndAttr(n, true)
+		for _, rcl := range rclasses {
+			if strings.Index(classes, " "+rcl+" ") == -1 {
+				classes += rcl + " "
+			}
+		}
+
+		setClasses(n, attr, classes)
+	}
+
+	return s
+}
+
+// HasClass determines whether any of the matched elements are assigned the
+// given class.
+func (s *Selection) HasClass(class string) bool {
+	class = " " + class + " "
+	for _, n := range s.Nodes {
+		classes, _ := getClassesAndAttr(n, false)
+		if strings.Index(classes, class) > -1 {
+			return true
+		}
+	}
+	return false
+}
+
+// Remove the given class(es) from each element in the set of matched elements.
+func (s *Selection) RemoveClass(class string) *Selection {
+	rclasses := getClassesSlice(class)
+
+	for _, n := range s.Nodes {
+		classes, attr := getClassesAndAttr(n, true)
+		for _, rcl := range rclasses {
+			classes = strings.Replace(classes, rcl, "", -1)
+		}
+
+		setClasses(n, attr, classes)
+	}
+
+	return s
+}
+
+// Remove all classes from each element in the set of matched elements.
+func (s *Selection) RemoveClasses() *Selection {
+	for _, n := range s.Nodes {
+		_, attr := getClassesAndAttr(n, false)
+		setClasses(n, attr, "")
+	}
+
+	return s
+}
+
+// Add or remove the given class(es) for each element in the set of matched elements.
+func (s *Selection) ToggleClass(class string) *Selection {
+	tcls := getClassesSlice(class)
+
+	for _, n := range s.Nodes {
+		classes, attr := getClassesAndAttr(n, true)
+		for _, tcl := range tcls {
+			if strings.Index(classes, tcl) != -1 {
+				classes = strings.Replace(classes, tcl, "", -1)
+			} else {
+				classes += tcl + " "
+			}
+		}
+
+		setClasses(n, attr, classes)
+	}
+
+	return s
+}
+
 // Get the specified node's text content.
 func getNodeText(node *html.Node) string {
 	if node.Type == html.TextNode {
@@ -74,18 +155,70 @@ func getNodeText(node *html.Node) string {
 	return ""
 }
 
-// Private function to get the specified attribute's value from a node.
-func getAttributeValue(attrName string, n *html.Node) (val string, exists bool) {
+func getAttribute(attrName string, n *html.Node) (attr *html.Attribute, exists bool) {
 	if n == nil {
 		return
 	}
 
-	for _, a := range n.Attr {
+	for i, a := range n.Attr {
 		if a.Key == attrName {
-			val = a.Val
+			attr = &n.Attr[i]
 			exists = true
 			return
 		}
 	}
+
 	return
+}
+
+// Private function to get the specified attribute's value from a node.
+func getAttributeValue(attrName string, n *html.Node) (val string, exists bool) {
+	if a, ok := getAttribute(attrName, n); ok {
+		val = a.Val
+		exists = true
+	}
+	return
+}
+
+// Get and normalize the "class" attribute from the node.
+func getClassesAndAttr(n *html.Node, create bool) (classes string, attr *html.Attribute) {
+	// Applies only to element nodes
+	if n.Type == html.ElementNode {
+		attr, _ = getAttribute("class", n)
+		if attr == nil && create {
+			n.Attr = append(n.Attr, html.Attribute{
+				Key: "class",
+				Val: "",
+			})
+			attr, _ = getAttribute("class", n)
+		}
+	}
+
+	if attr == nil {
+		classes = " "
+	} else {
+		classes = rxClassTrim.ReplaceAllString(" "+attr.Val+" ", " ")
+	}
+
+	return
+}
+
+func getClassesSlice(classes string) []string {
+	return strings.Split(rxClassTrim.ReplaceAllString(" "+classes+" ", " "), " ")
+}
+
+func setClasses(n *html.Node, attr *html.Attribute, classes string) {
+	classes = strings.TrimSpace(classes)
+
+	if classes == "" {
+		for i, a := range n.Attr {
+			if a.Key == "class" {
+				n.Attr[i], n.Attr[len(n.Attr)-1], n.Attr =
+					n.Attr[len(n.Attr)-1], html.Attribute{}, n.Attr[:len(n.Attr)-1]
+				return
+			}
+		}
+	} else {
+		attr.Val = classes
+	}
 }

@@ -72,27 +72,6 @@ func TestIsNodes(t *testing.T) {
 	}
 }
 
-func TestHasClass(t *testing.T) {
-	sel := Doc().Find("div")
-	if !sel.HasClass("span12") {
-		t.Error("Expected at least one div to have class span12.")
-	}
-}
-
-func TestHasClassNone(t *testing.T) {
-	sel := Doc().Find("h2")
-	if sel.HasClass("toto") {
-		t.Error("Expected h1 to have no class.")
-	}
-}
-
-func TestHasClassNotFirst(t *testing.T) {
-	sel := Doc().Find(".alert")
-	if !sel.HasClass("alert-error") {
-		t.Error("Expected .alert to also have class .alert-error.")
-	}
-}
-
 func TestDocContains(t *testing.T) {
 	sel := Doc().Find("h1")
 	if !Doc().Contains(sel.Nodes[0]) {
