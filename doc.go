@@ -77,8 +77,17 @@ The various methods are split into files based on the category of behavior:
     - EachWithBreak()
     - Map()
 
+* manipulation.go : methods for modifying the document
+    - After...()
+    - Append...()
+    - Before...()
+    - Clone()
+    - Empty
+    - Remove...()
+
 * property.go : methods that inspect and get the node's properties values.
-    - Attr()
+    - Attr(), RemoveAttr(), SetAttr()
+    - AddClass(), HasClass(), RemoveClass(), RemoveClasses(), ToggleClass()
     - Html()
     - Length()
     - Size(), which is an alias for Length()
@@ -86,7 +95,6 @@ The various methods are split into files based on the category of behavior:
 
 * query.go : methods that query, or reflect, a node's identity.
     - Contains()
-    - HasClass()
     - Is...()
 
 * traversal.go : methods to traverse the HTML document tree.
