@@ -20,6 +20,26 @@ func (s *Selection) Attr(attrName string) (val string, exists bool) {
 	return getAttributeValue(attrName, s.Nodes[0])
 }
 
+// Remove the named attribute from each element in the set of matched elements.
+func (s *Selection) RemoveAttr(attrName string) *Selection {
+	for _, n := range s.Nodes {
+		removeAttr(n, attrName)
+	}
+
+	return s
+}
+
+// Set the given attribute on each element in the set of matched elements.
+func (s *Selection) SetAttr(attrName string, val string) *Selection {
+	for _, n := range s.Nodes {
+		if attr, ok := getAttribute(attrName, n); ok {
+			attr.Val = val
+		}
+	}
+
+	return s
+}
+
 // Text gets the combined text contents of each element in the set of matched
 // elements, including their descendants.
 func (s *Selection) Text() string {
@@ -207,17 +227,21 @@ func getClassesSlice(classes string) []string {
 	return strings.Split(rxClassTrim.ReplaceAllString(" "+classes+" ", " "), " ")
 }
 
+func removeAttr(n *html.Node, attrName string) {
+	for i, a := range n.Attr {
+		if a.Key == attrName {
+			n.Attr[i], n.Attr[len(n.Attr)-1], n.Attr =
+				n.Attr[len(n.Attr)-1], html.Attribute{}, n.Attr[:len(n.Attr)-1]
+			return
+		}
+	}
+}
+
 func setClasses(n *html.Node, attr *html.Attribute, classes string) {
 	classes = strings.TrimSpace(classes)
 
 	if classes == "" {
-		for i, a := range n.Attr {
-			if a.Key == "class" {
-				n.Attr[i], n.Attr[len(n.Attr)-1], n.Attr =
-					n.Attr[len(n.Attr)-1], html.Attribute{}, n.Attr[:len(n.Attr)-1]
-				return
-			}
-		}
+		removeAttr(n, "class")
 	} else {
 		attr.Val = classes
 	}

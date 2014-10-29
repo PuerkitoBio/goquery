@@ -20,6 +20,32 @@ func TestAttrNotExist(t *testing.T) {
 	}
 }
 
+func TestRemoveAttr(t *testing.T) {
+	sel := Doc2Clone().Find("div")
+
+	sel.RemoveAttr("id")
+
+	_, ok := sel.Attr("id")
+	if ok {
+		t.Error("Expected there to be no id attributes set")
+	}
+}
+
+func TestSetAttr(t *testing.T) {
+	sel := Doc2Clone().Find("#main")
+
+	sel.SetAttr("id", "not-main")
+
+	val, ok := sel.Attr("id")
+	if !ok {
+		t.Error("Expected an id attribute on main")
+	}
+
+	if val != "not-main" {
+		t.Errorf("Expected an attribute id to be not-main, got %s", val)
+	}
+}
+
 func TestText(t *testing.T) {
 	txt := Doc().Find("h1").Text()
 	if strings.Trim(txt, " \n\r\t") != "Provok.in" {
