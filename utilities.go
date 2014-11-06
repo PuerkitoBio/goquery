@@ -1,7 +1,7 @@
 package goquery
 
 import (
-	"code.google.com/p/go.net/html"
+	"golang.org/x/net/html"
 )
 
 func getChildren(n *html.Node) (result []*html.Node) {
