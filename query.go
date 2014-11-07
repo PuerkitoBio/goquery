@@ -2,7 +2,7 @@ package goquery
 
 import (
 	"code.google.com/p/cascadia"
-	"code.google.com/p/go.net/html"
+	"golang.org/x/net/html"
 )
 
 // Is checks the current matched set of elements against a selector and
