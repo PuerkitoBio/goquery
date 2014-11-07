@@ -76,6 +76,17 @@ func (s *Selection) IndexSelector(selector string) int {
 	return -1
 }
 
+// IndexMatcher returns the position of the first element within the
+// Selection object relative to the elements matched by the matcher, or -1 if
+// not found.
+func (s *Selection) IndexMatcher(m Matcher) int {
+	if len(s.Nodes) > 0 {
+		sel := s.document.FindMatcher(m)
+		return indexInSlice(sel.Nodes, s.Nodes[0])
+	}
+	return -1
+}
+
 // IndexOfNode returns the position of the specified node within the Selection
 // object, or -1 if not found.
 func (s *Selection) IndexOfNode(node *html.Node) int {

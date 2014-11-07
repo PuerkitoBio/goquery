@@ -12,6 +12,14 @@ func (s *Selection) Add(selector string) *Selection {
 	return s.AddNodes(findWithSelector([]*html.Node{s.document.rootNode}, selector)...)
 }
 
+// AddMatcher adds the matcher's matching nodes to those in the current
+// selection and returns a new Selection object.
+// The matcher is run in the context of the document of the current
+// Selection object.
+func (s *Selection) AddMatcher(m Matcher) *Selection {
+	return s.AddNodes(findWithMatcher([]*html.Node{s.document.rootNode}, m)...)
+}
+
 // AddSelection adds the specified Selection object's nodes to those in the
 // current selection and returns a new Selection object.
 func (s *Selection) AddSelection(sel *Selection) *Selection {

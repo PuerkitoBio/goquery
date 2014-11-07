@@ -27,6 +27,13 @@ func (s *Selection) Find(selector string) *Selection {
 	return pushStack(s, findWithSelector(s.Nodes, selector))
 }
 
+// FindMatcher gets the descendants of each element in the current set of matched
+// elements, filtered by the matcher. It returns a new Selection object
+// containing these matched elements.
+func (s *Selection) FindMatcher(m Matcher) *Selection {
+	return pushStack(s, findWithMatcher(s.Nodes, m))
+}
+
 // FindSelection gets the descendants of each element in the current
 // Selection, filtered by a Selection. It returns a new Selection object
 // containing these matched elements.
@@ -68,6 +75,14 @@ func (s *Selection) ContentsFiltered(selector string) *Selection {
 	return s.Contents()
 }
 
+// ContentsMatcher gets the children of each element in the Selection,
+// filtered by the specified matcher. It returns a new Selection
+// object containing these elements. Since matchers only act on Element nodes,
+// this function is an alias to ChildrenMatcher.
+func (s *Selection) ContentsMatcher(m Matcher) *Selection {
+	return s.ChildrenMatcher(m)
+}
+
 // Children gets the child elements of each element in the Selection.
 // It returns a new Selection object containing these elements.
 func (s *Selection) Children() *Selection {
@@ -79,6 +94,13 @@ func (s *Selection) Children() *Selection {
 // Selection object containing these elements.
 func (s *Selection) ChildrenFiltered(selector string) *Selection {
 	return filterAndPush(s, getChildrenNodes(s.Nodes, siblingAll), selector)
+}
+
+// ChildrenMatcher gets the child elements of each element in the Selection,
+// filtered by the specified matcher. It returns a new
+// Selection object containing these elements.
+func (s *Selection) ChildrenMatcher(m Matcher) *Selection {
+	return filterAndPushMatcher(s, getChildrenNodes(s.Nodes, siblingAll), m)
 }
 
 // Parent gets the parent of each element in the Selection. It returns a
@@ -93,16 +115,27 @@ func (s *Selection) ParentFiltered(selector string) *Selection {
 	return filterAndPush(s, getParentNodes(s.Nodes), selector)
 }
 
+// ParentMatcher gets the parent of each element in the Selection filtered by a
+// matcher. It returns a new Selection object containing the matched elements.
+func (s *Selection) ParentMatcher(m Matcher) *Selection {
+	return filterAndPushMatcher(s, getParentNodes(s.Nodes), m)
+}
+
 // Closest gets the first element that matches the selector by testing the
 // element itself and traversing up through its ancestors in the DOM tree.
 func (s *Selection) Closest(selector string) *Selection {
 	cs := cascadia.MustCompile(selector)
+	return s.ClosestMatcher(cs)
+}
 
+// ClosestMatcher gets the first element that matches the matcher by testing the
+// element itself and traversing up through its ancestors in the DOM tree.
+func (s *Selection) ClosestMatcher(m Matcher) *Selection {
 	return pushStack(s, mapNodes(s.Nodes, func(i int, n *html.Node) []*html.Node {
 		// For each node in the selection, test the node itself, then each parent
 		// until a match is found.
 		for ; n != nil; n = n.Parent {
-			if cs.Match(n) {
+			if m.Match(n) {
 				return []*html.Node{n}
 			}
 		}
@@ -147,11 +180,24 @@ func (s *Selection) ParentsFiltered(selector string) *Selection {
 	return filterAndPush(s, getParentsNodes(s.Nodes, "", nil), selector)
 }
 
+// ParentsMatcher gets the ancestors of each element in the current
+// Selection. It returns a new Selection object with the matched elements.
+func (s *Selection) ParentsMatcher(m Matcher) *Selection {
+	return filterAndPushMatcher(s, getParentsNodes(s.Nodes, "", nil), m)
+}
+
 // ParentsUntil gets the ancestors of each element in the Selection, up to but
 // not including the element matched by the selector. It returns a new Selection
 // object containing the matched elements.
 func (s *Selection) ParentsUntil(selector string) *Selection {
 	return pushStack(s, getParentsNodes(s.Nodes, selector, nil))
+}
+
+// ParentsUntilMatcher gets the ancestors of each element in the Selection, up to but
+// not including the element matched by the matcher. It returns a new Selection
+// object containing the matched elements.
+func (s *Selection) ParentsUntilMatcher(m Matcher) *Selection {
+	return pushStackMatcher(s, getParentsNodes(s.Nodes, m, nil))
 }
 
 // ParentsUntilSelection gets the ancestors of each element in the Selection,

@@ -20,7 +20,7 @@ func (s *Selection) Attr(attrName string) (val string, exists bool) {
 	return getAttributeValue(attrName, s.Nodes[0])
 }
 
-// Remove the named attribute from each element in the set of matched elements.
+// RemoveAttr removes the named attribute from each element in the set of matched elements.
 func (s *Selection) RemoveAttr(attrName string) *Selection {
 	for _, n := range s.Nodes {
 		removeAttr(n, attrName)
@@ -29,7 +29,7 @@ func (s *Selection) RemoveAttr(attrName string) *Selection {
 	return s
 }
 
-// Set the given attribute on each element in the set of matched elements.
+// SetAttr sets the given attribute on each element in the set of matched elements.
 func (s *Selection) SetAttr(attrName string, val string) *Selection {
 	for _, n := range s.Nodes {
 		if attr, ok := getAttribute(attrName, n); ok {
@@ -82,7 +82,7 @@ func (s *Selection) Html() (ret string, e error) {
 	return
 }
 
-// Add the given class(es) to each element in the set of matched elements.
+// AddClass adds the given class(es) to each element in the set of matched elements.
 func (s *Selection) AddClass(class string) *Selection {
 	rclasses := getClassesSlice(class)
 
@@ -113,7 +113,7 @@ func (s *Selection) HasClass(class string) bool {
 	return false
 }
 
-// Remove the given class(es) from each element in the set of matched elements.
+// RemoveClass removes the given class(es) from each element in the set of matched elements.
 func (s *Selection) RemoveClass(class string) *Selection {
 	rclasses := getClassesSlice(class)
 
@@ -139,7 +139,7 @@ func (s *Selection) RemoveClasses() *Selection {
 	return s
 }
 
-// Add or remove the given class(es) for each element in the set of matched elements.
+// ToggleClass adds or removes the given class(es) for each element in the set of matched elements.
 func (s *Selection) ToggleClass(class string) *Selection {
 	tcls := getClassesSlice(class)
 

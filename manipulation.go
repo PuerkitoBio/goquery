@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"code.google.com/p/cascadia"
-	"code.google.com/p/go.net/html"
+	"golang.org/x/net/html"
 )
 
 func parseHtml(html string) *Selection {
@@ -79,39 +79,43 @@ func (s *Selection) manipulateNodes(
 	return s
 }
 
-// From the root document, apply the selector, and insert the matched elements
-// after element in the set of matched elements.
+// After applies the selector from the root document and inserts the matched elements
+// after the elements in the set of matched elements.
 //
 // If one of the matched elements in the selection is not currently in the
 // document, it's impossible to insert nodes after it, so it will be ignored.
 //
-// This follows the same rules as Selection.Append().
+// This follows the same rules as Selection.Append.
 func (s *Selection) After(selector string) *Selection {
-	return s.AfterSelector(cascadia.MustCompile(selector))
+	return s.AfterMatcher(cascadia.MustCompile(selector))
 }
 
-// From the root document, apply the cascadia selector, and insert the matched
-// elements after each element in the set of matched elements.
-// This follows the same rules as Selection.After().
-func (s *Selection) AfterSelector(cs cascadia.Selector) *Selection {
-	return s.AfterNodes(cs.MatchAll(s.document.rootNode)...)
+// AfterMatcher applies the matcher from the root document and inserts the matched elements
+// after the elements in the set of matched elements.
+//
+// If one of the matched elements in the selection is not currently in the
+// document, it's impossible to insert nodes after it, so it will be ignored.
+//
+// This follows the same rules as Selection.Append.
+func (s *Selection) AfterMatcher(m Matcher) *Selection {
+	return s.AfterNodes(m.MatchAll(s.document.rootNode)...)
 }
 
-// Insert the elements in the selection after each element in the set of matched
+// AfterSelection inserts the elements in the selection after each element in the set of matched
 // elements.
-// This follows the same rules as Selection.After().
+// This follows the same rules as Selection.After.
 func (s *Selection) AfterSelection(sel *Selection) *Selection {
 	return s.AfterNodes(sel.Nodes...)
 }
 
-// Parse the html and insert it after the set of matched elements
-// This follows the same rules as Selection.After().
+// AfterHtml parses the html and inserts it after the set of matched elements
+// This follows the same rules as Selection.After.
 func (s *Selection) AfterHtml(html string) *Selection {
 	return s.AfterSelection(parseHtml(html))
 }
 
-// Insert the nodes after each element in the set of matched elements.
-// This follows the same rules as Selection.After().
+// AfterNodes inserts the nodes after each element in the set of matched elements.
+// This follows the same rules as Selection.After.
 func (s *Selection) AfterNodes(ns ...*html.Node) *Selection {
 	return s.manipulateNodes(ns, true, func(sn *html.Node, n *html.Node) {
 		if sn.Parent != nil {
@@ -134,65 +138,65 @@ func (s *Selection) AfterNodes(ns ...*html.Node) *Selection {
 // appended to all target locations except the last, which will be moved
 // as noted in (1).
 func (s *Selection) Append(selector string) *Selection {
-	return s.AppendSelector(cascadia.MustCompile(selector))
+	return s.AppendMatcher(cascadia.MustCompile(selector))
 }
 
-// From the root document, apply the cascadia selector, and append those nodes
+// AppendMatcher applies the matcher from the root document, and append those nodes
 // to the set of matched elements.
-// This follows the same rules as Selection.Append().
-func (s *Selection) AppendSelector(cs cascadia.Selector) *Selection {
-	return s.AppendNodes(cs.MatchAll(s.document.rootNode)...)
+// This follows the same rules as Selection.Append.
+func (s *Selection) AppendMatcher(m Matcher) *Selection {
+	return s.AppendNodes(m.MatchAll(s.document.rootNode)...)
 }
 
-// Append the elements in the selection to the end of each element in the
+// AppendSelection appends the elements in the selection to the end of each element in the
 // set of matched elements.
-// This follows the same rules as Selection.Append().
+// This follows the same rules as Selection.Append.
 func (s *Selection) AppendSelection(sel *Selection) *Selection {
 	return s.AppendNodes(sel.Nodes...)
 }
 
-// Parse the html and append it to the set of matched elements
+// AppendHtml parses the html and appends it to the set of matched elements.
 func (s *Selection) AppendHtml(html string) *Selection {
 	return s.AppendSelection(parseHtml(html))
 }
 
-// Append the specified nodes to each node in the set of matched elements.
-// This follows the same rules as Selection.Append().
+// AppendNodes appends the specified nodes to each node in the set of matched elements.
+// This follows the same rules as Selection.Append.
 func (s *Selection) AppendNodes(ns ...*html.Node) *Selection {
 	return s.manipulateNodes(ns, false, func(sn *html.Node, n *html.Node) {
 		sn.AppendChild(n)
 	})
 }
 
-// From the root document, apply the selector, and insert the matched elements
+// Before applies the selector from the root document, and inserts the matched elements
 // before each element in the set of matched elements.
-// This follows the same rules as Selection.After().
+// This follows the same rules as Selection.After.
 func (s *Selection) Before(selector string) *Selection {
-	return s.BeforeSelector(cascadia.MustCompile(selector))
+	return s.BeforeMatcher(cascadia.MustCompile(selector))
 }
 
-// From the root document, apply the cascadia selector, and insert the matched
+// BeforeSelector applies the matcher from the root document, and inserts the matched
 // elements before each element in the set of matched elements.
-// This follows the same rules as Selection.After().
-func (s *Selection) BeforeSelector(cs cascadia.Selector) *Selection {
-	return s.BeforeNodes(cs.MatchAll(s.document.rootNode)...)
+// This follows the same rules as Selection.After.
+func (s *Selection) BeforeMatcher(m Matcher) *Selection {
+	return s.BeforeNodes(m.MatchAll(s.document.rootNode)...)
 }
 
-// Insert the elements in the selection before each element in the set of matched
+// BeforeSelection inserts the elements in the selection before each element in the set of matched
 // elements.
-// This follows the same rules as Selection.After().
+// This follows the same rules as Selection.After.
 func (s *Selection) BeforeSelection(sel *Selection) *Selection {
 	return s.BeforeNodes(sel.Nodes...)
 }
 
-// Parse the html and insert it before the set of matched elements
-// This follows the same rules as Selection.After().
+// BeforeHtml parses the html and inserts it before the set of matched elements.
+// This follows the same rules as Selection.After.
 func (s *Selection) BeforeHtml(html string) *Selection {
 	return s.BeforeSelection(parseHtml(html))
 }
 
-// Insert the nodes before each element in the set of matched elements.
-// This follows the same rules as Selection.After().
+// BeforeNodes inserts the nodes before each element in the set of matched elements.
+// This follows the same rules as Selection.After.
 func (s *Selection) BeforeNodes(ns ...*html.Node) *Selection {
 	return s.manipulateNodes(ns, false, func(sn *html.Node, n *html.Node) {
 		if sn.Parent != nil {
@@ -201,7 +205,7 @@ func (s *Selection) BeforeNodes(ns ...*html.Node) *Selection {
 	})
 }
 
-// Create a deep copy of the set of matched nodes. The new nodes will not be
+// Clone creates a deep copy of the set of matched nodes. The new nodes will not be
 // attached to the document.
 func (s *Selection) Clone() *Selection {
 	ns := newEmptySelection(s.document)
@@ -209,7 +213,7 @@ func (s *Selection) Clone() *Selection {
 	return ns
 }
 
-// Remove all children nodes from the set of matched elements.
+// Empty removes all children nodes from the set of matched elements.
 // Returns the children nodes in a new Selection on the current Selection stack.
 func (s *Selection) Empty() *Selection {
 	nodes := make([]*html.Node, 0)
@@ -224,7 +228,7 @@ func (s *Selection) Empty() *Selection {
 	return pushStack(s, nodes)
 }
 
-// Remove the set of matched elements from the document.
+// Remove removes the set of matched elements from the document.
 // Returns the same selection, now consisting of nodes not in the document.
 func (s *Selection) Remove() *Selection {
 	for _, n := range s.Nodes {
@@ -236,14 +240,14 @@ func (s *Selection) Remove() *Selection {
 	return s
 }
 
-// Filter the set of matched elements by selector before removing.
-// Returns the filtered Selection.
+// RemoveFilter removes the set of matched elements by selector.
+// Returns the Selection of removed nodes.
 func (s *Selection) RemoveFilter(selector string) *Selection {
-	return s.RemoveFilterSelector(cascadia.MustCompile(selector))
+	return s.RemoveMatcher(cascadia.MustCompile(selector))
 }
 
-// Filter the set of matched elements by cascadia selector before removing.
-// Returns the filtered Selection.
-func (s *Selection) RemoveFilterSelector(cs cascadia.Selector) *Selection {
-	return s.FilterSelector(cs).Remove()
+// RemoveMatcher removes the set of matched elements.
+// Returns the Selection of removed nodes.
+func (s *Selection) RemoveMatcher(m Matcher) *Selection {
+	return s.FilterMatcher(m).Remove()
 }

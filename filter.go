@@ -8,12 +8,14 @@ import (
 // Filter reduces the set of matched elements to those that match the selector string.
 // It returns a new Selection object for this subset of matching elements.
 func (s *Selection) Filter(selector string) *Selection {
-	return s.FilterSelector(cascadia.MustCompile(selector))
+	return s.FilterMatcher(cascadia.MustCompile(selector))
 }
 
-// Filter the set of matched elements by the given cascadia selector.
-func (s *Selection) FilterSelector(cs cascadia.Selector) *Selection {
-	return pushStack(s, winnow(s, cs, true))
+// FilterMatcher reduces the set of matched elements to those that match
+// the given matcher.
+// It returns a new Selection object for this subset of matching elements.
+func (s *Selection) FilterMatcher(m Matcher) *Selection {
+	return pushStack(s, winnow(s, m, true))
 }
 
 // Not removes elements from the Selection that match the selector string.
@@ -22,11 +24,10 @@ func (s *Selection) Not(selector string) *Selection {
 	return s.NotSelector(cascadia.MustCompile(selector))
 }
 
-// Not removes elements from the Selection that match the given cascadia
-// selector.
+// NotMatcher removes elements from the Selection that match the given matcher.
 // It returns a new Selection object with the matching elements removed.
-func (s *Selection) NotSelector(cs cascadia.Selector) *Selection {
-	return pushStack(s, winnow(s, cs, false))
+func (s *Selection) NotMatcher(m Matcher) *Selection {
+	return pushStack(s, winnow(s, m, false))
 }
 
 // FilterFunction reduces the set of matched elements to those that pass the function's test.
@@ -84,6 +85,13 @@ func (s *Selection) Has(selector string) *Selection {
 	return s.HasSelection(s.document.Find(selector))
 }
 
+// HasMatcher reduces the set of matched elements to those that have a descendant
+// that matches the matcher.
+// It returns a new Selection object with the matching elements.
+func (s *Selection) HasMatcher(m Matcher) *Selection {
+	return s.HasSelection(s.document.FindMatcher(m))
+}
+
 // HasNodes reduces the set of matched elements to those that have a
 // descendant that matches one of the nodes.
 // It returns a new Selection object with the matching elements.
@@ -118,16 +126,16 @@ func (s *Selection) End() *Selection {
 	return newEmptySelection(s.document)
 }
 
-// Filter based on the cascadia selector, and the indicator to keep (Filter) or
+// Filter based on the matcher, and the indicator to keep (Filter) or
 // to get rid of (Not) the matching elements.
-func winnow(sel *Selection, cs cascadia.Selector, keep bool) []*html.Node {
+func winnow(sel *Selection, m Matcher, keep bool) []*html.Node {
 	// Optimize if keep is requested
 	if keep {
-		return cs.Filter(sel.Nodes)
+		return m.Filter(sel.Nodes)
 	}
 	// Use grep
 	return grep(sel, func(i int, s *Selection) bool {
-		return !cs.Match(s.Get(0))
+		return !m.Match(s.Get(0))
 	})
 }
 

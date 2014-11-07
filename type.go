@@ -102,3 +102,12 @@ func newEmptySelection(doc *Document) *Selection {
 func newSingleSelection(node *html.Node, doc *Document) *Selection {
 	return &Selection{[]*html.Node{node}, doc, nil}
 }
+
+// Matcher is an interface that defines the methods to match
+// HTML nodes against a compiled selector string. Cascadia's
+// Selector implements this interface.
+type Matcher interface {
+	Match(*html.Node) bool
+	MatchAll(*html.Node) []*html.Node
+	Filter([]*html.Node) []*html.Node
+}
