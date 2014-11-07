@@ -21,7 +21,7 @@ func (s *Selection) FilterMatcher(m Matcher) *Selection {
 // Not removes elements from the Selection that match the selector string.
 // It returns a new Selection object with the matching elements removed.
 func (s *Selection) Not(selector string) *Selection {
-	return s.NotSelector(cascadia.MustCompile(selector))
+	return s.NotMatcher(cascadia.MustCompile(selector))
 }
 
 // NotMatcher removes elements from the Selection that match the given matcher.
