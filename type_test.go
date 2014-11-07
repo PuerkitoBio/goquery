@@ -22,7 +22,7 @@ func Doc() *Document {
 	return doc
 }
 func DocClone() *Document {
-	return NewDocumentFromDocument(Doc())
+	return CloneDocument(Doc())
 }
 func Doc2() *Document {
 	if doc2 == nil {
@@ -31,7 +31,7 @@ func Doc2() *Document {
 	return doc2
 }
 func Doc2Clone() *Document {
-	return NewDocumentFromDocument(Doc2())
+	return CloneDocument(Doc2())
 }
 func DocB() *Document {
 	if docB == nil {
@@ -40,7 +40,7 @@ func DocB() *Document {
 	return docB
 }
 func DocBClone() *Document {
-	return NewDocumentFromDocument(DocB())
+	return CloneDocument(DocB())
 }
 func DocW() *Document {
 	if docW == nil {
@@ -49,7 +49,7 @@ func DocW() *Document {
 	return docW
 }
 func DocWClone() *Document {
-	return NewDocumentFromDocument(DocW())
+	return CloneDocument(DocW())
 }
 
 func assertLength(t *testing.T, nodes []*html.Node, length int) {
