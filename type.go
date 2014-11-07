@@ -71,8 +71,8 @@ func NewDocumentFromResponse(res *http.Response) (*Document, error) {
 	return newDocument(root, res.Request.URL), nil
 }
 
-// Create a deep-clone of a document
-func NewDocumentFromDocument(doc *Document) *Document {
+// CloneDocument creates a deep-clone of a document.
+func CloneDocument(doc *Document) *Document {
 	return newDocument(cloneNode(doc.rootNode), doc.Url)
 }
 
