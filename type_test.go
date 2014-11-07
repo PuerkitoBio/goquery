@@ -17,7 +17,7 @@ var docW *Document
 
 func Doc() *Document {
 	if doc == nil {
-		doc = LoadDoc("page.html")
+		doc = loadDoc("page.html")
 	}
 	return doc
 }
@@ -26,7 +26,7 @@ func DocClone() *Document {
 }
 func Doc2() *Document {
 	if doc2 == nil {
-		doc2 = LoadDoc("page2.html")
+		doc2 = loadDoc("page2.html")
 	}
 	return doc2
 }
@@ -35,7 +35,7 @@ func Doc2Clone() *Document {
 }
 func DocB() *Document {
 	if docB == nil {
-		docB = LoadDoc("gotesting.html")
+		docB = loadDoc("gotesting.html")
 	}
 	return docB
 }
@@ -44,7 +44,7 @@ func DocBClone() *Document {
 }
 func DocW() *Document {
 	if docW == nil {
-		docW = LoadDoc("gowiki.html")
+		docW = loadDoc("gowiki.html")
 	}
 	return docW
 }
@@ -52,7 +52,7 @@ func DocWClone() *Document {
 	return NewDocumentFromDocument(DocW())
 }
 
-func AssertLength(t *testing.T, nodes []*html.Node, length int) {
+func assertLength(t *testing.T, nodes []*html.Node, length int) {
 	if len(nodes) != length {
 		t.Errorf("Expected %d nodes, found %d.", length, len(nodes))
 		for i, n := range nodes {
@@ -61,25 +61,25 @@ func AssertLength(t *testing.T, nodes []*html.Node, length int) {
 	}
 }
 
-func AssertClass(t *testing.T, sel *Selection, class string) {
+func assertClass(t *testing.T, sel *Selection, class string) {
 	if !sel.HasClass(class) {
 		t.Errorf("Expected node to have class %s, found %+v.", class, sel.Get(0))
 	}
 }
 
-func AssertPanic(t *testing.T) {
+func assertPanic(t *testing.T) {
 	if e := recover(); e == nil {
 		t.Error("Expected a panic.")
 	}
 }
 
-func AssertEqual(t *testing.T, s1 *Selection, s2 *Selection) {
+func assertEqual(t *testing.T, s1 *Selection, s2 *Selection) {
 	if s1 != s2 {
 		t.Error("Expected selection objects to be the same.")
 	}
 }
 
-func AssertSelectionIs(t *testing.T, sel *Selection, is ...string) {
+func assertSelectionIs(t *testing.T, sel *Selection, is ...string) {
 	for i := 0; i < sel.Length(); i++ {
 		if !sel.Eq(i).Is(is[i]) {
 			t.Errorf("Expected node %d to be %s, found %+v", i, is[i], sel.Get(i))
@@ -87,7 +87,17 @@ func AssertSelectionIs(t *testing.T, sel *Selection, is ...string) {
 	}
 }
 
-func LoadDoc(page string) *Document {
+func printSel(t *testing.T, sel *Selection) {
+	if testing.Verbose() {
+		h, err := sel.Html()
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Log(h)
+	}
+}
+
+func loadDoc(page string) *Document {
 	var f *os.File
 	var e error
 

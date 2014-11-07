@@ -175,7 +175,7 @@ func (s *Selection) Before(selector string) *Selection {
 	return s.BeforeMatcher(cascadia.MustCompile(selector))
 }
 
-// BeforeSelector applies the matcher from the root document, and inserts the matched
+// BeforeMatcher applies the matcher from the root document, and inserts the matched
 // elements before each element in the set of matched elements.
 // This follows the same rules as Selection.After.
 func (s *Selection) BeforeMatcher(m Matcher) *Selection {
@@ -214,7 +214,7 @@ func (s *Selection) Clone() *Selection {
 }
 
 // Empty removes all children nodes from the set of matched elements.
-// Returns the children nodes in a new Selection on the current Selection stack.
+// Returns the children nodes in a new Selection.
 func (s *Selection) Empty() *Selection {
 	nodes := make([]*html.Node, 0)
 
@@ -240,9 +240,9 @@ func (s *Selection) Remove() *Selection {
 	return s
 }
 
-// RemoveFilter removes the set of matched elements by selector.
+// RemoveFiltered removes the set of matched elements by selector.
 // Returns the Selection of removed nodes.
-func (s *Selection) RemoveFilter(selector string) *Selection {
+func (s *Selection) RemoveFiltered(selector string) *Selection {
 	return s.RemoveMatcher(cascadia.MustCompile(selector))
 }
 

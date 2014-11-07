@@ -12,7 +12,7 @@ func BenchmarkMetalReviewExample(b *testing.B) {
 	var buf bytes.Buffer
 
 	b.StopTimer()
-	doc := LoadDoc("metalreview.html")
+	doc := loadDoc("metalreview.html")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		doc.Find(".slider-row:nth-child(1) .slider-item").Each(func(i int, s *Selection) {

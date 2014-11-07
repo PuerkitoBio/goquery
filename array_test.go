@@ -6,23 +6,23 @@ import (
 
 func TestFirst(t *testing.T) {
 	sel := Doc().Find(".pvk-content").First()
-	AssertLength(t, sel.Nodes, 1)
+	assertLength(t, sel.Nodes, 1)
 }
 
 func TestFirstEmpty(t *testing.T) {
 	sel := Doc().Find(".pvk-zzcontentzz").First()
-	AssertLength(t, sel.Nodes, 0)
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestFirstRollback(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	sel2 := sel.First().End()
-	AssertEqual(t, sel, sel2)
+	assertEqual(t, sel, sel2)
 }
 
 func TestLast(t *testing.T) {
 	sel := Doc().Find(".pvk-content").Last()
-	AssertLength(t, sel.Nodes, 1)
+	assertLength(t, sel.Nodes, 1)
 
 	// Should contain Footer
 	foot := Doc().Find(".footer")
@@ -33,23 +33,23 @@ func TestLast(t *testing.T) {
 
 func TestLastEmpty(t *testing.T) {
 	sel := Doc().Find(".pvk-zzcontentzz").Last()
-	AssertLength(t, sel.Nodes, 0)
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestLastRollback(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	sel2 := sel.Last().End()
-	AssertEqual(t, sel, sel2)
+	assertEqual(t, sel, sel2)
 }
 
 func TestEq(t *testing.T) {
 	sel := Doc().Find(".pvk-content").Eq(1)
-	AssertLength(t, sel.Nodes, 1)
+	assertLength(t, sel.Nodes, 1)
 }
 
 func TestEqNegative(t *testing.T) {
 	sel := Doc().Find(".pvk-content").Eq(-1)
-	AssertLength(t, sel.Nodes, 1)
+	assertLength(t, sel.Nodes, 1)
 
 	// Should contain Footer
 	foot := Doc().Find(".footer")
@@ -60,65 +60,65 @@ func TestEqNegative(t *testing.T) {
 
 func TestEqEmpty(t *testing.T) {
 	sel := Doc().Find("something_random_that_does_not_exists").Eq(0)
-	AssertLength(t, sel.Nodes, 0)
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestEqInvalidPositive(t *testing.T) {
 	sel := Doc().Find(".pvk-content").Eq(3)
-	AssertLength(t, sel.Nodes, 0)
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestEqInvalidNegative(t *testing.T) {
 	sel := Doc().Find(".pvk-content").Eq(-4)
-	AssertLength(t, sel.Nodes, 0)
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestEqRollback(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	sel2 := sel.Eq(1).End()
-	AssertEqual(t, sel, sel2)
+	assertEqual(t, sel, sel2)
 }
 
 func TestSlice(t *testing.T) {
 	sel := Doc().Find(".pvk-content").Slice(0, 2)
 
-	AssertLength(t, sel.Nodes, 2)
+	assertLength(t, sel.Nodes, 2)
 }
 
 func TestSliceOutOfBounds(t *testing.T) {
-	defer AssertPanic(t)
+	defer assertPanic(t)
 	Doc().Find(".pvk-content").Slice(2, 12)
 }
 
 func TestNegativeSliceStart(t *testing.T) {
 	sel := Doc().Find(".container-fluid").Slice(-2, 3)
-	AssertLength(t, sel.Nodes, 1)
-	AssertSelectionIs(t, sel.Eq(0), "#cf3")
+	assertLength(t, sel.Nodes, 1)
+	assertSelectionIs(t, sel.Eq(0), "#cf3")
 }
 
 func TestNegativeSliceEnd(t *testing.T) {
 	sel := Doc().Find(".container-fluid").Slice(1, -1)
-	AssertLength(t, sel.Nodes, 2)
-	AssertSelectionIs(t, sel.Eq(0), "#cf2")
-	AssertSelectionIs(t, sel.Eq(1), "#cf3")
+	assertLength(t, sel.Nodes, 2)
+	assertSelectionIs(t, sel.Eq(0), "#cf2")
+	assertSelectionIs(t, sel.Eq(1), "#cf3")
 }
 
 func TestNegativeSliceBoth(t *testing.T) {
 	sel := Doc().Find(".container-fluid").Slice(-3, -1)
-	AssertLength(t, sel.Nodes, 2)
-	AssertSelectionIs(t, sel.Eq(0), "#cf2")
-	AssertSelectionIs(t, sel.Eq(1), "#cf3")
+	assertLength(t, sel.Nodes, 2)
+	assertSelectionIs(t, sel.Eq(0), "#cf2")
+	assertSelectionIs(t, sel.Eq(1), "#cf3")
 }
 
 func TestNegativeSliceOutOfBounds(t *testing.T) {
-	defer AssertPanic(t)
+	defer assertPanic(t)
 	Doc().Find(".container-fluid").Slice(-12, -7)
 }
 
 func TestSliceRollback(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	sel2 := sel.Slice(0, 2).End()
-	AssertEqual(t, sel, sel2)
+	assertEqual(t, sel, sel2)
 }
 
 func TestGet(t *testing.T) {
@@ -138,7 +138,7 @@ func TestGetNegative(t *testing.T) {
 }
 
 func TestGetInvalid(t *testing.T) {
-	defer AssertPanic(t)
+	defer assertPanic(t)
 	sel := Doc().Find(".pvk-content")
 	sel.Get(129)
 }
