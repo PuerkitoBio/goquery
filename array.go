@@ -36,7 +36,7 @@ func (s *Selection) Eq(index int) *Selection {
 
 // Slice reduces the set of matched elements to a subset specified by a range
 // of indices.
-func (s *Selection) Slice(start int, end int) *Selection {
+func (s *Selection) Slice(start, end int) *Selection {
 	if start < 0 {
 		start += len(s.Nodes)
 	}

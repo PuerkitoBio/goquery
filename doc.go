@@ -25,7 +25,7 @@
 Package goquery implements features similar to jQuery, including the chainable
 syntax, to manipulate and query an HTML document.
 
-GoQuery brings a syntax and a set of features similar to jQuery to the Go language.
+goquery brings a syntax and a set of features similar to jQuery to the Go language.
 It is based on Go's net/html package and the CSS Selector library cascadia. Since
 the net/html parser returns tokens (nodes), and not a full-featured DOM object,
 jQuery's manipulation and modification functions have been left off (no point in
@@ -36,7 +36,7 @@ the caller's responsibility to ensure that the source document provides UTF-8 en
 
 Supported functions are query-oriented features (`hasClass()`, `attr()` and the likes),
 as well as traversing functions that make sense given what we have to work with.
-This makes GoQuery a great library for scraping web pages.
+This makes goquery a great library for scraping web pages.
 
 Syntax-wise, it is as close as possible to jQuery, with the same function names when
 possible, and that warm and fuzzy chainable interface. jQuery being the
@@ -82,12 +82,12 @@ The various methods are split into files based on the category of behavior:
     - Append...()
     - Before...()
     - Clone()
-    - Empty
+    - Empty()
     - Remove...()
 
 * property.go : methods that inspect and get the node's properties values.
     - Attr(), RemoveAttr(), SetAttr()
-    - AddClass(), HasClass(), RemoveClass(), RemoveClasses(), ToggleClass()
+    - AddClass(), HasClass(), RemoveClass(), ToggleClass()
     - Html()
     - Length()
     - Size(), which is an alias for Length()
@@ -106,8 +106,9 @@ The various methods are split into files based on the category of behavior:
     - Prev...()
     - Siblings...()
 
-* type.go : definition of the types exposed by GoQuery.
+* type.go : definition of the types exposed by goquery.
     - Document
     - Selection
+    - Matcher
 */
 package goquery
