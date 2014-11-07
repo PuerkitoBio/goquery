@@ -25,22 +25,19 @@
 Package goquery implements features similar to jQuery, including the chainable
 syntax, to manipulate and query an HTML document.
 
-goquery brings a syntax and a set of features similar to jQuery to the Go language.
-It is based on Go's net/html package and the CSS Selector library cascadia. Since
-the net/html parser returns tokens (nodes), and not a full-featured DOM object,
-jQuery's manipulation and modification functions have been left off (no point in
-modifying data in the parsed tree of the HTML, it has no effect).
+It brings a syntax and a set of features similar to jQuery to the Go language.
+It is based on Go's net/html package and the CSS Selector library cascadia.
+Since the net/html parser returns nodes, and not a full-featured DOM
+tree, jQuery's stateful manipulation functions (like height(), css(), detach())
+have been left off.
 
 Also, because the net/html parser requires UTF-8 encoding, so does goquery: it is
 the caller's responsibility to ensure that the source document provides UTF-8 encoded HTML.
-
-Supported functions are query-oriented features (`hasClass()`, `attr()` and the likes),
-as well as traversing functions that make sense given what we have to work with.
-This makes goquery a great library for scraping web pages.
+See the repository's wiki for various options on how to do this.
 
 Syntax-wise, it is as close as possible to jQuery, with the same function names when
 possible, and that warm and fuzzy chainable interface. jQuery being the
-ultra-popular library that it is, I felt that writing a similar HTML-manipulating
+ultra-popular library that it is, writing a similar HTML-manipulating
 library was better to follow its API than to start anew (in the same spirit as
 Go's fmt package), even though some of its methods are less than intuitive (looking
 at you, index()...).
@@ -50,7 +47,8 @@ file: https://github.com/puerkitobio/goquery
 
 Please note that because of the net/html dependency, goquery requires Go1.1+.
 
-The various methods are split into files based on the category of behavior:
+The various methods are split into files based on the category of behavior.
+The three dots (...) indicate that various "overloads" are available.
 
 * array.go : array-like positional manipulation of the selection.
     - Eq()
