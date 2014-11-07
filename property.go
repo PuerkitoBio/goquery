@@ -32,7 +32,7 @@ func (s *Selection) RemoveAttr(attrName string) *Selection {
 // SetAttr sets the given attribute on each element in the set of matched elements.
 func (s *Selection) SetAttr(attrName string, val string) *Selection {
 	for _, n := range s.Nodes {
-		if attr, ok := getAttribute(attrName, n); ok {
+		if attr := getAttributePtr(attrName, n); attr != nil {
 			attr.Val = val
 		}
 	}
@@ -83,18 +83,22 @@ func (s *Selection) Html() (ret string, e error) {
 }
 
 // AddClass adds the given class(es) to each element in the set of matched elements.
+// Multiple class names can be specified, separated by a space.
 func (s *Selection) AddClass(class string) *Selection {
-	rclasses := getClassesSlice(class)
+	if class == "" {
+		return s
+	}
 
+	slClasses := getClassesSlice(class)
 	for _, n := range s.Nodes {
-		classes, attr := getClassesAndAttr(n, true)
-		for _, rcl := range rclasses {
-			if strings.Index(classes, " "+rcl+" ") == -1 {
-				classes += rcl + " "
+		curClasses, attr := getClassesAndAttr(n, true)
+		for _, newClass := range slClasses {
+			if strings.Index(curClasses, " "+newClass+" ") == -1 {
+				curClasses += newClass + " "
 			}
 		}
 
-		setClasses(n, attr, classes)
+		setClasses(n, attr, curClasses)
 	}
 
 	return s
@@ -114,40 +118,50 @@ func (s *Selection) HasClass(class string) bool {
 }
 
 // RemoveClass removes the given class(es) from each element in the set of matched elements.
-func (s *Selection) RemoveClass(class string) *Selection {
-	rclasses := getClassesSlice(class)
+// Multiple class names can be specified, separated by a space or via multiple arguments.
+// If no class name is provided, all classes are removed.
+func (s *Selection) RemoveClass(class ...string) *Selection {
+	var rclasses []string
 
-	for _, n := range s.Nodes {
-		classes, attr := getClassesAndAttr(n, true)
-		for _, rcl := range rclasses {
-			classes = strings.Replace(classes, rcl, "", -1)
-		}
+	classStr := strings.TrimSpace(strings.Join(class, " "))
+	remove := classStr == ""
 
-		setClasses(n, attr, classes)
+	if !remove {
+		rclasses = getClassesSlice(classStr)
 	}
 
-	return s
-}
-
-// Remove all classes from each element in the set of matched elements.
-func (s *Selection) RemoveClasses() *Selection {
 	for _, n := range s.Nodes {
-		_, attr := getClassesAndAttr(n, false)
-		setClasses(n, attr, "")
+		if remove {
+			removeAttr(n, "class")
+		} else {
+			classes, attr := getClassesAndAttr(n, true)
+			for _, rcl := range rclasses {
+				classes = strings.Replace(classes, " "+rcl+" ", " ", -1)
+			}
+
+			setClasses(n, attr, classes)
+		}
 	}
 
 	return s
 }
 
 // ToggleClass adds or removes the given class(es) for each element in the set of matched elements.
-func (s *Selection) ToggleClass(class string) *Selection {
-	tcls := getClassesSlice(class)
+// Multiple class names can be specified, separated by a space or via multiple arguments.
+func (s *Selection) ToggleClass(class ...string) *Selection {
+	classStr := strings.TrimSpace(strings.Join(class, " "))
+
+	if classStr == "" {
+		return s
+	}
+
+	tcls := getClassesSlice(classStr)
 
 	for _, n := range s.Nodes {
 		classes, attr := getClassesAndAttr(n, true)
 		for _, tcl := range tcls {
-			if strings.Index(classes, tcl) != -1 {
-				classes = strings.Replace(classes, tcl, "", -1)
+			if strings.Index(classes, " "+tcl+" ") != -1 {
+				classes = strings.Replace(classes, " "+tcl+" ", " ", -1)
 			} else {
 				classes += tcl + " "
 			}
@@ -175,25 +189,22 @@ func getNodeText(node *html.Node) string {
 	return ""
 }
 
-func getAttribute(attrName string, n *html.Node) (attr *html.Attribute, exists bool) {
+func getAttributePtr(attrName string, n *html.Node) *html.Attribute {
 	if n == nil {
-		return
+		return nil
 	}
 
 	for i, a := range n.Attr {
 		if a.Key == attrName {
-			attr = &n.Attr[i]
-			exists = true
-			return
+			return &n.Attr[i]
 		}
 	}
-
-	return
+	return nil
 }
 
 // Private function to get the specified attribute's value from a node.
 func getAttributeValue(attrName string, n *html.Node) (val string, exists bool) {
-	if a, ok := getAttribute(attrName, n); ok {
+	if a := getAttributePtr(attrName, n); a != nil {
 		val = a.Val
 		exists = true
 	}
@@ -204,13 +215,13 @@ func getAttributeValue(attrName string, n *html.Node) (val string, exists bool) 
 func getClassesAndAttr(n *html.Node, create bool) (classes string, attr *html.Attribute) {
 	// Applies only to element nodes
 	if n.Type == html.ElementNode {
-		attr, _ = getAttribute("class", n)
+		attr = getAttributePtr("class", n)
 		if attr == nil && create {
 			n.Attr = append(n.Attr, html.Attribute{
 				Key: "class",
 				Val: "",
 			})
-			attr, _ = getAttribute("class", n)
+			attr = &n.Attr[len(n.Attr)-1]
 		}
 	}
 
@@ -239,10 +250,10 @@ func removeAttr(n *html.Node, attrName string) {
 
 func setClasses(n *html.Node, attr *html.Attribute, classes string) {
 	classes = strings.TrimSpace(classes)
-
 	if classes == "" {
 		removeAttr(n, "class")
-	} else {
-		attr.Val = classes
+		return
 	}
+
+	attr.Val = classes
 }

@@ -120,6 +120,15 @@ func TestAddClass(t *testing.T) {
 	}
 }
 
+func TestAddClassSimilar(t *testing.T) {
+	sel := Doc2Clone().Find("#nf5")
+	sel.AddClass("odd")
+
+	assertClass(t, sel, "odd")
+	assertClass(t, sel, "odder")
+	printSel(t, sel.Parent())
+}
+
 func TestAddEmptyClass(t *testing.T) {
 	sel := Doc2Clone().Find("#main")
 	sel.AddClass("")
@@ -171,16 +180,25 @@ func TestRemoveClass(t *testing.T) {
 	}
 }
 
+func TestRemoveClassSimilar(t *testing.T) {
+	sel := Doc2Clone().Find("#nf5, #nf6")
+	assertLength(t, sel.Nodes, 2)
+
+	sel.RemoveClass("odd")
+	assertClass(t, sel.Eq(0), "odder")
+	printSel(t, sel)
+}
+
 func TestRemoveAllClasses(t *testing.T) {
 	sel := Doc2Clone().Find("#nf1")
-	sel.RemoveClasses()
+	sel.RemoveClass()
 
 	if a, ok := sel.Attr("class"); ok {
 		t.Error("All classes were not removed, has ", a)
 	}
 
 	sel = Doc2Clone().Find("#main")
-	sel.RemoveClasses()
+	sel.RemoveClass()
 	if a, ok := sel.Attr("class"); ok {
 		t.Error("All classes were not removed, has ", a)
 	}
@@ -201,6 +219,6 @@ func TestToggleClass(t *testing.T) {
 
 	sel.ToggleClass("one even row")
 	if a, ok := sel.Attr("class"); ok {
-		t.Error("Expected #nf1 to have no classes, have ", a)
+		t.Errorf("Expected #nf1 to have no classes, have %q", a)
 	}
 }
