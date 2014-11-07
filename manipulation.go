@@ -1,7 +1,6 @@
 package goquery
 
 import (
-	"fmt"
 	"strings"
 
 	"code.google.com/p/cascadia"
@@ -192,7 +191,7 @@ func parseHtml(h string) []*html.Node {
 	// EOF, but strings.Reader never will
 	nodes, err := html.ParseFragment(strings.NewReader(h), &html.Node{Type: html.ElementNode})
 	if err != nil {
-		panic(fmt.Sprintf("goquery: failed to parse HTML: %s", err))
+		panic("goquery: failed to parse HTML: " + err.Error())
 	}
 	return nodes
 }
