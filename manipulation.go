@@ -216,7 +216,7 @@ func (s *Selection) Clone() *Selection {
 // Empty removes all children nodes from the set of matched elements.
 // Returns the children nodes in a new Selection.
 func (s *Selection) Empty() *Selection {
-	nodes := make([]*html.Node, 0)
+	var nodes []*html.Node
 
 	for _, n := range s.Nodes {
 		for c := n.FirstChild; c != nil; c = n.FirstChild {
