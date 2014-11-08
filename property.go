@@ -83,16 +83,18 @@ func (s *Selection) Html() (ret string, e error) {
 }
 
 // AddClass adds the given class(es) to each element in the set of matched elements.
-// Multiple class names can be specified, separated by a space.
-func (s *Selection) AddClass(class string) *Selection {
-	if class == "" {
+// Multiple class names can be specified, separated by a space or via multiple arguments.
+func (s *Selection) AddClass(class ...string) *Selection {
+	classStr := strings.TrimSpace(strings.Join(class, " "))
+
+	if classStr == "" {
 		return s
 	}
 
-	slClasses := getClassesSlice(class)
+	tcls := getClassesSlice(classStr)
 	for _, n := range s.Nodes {
 		curClasses, attr := getClassesAndAttr(n, true)
-		for _, newClass := range slClasses {
+		for _, newClass := range tcls {
 			if strings.Index(curClasses, " "+newClass+" ") == -1 {
 				curClasses += newClass + " "
 			}
