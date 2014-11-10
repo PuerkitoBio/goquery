@@ -4,6 +4,10 @@ import (
 	"testing"
 )
 
+const (
+	wrapHtml = "<div id=\"ins\">test string<div><p><em><b></b></em></p></div></div>"
+)
+
 func TestAfter(t *testing.T) {
 	doc := Doc2Clone()
 	doc.Find("#main").After("#nf6")
@@ -190,5 +194,91 @@ func TestRemoveFiltered(t *testing.T) {
 	if nf6.Nodes[0] != s.Nodes[0] {
 		t.Error("Removed node does not match original")
 	}
+	printSel(t, doc.Selection)
+}
+
+func TestWrap(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#nf1").Wrap("#nf2")
+	nf1 := doc.Find("#foot #nf2 #nf1")
+	assertLength(t, nf1.Nodes, 1)
+
+	nf2 := doc.Find("#nf2")
+	assertLength(t, nf2.Nodes, 2)
+
+	printSel(t, doc.Selection)
+}
+
+func TestWrapEmpty(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#nf1").Wrap("#doesnt-exist")
+
+	origHtml, _ := Doc2().Html()
+	newHtml, _ := doc.Html()
+
+	if origHtml != newHtml {
+		t.Error("Expected the two documents to be identical.")
+	}
+
+	printSel(t, doc.Selection)
+}
+
+func TestWrapHtml(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#nf1").WrapHtml(wrapHtml)
+	nf1 := doc.Find("#foot div#ins:first-child div p em b #nf1")
+	assertLength(t, nf1.Nodes, 1)
+	printSel(t, doc.Selection)
+}
+
+func TestWrapSelection(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#nf1").WrapSelection(doc.Find("#nf2"))
+	nf1 := doc.Find("#foot #nf2 #nf1")
+	assertLength(t, nf1.Nodes, 1)
+
+	nf2 := doc.Find("#nf2")
+	assertLength(t, nf2.Nodes, 2)
+
+	printSel(t, doc.Selection)
+}
+
+func TestWrapAll(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find(".odd").WrapAll("#nf1")
+	nf1 := doc.Find("#main #nf1")
+	assertLength(t, nf1.Nodes, 1)
+
+	sel := nf1.Find("#n2 ~ #n4 ~ #n6 ~ #nf2 ~ #nf4 ~ #nf6")
+	assertLength(t, sel.Nodes, 1)
+
+	printSel(t, doc.Selection)
+}
+
+func TestWrapAllHtml(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find(".odd").WrapAllHtml(wrapHtml)
+	nf1 := doc.Find("#main div#ins div p em b #n2 ~ #n4 ~ #n6 ~ #nf2 ~ #nf4 ~ #nf6")
+	assertLength(t, nf1.Nodes, 1)
+	printSel(t, doc.Selection)
+}
+
+func TestWrapInner(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find(".one").WrapInner(".two")
+
+	nf1 := doc.Find("#foot #n2 ~ #nf2")
+	assertLength(t, nf1.Nodes, 1)
+
+	printSel(t, doc.Selection)
+}
+
+func TestWrapInnerHtml(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#foot").WrapInnerHtml(wrapHtml)
+
+	foot := doc.Find("#foot div#ins div p em b #nf1 ~ #nf2 ~ #nf3")
+	assertLength(t, foot.Nodes, 1)
+
 	printSel(t, doc.Selection)
 }

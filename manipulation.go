@@ -186,6 +186,172 @@ func (s *Selection) RemoveMatcher(m Matcher) *Selection {
 	return s.FilterMatcher(m).Remove()
 }
 
+// Wrap wraps each element in the set of matched elements inside the first
+// element matched by the given selector. The matched child is cloned before
+// being inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) Wrap(selector string) *Selection {
+	return s.WrapMatcher(cascadia.MustCompile(selector))
+}
+
+// WrapMatcher wraps each element in the set of matched elements inside the
+// first element matched by the given matcher. The matched child is cloned
+// before being inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapMatcher(m Matcher) *Selection {
+	return s.wrapNodes(m.MatchAll(s.document.rootNode)...)
+}
+
+// WrapSelection wraps each element in the set of matched elements inside the
+// first element in the given Selection. The element is cloned before being
+// inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapSelection(sel *Selection) *Selection {
+	return s.wrapNodes(sel.Nodes...)
+}
+
+// WrapHtml wraps each element in the set of matched elements inside the inner-
+// most child of the given HTML.
+// It returns the original set of elements.
+func (s *Selection) WrapHtml(html string) *Selection {
+	return s.wrapNodes(parseHtml(html)...)
+}
+
+// WrapNode wraps each element in the set of matched elements inside the inner-
+// most child of the given node. The given node is copied before being inserted
+// into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapNode(n *html.Node) *Selection {
+	return s.wrapNodes(n)
+}
+
+func (s *Selection) wrapNodes(ns ...*html.Node) *Selection {
+	s.Each(func(i int, ss *Selection) {
+		ss.wrapAllNodes(ns...)
+	})
+
+	return s
+}
+
+// WrapAll wraps a single HTML structure, matched by the given selector, around
+// each element in the set of matched elements. The matched child is cloned
+// before being inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapAll(selector string) *Selection {
+	return s.WrapAllMatcher(cascadia.MustCompile(selector))
+}
+
+// WrapAllMatcher wraps a single HTML structure, matched by the given Matcher,
+// around each element in the set of matched elements. The matched child is
+// cloned before being inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapAllMatcher(m Matcher) *Selection {
+	return s.wrapAllNodes(m.MatchAll(s.document.rootNode)...)
+}
+
+// WrapAllSelection wraps a single HTML structure, the first node of the given
+// Selection, around each element in the set of matched elements. The matched
+// child is cloned before being inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapAllSelection(sel *Selection) *Selection {
+	return s.wrapAllNodes(sel.Nodes...)
+}
+
+// WrapAllHtml wraps the given HTML structure around each element in the set of
+// matched elements. The matched child is cloned before being inserted into the
+// document.
+// It returns the original set of elements.
+func (s *Selection) WrapAllHtml(html string) *Selection {
+	return s.wrapAllNodes(parseHtml(html)...)
+}
+
+func (s *Selection) wrapAllNodes(ns ...*html.Node) *Selection {
+	if len(ns) > 0 {
+		return s.WrapAllNode(ns[0])
+	}
+	return s
+}
+
+// WrapAllNode wraps the given node around the first element in the Selection,
+// making all other nodes in the Selection children of the given node. The node
+// is cloned before being inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapAllNode(n *html.Node) *Selection {
+	if s.Size() == 0 {
+		return s
+	}
+
+	wrap := cloneNode(n)
+
+	first := s.Nodes[0]
+	if first.Parent != nil {
+		first.Parent.InsertBefore(wrap, first)
+		first.Parent.RemoveChild(first)
+	}
+
+	for c := getFirstChildEl(wrap); c != nil; c = getFirstChildEl(wrap) {
+		wrap = c
+	}
+
+	newSingleSelection(wrap, s.document).AppendSelection(s)
+
+	return s
+}
+
+// WrapInner wraps an HTML structure, matched by the given selector, around the
+// content of element in the set of matched elements. The matched child is
+// cloned before being inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapInner(selector string) *Selection {
+	return s.WrapInnerMatcher(cascadia.MustCompile(selector))
+}
+
+// WrapInnerMatcher wraps an HTML structure, matched by the given selector,
+// around the content of element in the set of matched elements. The matched
+// child is cloned before being inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapInnerMatcher(m Matcher) *Selection {
+	return s.wrapInnerNodes(m.MatchAll(s.document.rootNode)...)
+}
+
+// WrapInnerSelection wraps an HTML structure, matched by the given selector,
+// around the content of element in the set of matched elements. The matched
+// child is cloned before being inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapInnerSelection(sel *Selection) *Selection {
+	return s.wrapInnerNodes(sel.Nodes...)
+}
+
+// WrapInnerHtml wraps an HTML structure, matched by the given selector, around
+// the content of element in the set of matched elements. The matched child is
+// cloned before being inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapInnerHtml(html string) *Selection {
+	return s.wrapInnerNodes(parseHtml(html)...)
+}
+
+// WrapInnerNode wraps an HTML structure, matched by the given selector, around
+// the content of element in the set of matched elements. The matched child is
+// cloned before being inserted into the document.
+// It returns the original set of elements.
+func (s *Selection) WrapInnerNode(n *html.Node) *Selection {
+	return s.wrapInnerNodes(n)
+}
+
+func (s *Selection) wrapInnerNodes(ns ...*html.Node) *Selection {
+	s.Each(func(i int, s *Selection) {
+		contents := s.Contents()
+
+		if contents.Size() > 0 {
+			contents.wrapAllNodes(ns...)
+		} else {
+			s.AppendNodes(ns...)
+		}
+	})
+
+	return s
+}
+
 func parseHtml(h string) []*html.Node {
 	// Errors are only returned when the io.Reader returns any error besides
 	// EOF, but strings.Reader never will
@@ -194,6 +360,15 @@ func parseHtml(h string) []*html.Node {
 		panic("goquery: failed to parse HTML: " + err.Error())
 	}
 	return nodes
+}
+
+// Get the first child that is an ElementNode
+func getFirstChildEl(n *html.Node) *html.Node {
+	c := n.FirstChild
+	for c != nil && c.Type != html.ElementNode {
+		c = c.NextSibling
+	}
+	return c
 }
 
 // Deep copy a slice of nodes.
