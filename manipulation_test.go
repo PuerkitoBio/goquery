@@ -230,6 +230,28 @@ func TestReplaceWithSelection(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
+func TestUnwrap(t *testing.T) {
+	doc := Doc2Clone()
+
+	doc.Find("#nf5").Unwrap()
+	assertLength(t, doc.Find("#foot").Nodes, 0)
+
+	assertLength(t, doc.Find("body > #nf1").Nodes, 1)
+	assertLength(t, doc.Find("body > #nf5").Nodes, 1)
+
+	printSel(t, doc.Selection)
+}
+
+func TestUnwrapBody(t *testing.T) {
+	doc := Doc2Clone()
+
+	doc.Find("#main").Unwrap()
+	assertLength(t, doc.Find("body").Nodes, 1)
+	assertLength(t, doc.Find("body > #main").Nodes, 1)
+
+	printSel(t, doc.Selection)
+}
+
 func TestWrap(t *testing.T) {
 	doc := Doc2Clone()
 	doc.Find("#nf1").Wrap("#nf2")

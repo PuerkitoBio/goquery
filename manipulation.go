@@ -232,6 +232,19 @@ func (s *Selection) ReplaceWithNodes(ns ...*html.Node) *Selection {
 	return s.Remove()
 }
 
+// Unwrap removes the parents of the set of matched elements, leaving the matched
+// elements (and their siblings, if any) in their place.
+// It returns the original selection.
+func (s *Selection) Unwrap() *Selection {
+	s.Parent().Each(func(i int, ss *Selection) {
+		if ss.Nodes[0].Data != "body" {
+			ss.ReplaceWithSelection(ss.Contents())
+		}
+	})
+
+	return s
+}
+
 // Wrap wraps each element in the set of matched elements inside the first
 // element matched by the given selector. The matched child is cloned before
 // being inserted into the document.
