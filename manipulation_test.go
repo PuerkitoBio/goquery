@@ -197,6 +197,39 @@ func TestRemoveFiltered(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
+func TestReplaceWith(t *testing.T) {
+	doc := Doc2Clone()
+
+	doc.Find("#nf6").ReplaceWith("#main")
+	assertLength(t, doc.Find("#foot #main:last-child").Nodes, 1)
+
+	doc.Find("#foot").ReplaceWith("#main")
+	assertLength(t, doc.Find("#foot").Nodes, 0)
+	assertLength(t, doc.Find("#main").Nodes, 1)
+
+	printSel(t, doc.Selection)
+}
+
+func TestReplaceWithHtml(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#main, #foot").ReplaceWithHtml("<div id=\"replace\"></div>")
+
+	assertLength(t, doc.Find("#replace").Nodes, 2)
+
+	printSel(t, doc.Selection)
+}
+
+func TestReplaceWithSelection(t *testing.T) {
+	doc := Doc2Clone()
+	sel := doc.Find("#nf6").ReplaceWithSelection(doc.Find("#nf5"))
+
+	assertLength(t, sel.Filter("#nf6").Nodes, 1)
+	assertLength(t, doc.Find("#nf6").Nodes, 0)
+	assertLength(t, doc.Find("#nf5").Nodes, 1)
+
+	printSel(t, doc.Selection)
+}
+
 func TestWrap(t *testing.T) {
 	doc := Doc2Clone()
 	doc.Find("#nf1").Wrap("#nf2")

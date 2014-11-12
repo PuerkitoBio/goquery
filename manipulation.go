@@ -186,6 +186,52 @@ func (s *Selection) RemoveMatcher(m Matcher) *Selection {
 	return s.FilterMatcher(m).Remove()
 }
 
+// ReplaceWith replaces each element in the set of matched elements with the
+// nodes matched by the given selector.
+// It returns the removed elements.
+//
+// This follows the same rules as Selection.Append.
+func (s *Selection) ReplaceWith(selector string) *Selection {
+	return s.ReplaceWithMatcher(cascadia.MustCompile(selector))
+}
+
+// ReplaceWithMatcher replaces each element in the set of matched elements with
+// the nodes matched by the given Matcher.
+// It returns the removed elements.
+//
+// This follows the same rules as Selection.Append.
+func (s *Selection) ReplaceWithMatcher(m Matcher) *Selection {
+	return s.ReplaceWithNodes(m.MatchAll(s.document.rootNode)...)
+}
+
+// ReplaceWithSelection replaces each element in the set of matched elements with
+// the nodes from the given Selection.
+// It returns the removed elements.
+//
+// This follows the same rules as Selection.Append.
+func (s *Selection) ReplaceWithSelection(sel *Selection) *Selection {
+	return s.ReplaceWithNodes(sel.Nodes...)
+}
+
+// ReplaceWithHtml replaces each element in the set of matched elements with
+// the parsed HTML.
+// It returns the removed elements.
+//
+// This follows the same rules as Selection.Append.
+func (s *Selection) ReplaceWithHtml(html string) *Selection {
+	return s.ReplaceWithNodes(parseHtml(html)...)
+}
+
+// ReplaceWithNodes replaces each element in the set of matched elements with
+// the given nodes.
+// It returns the removed elements.
+//
+// This follows the same rules as Selection.Append.
+func (s *Selection) ReplaceWithNodes(ns ...*html.Node) *Selection {
+	s.AfterNodes(ns...)
+	return s.Remove()
+}
+
 // Wrap wraps each element in the set of matched elements inside the first
 // element matched by the given selector. The matched child is cloned before
 // being inserted into the document.
