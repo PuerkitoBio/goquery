@@ -82,6 +82,11 @@ The three dots (...) indicate that various "overloads" are available.
     - Clone()
     - Empty()
     - Remove...()
+	- ReplaceWith...()
+	- Unwrap()
+	- Wrap...()
+	- WrapAll...()
+	- WrapInner...()
 
 * property.go : methods that inspect and get the node's properties values.
     - Attr(), RemoveAttr(), SetAttr()
