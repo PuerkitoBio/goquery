@@ -13,7 +13,7 @@ import (
 // If one of the matched elements in the selection is not currently in the
 // document, it's impossible to insert nodes after it, so it will be ignored.
 //
-// This follows the same rules outlined in Selection.Append.
+// This follows the same rules as Selection.Append.
 func (s *Selection) After(selector string) *Selection {
 	return s.AfterMatcher(cascadia.MustCompile(selector))
 }
@@ -24,7 +24,7 @@ func (s *Selection) After(selector string) *Selection {
 // If one of the matched elements in the selection is not currently in the
 // document, it's impossible to insert nodes after it, so it will be ignored.
 //
-// This follows the same rules outlined in Selection.Append.
+// This follows the same rules as Selection.Append.
 func (s *Selection) AfterMatcher(m Matcher) *Selection {
 	return s.AfterNodes(m.MatchAll(s.document.rootNode)...)
 }
@@ -32,21 +32,21 @@ func (s *Selection) AfterMatcher(m Matcher) *Selection {
 // AfterSelection inserts the elements in the selection after each element in the set of matched
 // elements.
 //
-// This follows the same rules outlined in Selection.Append.
+// This follows the same rules as Selection.Append.
 func (s *Selection) AfterSelection(sel *Selection) *Selection {
 	return s.AfterNodes(sel.Nodes...)
 }
 
 // AfterHtml parses the html and inserts it after the set of matched elements.
 //
-// This follows the same rules outlined in Selection.Append.
+// This follows the same rules as Selection.Append.
 func (s *Selection) AfterHtml(html string) *Selection {
 	return s.AfterNodes(parseHtml(html)...)
 }
 
 // AfterNodes inserts the nodes after each element in the set of matched elements.
 //
-// This follows the same rules outlined in Selection.Append.
+// This follows the same rules as Selection.Append.
 func (s *Selection) AfterNodes(ns ...*html.Node) *Selection {
 	return s.manipulateNodes(ns, true, func(sn *html.Node, n *html.Node) {
 		if sn.Parent != nil {
@@ -237,6 +237,9 @@ func (s *Selection) ReplaceWithNodes(ns ...*html.Node) *Selection {
 // It returns the original selection.
 func (s *Selection) Unwrap() *Selection {
 	s.Parent().Each(func(i int, ss *Selection) {
+		// For some reason, jquery allows unwrap to remove the <head> element, so
+		// allowing it here too. Same for <html>. Why it allows those elements to
+		// be unwrapped while not allowing body is a mystery to me.
 		if ss.Nodes[0].Data != "body" {
 			ss.ReplaceWithSelection(ss.Contents())
 		}
@@ -248,6 +251,7 @@ func (s *Selection) Unwrap() *Selection {
 // Wrap wraps each element in the set of matched elements inside the first
 // element matched by the given selector. The matched child is cloned before
 // being inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) Wrap(selector string) *Selection {
 	return s.WrapMatcher(cascadia.MustCompile(selector))
@@ -256,6 +260,7 @@ func (s *Selection) Wrap(selector string) *Selection {
 // WrapMatcher wraps each element in the set of matched elements inside the
 // first element matched by the given matcher. The matched child is cloned
 // before being inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapMatcher(m Matcher) *Selection {
 	return s.wrapNodes(m.MatchAll(s.document.rootNode)...)
@@ -264,6 +269,7 @@ func (s *Selection) WrapMatcher(m Matcher) *Selection {
 // WrapSelection wraps each element in the set of matched elements inside the
 // first element in the given Selection. The element is cloned before being
 // inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapSelection(sel *Selection) *Selection {
 	return s.wrapNodes(sel.Nodes...)
@@ -271,6 +277,7 @@ func (s *Selection) WrapSelection(sel *Selection) *Selection {
 
 // WrapHtml wraps each element in the set of matched elements inside the inner-
 // most child of the given HTML.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapHtml(html string) *Selection {
 	return s.wrapNodes(parseHtml(html)...)
@@ -279,6 +286,7 @@ func (s *Selection) WrapHtml(html string) *Selection {
 // WrapNode wraps each element in the set of matched elements inside the inner-
 // most child of the given node. The given node is copied before being inserted
 // into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapNode(n *html.Node) *Selection {
 	return s.wrapNodes(n)
@@ -293,32 +301,36 @@ func (s *Selection) wrapNodes(ns ...*html.Node) *Selection {
 }
 
 // WrapAll wraps a single HTML structure, matched by the given selector, around
-// each element in the set of matched elements. The matched child is cloned
+// all elements in the set of matched elements. The matched child is cloned
 // before being inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapAll(selector string) *Selection {
 	return s.WrapAllMatcher(cascadia.MustCompile(selector))
 }
 
 // WrapAllMatcher wraps a single HTML structure, matched by the given Matcher,
-// around each element in the set of matched elements. The matched child is
+// around all elements in the set of matched elements. The matched child is
 // cloned before being inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapAllMatcher(m Matcher) *Selection {
 	return s.wrapAllNodes(m.MatchAll(s.document.rootNode)...)
 }
 
 // WrapAllSelection wraps a single HTML structure, the first node of the given
-// Selection, around each element in the set of matched elements. The matched
+// Selection, around all elements in the set of matched elements. The matched
 // child is cloned before being inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapAllSelection(sel *Selection) *Selection {
 	return s.wrapAllNodes(sel.Nodes...)
 }
 
-// WrapAllHtml wraps the given HTML structure around each element in the set of
+// WrapAllHtml wraps the given HTML structure around all elements in the set of
 // matched elements. The matched child is cloned before being inserted into the
 // document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapAllHtml(html string) *Selection {
 	return s.wrapAllNodes(parseHtml(html)...)
@@ -334,6 +346,7 @@ func (s *Selection) wrapAllNodes(ns ...*html.Node) *Selection {
 // WrapAllNode wraps the given node around the first element in the Selection,
 // making all other nodes in the Selection children of the given node. The node
 // is cloned before being inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapAllNode(n *html.Node) *Selection {
 	if s.Size() == 0 {
@@ -360,6 +373,7 @@ func (s *Selection) WrapAllNode(n *html.Node) *Selection {
 // WrapInner wraps an HTML structure, matched by the given selector, around the
 // content of element in the set of matched elements. The matched child is
 // cloned before being inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapInner(selector string) *Selection {
 	return s.WrapInnerMatcher(cascadia.MustCompile(selector))
@@ -368,6 +382,7 @@ func (s *Selection) WrapInner(selector string) *Selection {
 // WrapInnerMatcher wraps an HTML structure, matched by the given selector,
 // around the content of element in the set of matched elements. The matched
 // child is cloned before being inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapInnerMatcher(m Matcher) *Selection {
 	return s.wrapInnerNodes(m.MatchAll(s.document.rootNode)...)
@@ -376,6 +391,7 @@ func (s *Selection) WrapInnerMatcher(m Matcher) *Selection {
 // WrapInnerSelection wraps an HTML structure, matched by the given selector,
 // around the content of element in the set of matched elements. The matched
 // child is cloned before being inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapInnerSelection(sel *Selection) *Selection {
 	return s.wrapInnerNodes(sel.Nodes...)
@@ -384,6 +400,7 @@ func (s *Selection) WrapInnerSelection(sel *Selection) *Selection {
 // WrapInnerHtml wraps an HTML structure, matched by the given selector, around
 // the content of element in the set of matched elements. The matched child is
 // cloned before being inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapInnerHtml(html string) *Selection {
 	return s.wrapInnerNodes(parseHtml(html)...)
@@ -392,19 +409,24 @@ func (s *Selection) WrapInnerHtml(html string) *Selection {
 // WrapInnerNode wraps an HTML structure, matched by the given selector, around
 // the content of element in the set of matched elements. The matched child is
 // cloned before being inserted into the document.
+//
 // It returns the original set of elements.
 func (s *Selection) WrapInnerNode(n *html.Node) *Selection {
 	return s.wrapInnerNodes(n)
 }
 
 func (s *Selection) wrapInnerNodes(ns ...*html.Node) *Selection {
+	if len(ns) == 0 {
+		return s
+	}
+
 	s.Each(func(i int, s *Selection) {
 		contents := s.Contents()
 
 		if contents.Size() > 0 {
 			contents.wrapAllNodes(ns...)
 		} else {
-			s.AppendNodes(ns...)
+			s.AppendNodes(cloneNode(ns[0]))
 		}
 	})
 

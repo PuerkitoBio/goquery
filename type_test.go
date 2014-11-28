@@ -12,6 +12,7 @@ import (
 // Test helper functions and members
 var doc *Document
 var doc2 *Document
+var doc3 *Document
 var docB *Document
 var docW *Document
 
@@ -32,6 +33,15 @@ func Doc2() *Document {
 }
 func Doc2Clone() *Document {
 	return CloneDocument(Doc2())
+}
+func Doc3() *Document {
+	if doc3 == nil {
+		doc3 = loadDoc("page3.html")
+	}
+	return doc3
+}
+func Doc3Clone() *Document {
+	return CloneDocument(Doc3())
 }
 func DocB() *Document {
 	if docB == nil {

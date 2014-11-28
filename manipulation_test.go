@@ -202,6 +202,7 @@ func TestReplaceWith(t *testing.T) {
 
 	doc.Find("#nf6").ReplaceWith("#main")
 	assertLength(t, doc.Find("#foot #main:last-child").Nodes, 1)
+	printSel(t, doc.Selection)
 
 	doc.Find("#foot").ReplaceWith("#main")
 	assertLength(t, doc.Find("#foot").Nodes, 0)
@@ -223,7 +224,7 @@ func TestReplaceWithSelection(t *testing.T) {
 	doc := Doc2Clone()
 	sel := doc.Find("#nf6").ReplaceWithSelection(doc.Find("#nf5"))
 
-	assertLength(t, sel.Filter("#nf6").Nodes, 1)
+	assertSelectionIs(t, sel, "#nf6")
 	assertLength(t, doc.Find("#nf6").Nodes, 0)
 	assertLength(t, doc.Find("#nf5").Nodes, 1)
 
@@ -235,8 +236,17 @@ func TestUnwrap(t *testing.T) {
 
 	doc.Find("#nf5").Unwrap()
 	assertLength(t, doc.Find("#foot").Nodes, 0)
-
 	assertLength(t, doc.Find("body > #nf1").Nodes, 1)
+	assertLength(t, doc.Find("body > #nf5").Nodes, 1)
+
+	printSel(t, doc.Selection)
+
+	doc = Doc2Clone()
+
+	doc.Find("#nf5, #n1").Unwrap()
+	assertLength(t, doc.Find("#foot").Nodes, 0)
+	assertLength(t, doc.Find("#main").Nodes, 0)
+	assertLength(t, doc.Find("body > #n1").Nodes, 1)
 	assertLength(t, doc.Find("body > #nf5").Nodes, 1)
 
 	printSel(t, doc.Selection)
@@ -248,6 +258,28 @@ func TestUnwrapBody(t *testing.T) {
 	doc.Find("#main").Unwrap()
 	assertLength(t, doc.Find("body").Nodes, 1)
 	assertLength(t, doc.Find("body > #main").Nodes, 1)
+
+	printSel(t, doc.Selection)
+}
+
+func TestUnwrapHead(t *testing.T) {
+	doc := Doc2Clone()
+
+	doc.Find("title").Unwrap()
+	assertLength(t, doc.Find("head").Nodes, 0)
+	assertLength(t, doc.Find("head > title").Nodes, 0)
+	assertLength(t, doc.Find("title").Nodes, 1)
+
+	printSel(t, doc.Selection)
+}
+
+func TestUnwrapHtml(t *testing.T) {
+	doc := Doc2Clone()
+
+	doc.Find("head").Unwrap()
+	assertLength(t, doc.Find("html").Nodes, 0)
+	assertLength(t, doc.Find("html head").Nodes, 0)
+	assertLength(t, doc.Find("head").Nodes, 1)
 
 	printSel(t, doc.Selection)
 }
@@ -280,9 +312,9 @@ func TestWrapEmpty(t *testing.T) {
 
 func TestWrapHtml(t *testing.T) {
 	doc := Doc2Clone()
-	doc.Find("#nf1").WrapHtml(wrapHtml)
-	nf1 := doc.Find("#foot div#ins:first-child div p em b #nf1")
-	assertLength(t, nf1.Nodes, 1)
+	doc.Find(".odd").WrapHtml(wrapHtml)
+	nf2 := doc.Find("#ins #nf2")
+	assertLength(t, nf2.Nodes, 1)
 	printSel(t, doc.Selection)
 }
 
@@ -318,12 +350,36 @@ func TestWrapAllHtml(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
-func TestWrapInner(t *testing.T) {
+func TestWrapInnerNoContent(t *testing.T) {
 	doc := Doc2Clone()
 	doc.Find(".one").WrapInner(".two")
 
-	nf1 := doc.Find("#foot #n2 ~ #nf2")
-	assertLength(t, nf1.Nodes, 1)
+	twos := doc.Find(".two")
+	assertLength(t, twos.Nodes, 4)
+	assertLength(t, doc.Find(".one .two").Nodes, 2)
+
+	printSel(t, doc.Selection)
+}
+
+func TestWrapInnerWithContent(t *testing.T) {
+	doc := Doc3Clone()
+	doc.Find(".one").WrapInner(".two")
+
+	twos := doc.Find(".two")
+	assertLength(t, twos.Nodes, 4)
+	assertLength(t, doc.Find(".one .two").Nodes, 2)
+
+	printSel(t, doc.Selection)
+}
+
+func TestWrapInnerNoWrapper(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find(".one").WrapInner(".not-exist")
+
+	twos := doc.Find(".two")
+	assertLength(t, twos.Nodes, 2)
+	assertLength(t, doc.Find(".one").Nodes, 2)
+	assertLength(t, doc.Find(".one .two").Nodes, 0)
 
 	printSel(t, doc.Selection)
 }
