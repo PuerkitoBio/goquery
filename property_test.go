@@ -46,6 +46,21 @@ func TestSetAttr(t *testing.T) {
 	}
 }
 
+func TestSetAttr2(t *testing.T) {
+	sel := Doc2Clone().Find("#main")
+
+	sel.SetAttr("foo", "bar")
+
+	val, ok := sel.Attr("foo")
+	if !ok {
+		t.Error("Expected an 'foo' attribute on main")
+	}
+
+	if val != "bar" {
+		t.Errorf("Expected an attribute 'foo' to be 'bar', got '%s'", val)
+	}
+}
+
 func TestText(t *testing.T) {
 	txt := Doc().Find("h1").Text()
 	if strings.Trim(txt, " \n\r\t") != "Provok.in" {
