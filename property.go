@@ -32,7 +32,10 @@ func (s *Selection) RemoveAttr(attrName string) *Selection {
 // SetAttr sets the given attribute on each element in the set of matched elements.
 func (s *Selection) SetAttr(attrName, val string) *Selection {
 	for _, n := range s.Nodes {
-		if attr := getAttributePtr(attrName, n); attr != nil {
+		attr := getAttributePtr(attrName, n)
+		if attr == nil {
+			n.Attr = append(n.Attr, html.Attribute{Key: attrName, Val: val})
+		} else {
 			attr.Val = val
 		}
 	}
