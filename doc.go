@@ -81,6 +81,7 @@ The three dots (...) indicate that various "overloads" are available.
     - Before...()
     - Clone()
     - Empty()
+    - Prepend...()
     - Remove...()
     - ReplaceWith...()
     - Unwrap()
