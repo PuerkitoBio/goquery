@@ -162,6 +162,45 @@ func (s *Selection) Empty() *Selection {
 	return pushStack(s, nodes)
 }
 
+// Prepend prepends the elements specified by the selector to each element in
+// the set of matched elements, following the same rules as Append.
+func (s *Selection) Prepend(selector string) *Selection {
+	return s.PrependMatcher(cascadia.MustCompile(selector))
+}
+
+// PrependMatcher prepends the elements specified by the matcher to each
+// element in the set of matched elements.
+//
+// This follows the same rules as Selection.Append.
+func (s *Selection) PrependMatcher(m Matcher) *Selection {
+	return s.PrependNodes(m.MatchAll(s.document.rootNode)...)
+}
+
+// PrependSelection prepends the elements in the selection to each element in
+// the set of matched elements.
+//
+// This follows the same rules as Selection.Append.
+func (s *Selection) PrependSelection(sel *Selection) *Selection {
+	return s.PrependNodes(sel.Nodes...)
+}
+
+// PrependHtml parses the html and prepends it to the set of matched elements.
+func (s *Selection) PrependHtml(html string) *Selection {
+	return s.PrependNodes(parseHtml(html)...)
+}
+
+// PrependNodes prepends the specified nodes to each node in the set of
+// matched elements.
+//
+// This follows the same rules as Selection.Append.
+func (s *Selection) PrependNodes(ns ...*html.Node) *Selection {
+	return s.manipulateNodes(ns, true, func(sn *html.Node, n *html.Node) {
+		// sn.FirstChild may be nil, in which case this functions like
+		// sn.AppendChild()
+		sn.InsertBefore(n, sn.FirstChild)
+	})
+}
+
 // Remove removes the set of matched elements from the document.
 // It returns the same selection, now consisting of nodes not in the document.
 func (s *Selection) Remove() *Selection {

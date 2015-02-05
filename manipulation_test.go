@@ -160,6 +160,64 @@ func TestEmpty(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
+func TestPrepend(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#main").Prepend("#nf6")
+
+	assertLength(t, doc.Find("#foot #nf6").Nodes, 0)
+	assertLength(t, doc.Find("#main #nf6:first-child").Nodes, 1)
+	printSel(t, doc.Selection)
+}
+
+func TestPrependBody(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("body").Prepend("#nf6")
+
+	assertLength(t, doc.Find("#foot #nf6").Nodes, 0)
+	assertLength(t, doc.Find("#main #nf6").Nodes, 0)
+	assertLength(t, doc.Find("body > #nf6:first-child").Nodes, 1)
+	printSel(t, doc.Selection)
+}
+
+func TestPrependSelection(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#main").PrependSelection(doc.Find("#nf1, #nf2"))
+
+	assertLength(t, doc.Find("#foot #nf1").Nodes, 0)
+	assertLength(t, doc.Find("#foot #nf2").Nodes, 0)
+	assertLength(t, doc.Find("#main #nf1:first-child").Nodes, 1)
+	assertLength(t, doc.Find("#main #nf2:nth-child(2)").Nodes, 1)
+	printSel(t, doc.Selection)
+}
+
+func TestPrependSelectionExisting(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#main").PrependSelection(doc.Find("#n5, #n6"))
+
+	assertClass(t, doc.Find("#main :nth-child(1)"), "five")
+	assertClass(t, doc.Find("#main :nth-child(2)"), "six")
+	assertClass(t, doc.Find("#main :nth-child(5)"), "three")
+	assertClass(t, doc.Find("#main :nth-child(6)"), "four")
+	printSel(t, doc.Selection)
+}
+
+func TestPrependClone(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("#n1").PrependSelection(doc.Find("#nf1").Clone())
+
+	assertLength(t, doc.Find("#foot #nf1:first-child").Nodes, 1)
+	assertLength(t, doc.Find("#main #nf1:first-child").Nodes, 1)
+	printSel(t, doc.Selection)
+}
+
+func TestPrependHtml(t *testing.T) {
+	doc := Doc2Clone()
+	doc.Find("div").PrependHtml("<strong>new node</strong>")
+
+	assertLength(t, doc.Find("strong:first-child").Nodes, 14)
+	printSel(t, doc.Selection)
+}
+
 func TestRemove(t *testing.T) {
 	doc := Doc2Clone()
 	doc.Find("#nf1").Remove()
