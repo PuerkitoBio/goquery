@@ -1,8 +1,8 @@
 package goquery
 
 import (
-	"code.google.com/p/cascadia"
-	"golang.org/x/net/html"
+"github.com/andybalholm/cascadia"
+"golang.org/x/net/html"
 )
 
 // Filter reduces the set of matched elements to those that match the selector string.
@@ -104,7 +104,7 @@ func (s *Selection) HasNodes(nodes ...*html.Node) *Selection {
 			}
 		}
 		return false
-	})
+		})
 }
 
 // HasSelection reduces the set of matched elements to those that have a
@@ -136,7 +136,7 @@ func winnow(sel *Selection, m Matcher, keep bool) []*html.Node {
 	// Use grep
 	return grep(sel, func(i int, s *Selection) bool {
 		return !m.Match(s.Get(0))
-	})
+		})
 }
 
 // Filter based on an array of nodes, and the indicator to keep (Filter) or
@@ -144,7 +144,7 @@ func winnow(sel *Selection, m Matcher, keep bool) []*html.Node {
 func winnowNodes(sel *Selection, nodes []*html.Node, keep bool) []*html.Node {
 	return grep(sel, func(i int, s *Selection) bool {
 		return isInSlice(nodes, s.Get(0)) == keep
-	})
+		})
 }
 
 // Filter based on a function test, and the indicator to keep (Filter) or
@@ -152,5 +152,5 @@ func winnowNodes(sel *Selection, nodes []*html.Node, keep bool) []*html.Node {
 func winnowFunction(sel *Selection, f func(int, *Selection) bool, keep bool) []*html.Node {
 	return grep(sel, func(i int, s *Selection) bool {
 		return f(i, s) == keep
-	})
+		})
 }

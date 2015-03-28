@@ -1,8 +1,8 @@
 package goquery
 
 import (
-	"code.google.com/p/cascadia"
-	"golang.org/x/net/html"
+"github.com/andybalholm/cascadia"
+"golang.org/x/net/html"
 )
 
 // Is checks the current matched set of elements against a selector and

@@ -1,8 +1,8 @@
 package goquery
 
 import (
-	"code.google.com/p/cascadia"
-	"golang.org/x/net/html"
+"github.com/andybalholm/cascadia"
+"golang.org/x/net/html"
 )
 
 type siblingType int
@@ -53,7 +53,7 @@ func (s *Selection) FindNodes(nodes ...*html.Node) *Selection {
 			return []*html.Node{n}
 		}
 		return nil
-	}))
+		}))
 }
 
 // Contents gets the children of each element in the Selection,
@@ -140,7 +140,7 @@ func (s *Selection) ClosestMatcher(m Matcher) *Selection {
 			}
 		}
 		return nil
-	}))
+		}))
 }
 
 // ClosestNodes gets the first element that matches one of the nodes by testing the
@@ -155,7 +155,7 @@ func (s *Selection) ClosestNodes(nodes ...*html.Node) *Selection {
 			}
 		}
 		return nil
-	}))
+		}))
 }
 
 // ClosestSelection gets the first element that matches one of the nodes in the
@@ -547,7 +547,7 @@ func findWithMatcher(nodes []*html.Node, m Matcher) []*html.Node {
 			}
 		}
 		return
-	})
+		})
 }
 
 // Internal implementation to get all parent nodes, stopping at the specified
@@ -570,7 +570,7 @@ func getParentsNodes(nodes []*html.Node, stopm Matcher, stopNodes []*html.Node) 
 			}
 		}
 		return
-	})
+		})
 }
 
 // Internal implementation of sibling nodes that return a raw slice of matches.
@@ -596,7 +596,7 @@ func getSiblingNodes(nodes []*html.Node, st siblingType, untilm Matcher, untilNo
 
 	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
 		return getChildrenWithSiblingType(n.Parent, st, n, f)
-	})
+		})
 }
 
 // Gets the children nodes of each node in the specified slice of nodes,
@@ -604,7 +604,7 @@ func getSiblingNodes(nodes []*html.Node, st siblingType, untilm Matcher, untilNo
 func getChildrenNodes(nodes []*html.Node, st siblingType) []*html.Node {
 	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
 		return getChildrenWithSiblingType(n, st, nil, nil)
-	})
+		})
 }
 
 // Gets the children of the specified parent, based on the requested sibling
@@ -679,7 +679,7 @@ func getParentNodes(nodes []*html.Node) []*html.Node {
 			return []*html.Node{n.Parent}
 		}
 		return nil
-	})
+		})
 }
 
 // Internal map function used by many traversing methods. Takes the source nodes

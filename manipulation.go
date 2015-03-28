@@ -1,10 +1,10 @@
 package goquery
 
 import (
-	"strings"
+"strings"
 
-	"code.google.com/p/cascadia"
-	"golang.org/x/net/html"
+"github.com/andybalholm/cascadia"
+"golang.org/x/net/html"
 )
 
 // After applies the selector from the root document and inserts the matched elements
@@ -52,7 +52,7 @@ func (s *Selection) AfterNodes(ns ...*html.Node) *Selection {
 		if sn.Parent != nil {
 			sn.Parent.InsertBefore(n, sn.NextSibling)
 		}
-	})
+		})
 }
 
 // Append appends the elements specified by the selector to the end of each element
@@ -96,7 +96,7 @@ func (s *Selection) AppendHtml(html string) *Selection {
 func (s *Selection) AppendNodes(ns ...*html.Node) *Selection {
 	return s.manipulateNodes(ns, false, func(sn *html.Node, n *html.Node) {
 		sn.AppendChild(n)
-	})
+		})
 }
 
 // Before inserts the matched elements before each element in the set of matched elements.
@@ -136,7 +136,7 @@ func (s *Selection) BeforeNodes(ns ...*html.Node) *Selection {
 		if sn.Parent != nil {
 			sn.Parent.InsertBefore(n, sn)
 		}
-	})
+		})
 }
 
 // Clone creates a deep copy of the set of matched nodes. The new nodes will not be
@@ -198,7 +198,7 @@ func (s *Selection) PrependNodes(ns ...*html.Node) *Selection {
 		// sn.FirstChild may be nil, in which case this functions like
 		// sn.AppendChild()
 		sn.InsertBefore(n, sn.FirstChild)
-	})
+		})
 }
 
 // Remove removes the set of matched elements from the document.
@@ -282,7 +282,7 @@ func (s *Selection) Unwrap() *Selection {
 		if ss.Nodes[0].Data != "body" {
 			ss.ReplaceWithSelection(ss.Contents())
 		}
-	})
+		})
 
 	return s
 }
@@ -334,7 +334,7 @@ func (s *Selection) WrapNode(n *html.Node) *Selection {
 func (s *Selection) wrapNodes(ns ...*html.Node) *Selection {
 	s.Each(func(i int, ss *Selection) {
 		ss.wrapAllNodes(ns...)
-	})
+		})
 
 	return s
 }
@@ -467,7 +467,7 @@ func (s *Selection) wrapInnerNodes(ns ...*html.Node) *Selection {
 		} else {
 			s.AppendNodes(cloneNode(ns[0]))
 		}
-	})
+		})
 
 	return s
 }

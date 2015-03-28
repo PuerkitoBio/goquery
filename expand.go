@@ -1,8 +1,8 @@
 package goquery
 
 import (
-	"code.google.com/p/cascadia"
-	"golang.org/x/net/html"
+"github.com/andybalholm/cascadia"
+"golang.org/x/net/html"
 )
 
 // Add adds the selector string's matching nodes to those in the current
