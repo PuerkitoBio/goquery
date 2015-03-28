@@ -3,7 +3,7 @@ package goquery
 import (
 	"strings"
 
-	"code.google.com/p/cascadia"
+	"github.com/andybalholm/cascadia"
 	"golang.org/x/net/html"
 )
 
