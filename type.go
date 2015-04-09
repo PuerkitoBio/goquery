@@ -51,7 +51,7 @@ func NewDocumentFromReader(r io.Reader) (*Document, error) {
 	return newDocument(root, nil), nil
 }
 
-// NewDocumentFromResponse is another Document constructor that takes an http resonse as argument.
+// NewDocumentFromResponse is another Document constructor that takes an http response as argument.
 // It loads the specified response's document, parses it, and stores the root Document
 // node, ready to be manipulated. The response's body is closed on return.
 func NewDocumentFromResponse(res *http.Response) (*Document, error) {
