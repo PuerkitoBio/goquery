@@ -20,6 +20,20 @@ func (s *Selection) Attr(attrName string) (val string, exists bool) {
 	return getAttributeValue(attrName, s.Nodes[0])
 }
 
+// AttrOr works like Attr but returns default value if attribute is not present.
+func (s *Selection) AttrOr(attrName, defaultValue string) string {
+	if len(s.Nodes) == 0 {
+		return ""
+	}
+
+	val, exists := getAttributeValue(attrName, s.Nodes[0])
+	if !exists {
+		return defaultValue
+	}
+
+	return val
+}
+
 // RemoveAttr removes the named attribute from each element in the set of matched elements.
 func (s *Selection) RemoveAttr(attrName string) *Selection {
 	for _, n := range s.Nodes {

@@ -90,7 +90,7 @@ The three dots (...) indicate that various "overloads" are available.
     - WrapInner...()
 
 * property.go : methods that inspect and get the node's properties values.
-    - Attr(), RemoveAttr(), SetAttr()
+    - Attr*(), RemoveAttr(), SetAttr()
     - AddClass(), HasClass(), RemoveClass(), ToggleClass()
     - Html()
     - Length()

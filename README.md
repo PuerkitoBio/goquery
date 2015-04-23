@@ -30,6 +30,7 @@ Please note that because of the net/html dependency, goquery requires Go1.1+.
 
 **Note that goquery's API is now stable, and will not break.**
 
+*    **2015-04-20** : Add `AttrOr` helper method to return the attribute's value or a default value if absent. Thanks to [piotrkowalczuk][piotr].
 *    **2015-02-04** : Add more manipulation functions - Prepend* - thanks again to [Andrew Stone][thatguystone].
 *    **2014-11-28** : Add more manipulation functions - ReplaceWith*, Wrap* and Unwrap - thanks again to [Andrew Stone][thatguystone].
 *    **2014-11-07** : Add manipulation functions (thanks to [Andrew Stone][thatguystone]) and `*Matcher` functions, that receive compiled cascadia selectors instead of selector strings, thus avoiding potential panics thrown by goquery via `cascadia.MustCompile` calls. This results in better performance (selectors can be compiled once and reused) and more idiomatic error handling (you can handle cascadia's compilation errors, instead of recovering from panics, which had been bugging me for a long time). Note that the actual type expected is a `Matcher` interface, that `cascadia.Selector` implements. Other matcher implementations could be used.
@@ -99,13 +100,14 @@ The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia'
 
 [jquery]: http://jquery.com/
 [go]: http://golang.org/
-[cascadia]: http://code.google.com/p/cascadia/
+[cascadia]: https://github.com/andybalholm/cascadia
 [bsd]: http://opensource.org/licenses/BSD-3-Clause
 [golic]: http://golang.org/LICENSE
-[caslic]: http://code.google.com/p/cascadia/source/browse/LICENSE
+[caslic]: https://github.com/andybalholm/cascadia/blob/master/LICENSE
 [doc]: http://godoc.org/github.com/PuerkitoBio/goquery
 [index]: http://api.jquery.com/index/
-[gonet]: http://code.google.com/p/go/source/detail?r=f7f5159120f51ba0070774d3c5907969b5fe7858&repo=net
-[html]: http://godoc.org/code.google.com/p/go.net/html
+[gonet]: https://github.com/golang/net/
+[html]: http://godoc.org/golang.org/x/net/html
 [wiki]: https://github.com/PuerkitoBio/goquery/wiki/Tips-and-tricks
 [thatguystone]: https://github.com/thatguystone
+[piotr]: https://github.com/piotrkowalczuk
