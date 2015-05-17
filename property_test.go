@@ -245,3 +245,22 @@ func TestToggleClass(t *testing.T) {
 		t.Errorf("Expected #nf1 to have no classes, have %q", a)
 	}
 }
+
+func TestValPosition(t *testing.T) {
+	val := Doc4().Find("#main_position1").Find("[name=t1]").Val()
+	if (val != "textarea_1") {
+		t.Errorf("Position error, value, %q", val)
+	}
+	val = Doc4().Find("#main_position2").Find("[name=t1]").Val()
+	if (val != "textarea_1") {
+		t.Errorf("Position error, value, %q", val)
+	}
+	val = Doc4().Find("#main_position3").Find("[name=t1]").Val()
+	if (val != "checkbox_3") {
+		t.Errorf("Position error, value, %q", val)
+	}
+	val = Doc4().Find("#main_position4").Find("[name=t1]").Val()
+	if (val != "radio_4") {
+		t.Errorf("Position error, value, %q", val)
+	}
+}

@@ -10,6 +10,30 @@ import (
 
 var rxClassTrim = regexp.MustCompile("[\t\r\n]")
 
+// Experemental func, input[type=text|hidden|radio|checkbox], textarea
+func (s *Selection) Val() (val string) {
+	if len(s.Nodes) == 0 {
+		return
+	}
+	node := s.Filter("input[type #=(text|hidden)], input[type #=(radio|checkbox)][checked], textarea").Last()
+	if len(node.Nodes) == 0 {
+		return
+	}
+	node_type := strings.ToLower(node.Nodes[0].Data)
+	if node_type == "input" {
+		switch node.AttrOr("type", "text") {
+			case "checkbox", "radio":
+				return node.AttrOr("value", "on")
+			case "text", "hidden":
+				return node.AttrOr("value", "")
+		}
+	} else if node_type == "textarea" {
+		val, _ = node.Html()
+		return val
+	}
+	return
+}
+
 // Attr gets the specified attribute's value for the first element in the
 // Selection. To get the value for each element individually, use a looping
 // construct such as Each or Map method.
