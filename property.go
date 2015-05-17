@@ -10,12 +10,12 @@ import (
 
 var rxClassTrim = regexp.MustCompile("[\t\r\n]")
 
-// Experimental func, input[type=text|hidden|radio|checkbox], textarea
+// Experimental func, input[type=text|hidden|radio|checkbox], textarea, select
 func (s *Selection) Val() (val string) {
 	if len(s.Nodes) == 0 {
 		return
 	}
-	node := s.Filter("input[type #=(text|hidden)], input[type #=(radio|checkbox)][checked], textarea").Last()
+	node := s.Filter("input[type #=(text|hidden)], input[type #=(radio|checkbox)][checked], textarea, select").Last()
 	if len(node.Nodes) == 0 {
 		return
 	}
@@ -27,6 +27,15 @@ func (s *Selection) Val() (val string) {
 			case "text", "hidden":
 				return node.AttrOr("value", "")
 		}
+	} else if node_type == "select" {
+		node_option := node.Find("option[selected]")
+		if len(node_option.Nodes) == 0 {
+			node_option = node.Find("option").First()
+			if len(node_option.Nodes) == 0 {
+				return
+			}
+		}
+		return node_option.AttrOr("value", "")
 	} else if node_type == "textarea" {
 		val, _ = node.Html()
 		return val

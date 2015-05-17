@@ -248,19 +248,29 @@ func TestToggleClass(t *testing.T) {
 
 func TestValPosition(t *testing.T) {
 	val := Doc4().Find("#main_position1").Find("[name=t1]").Val()
-	if (val != "textarea_1") {
+	if val != "textarea_1" {
 		t.Errorf("Position error, value, %q", val)
 	}
 	val = Doc4().Find("#main_position2").Find("[name=t1]").Val()
-	if (val != "textarea_1") {
+	if val != "textarea_1" {
 		t.Errorf("Position error, value, %q", val)
 	}
 	val = Doc4().Find("#main_position3").Find("[name=t1]").Val()
-	if (val != "checkbox_3") {
+	if val != "checkbox_3" {
 		t.Errorf("Position error, value, %q", val)
 	}
 	val = Doc4().Find("#main_position4").Find("[name=t1]").Val()
-	if (val != "radio_4") {
+	if val != "radio_4" {
 		t.Errorf("Position error, value, %q", val)
+	}
+}
+func TestValSelect(t *testing.T) {
+	val := Doc4().Find("#main_select1").Find("[name=optionsForm\\:skinsList]").Val()
+	if val != "classic" {
+		t.Errorf("Val select error, value, %q", val)
+	}
+	val = Doc4().Find("#main_select2").Find("[name=optionsForm\\:skinsList]").Val()
+	if val != "DEFAULT" {
+		t.Errorf("Val DEFAULT select error, value, %q", val)
 	}
 }
