@@ -1,5 +1,5 @@
 # goquery - a little like that j-thing, only in Go
-**forked from [PuerkitoBio/goquery][PuerkitoBio/goquery]**
+**forked from [PuerkitoBio/goquery][forkfrom]**
 
 [![build status](https://secure.travis-ci.org/PuerkitoBio/goquery.png)](http://travis-ci.org/PuerkitoBio/goquery)
 
@@ -106,6 +106,7 @@ The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia'
 [bsd]: http://opensource.org/licenses/BSD-3-Clause
 [golic]: http://golang.org/LICENSE
 [caslic]: https://github.com/andybalholm/cascadia/blob/master/LICENSE
+[forkfrom]: https://github.com/github.com/PuerkitoBio
 [doc]: http://godoc.org/github.com/PuerkitoBio/goquery
 [index]: http://api.jquery.com/index/
 [gonet]: https://github.com/golang/net/
@@ -113,3 +114,4 @@ The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia'
 [wiki]: https://github.com/PuerkitoBio/goquery/wiki/Tips-and-tricks
 [thatguystone]: https://github.com/thatguystone
 [piotr]: https://github.com/piotrkowalczuk
+[mantyr]: https://github.com/mantyr
