@@ -10,7 +10,7 @@ import (
 
 var rxClassTrim = regexp.MustCompile("[\t\r\n]")
 
-// Experemental func, input[type=text|hidden|radio|checkbox], textarea
+// Experimental func, input[type=text|hidden|radio|checkbox], textarea
 func (s *Selection) Val() (val string) {
 	if len(s.Nodes) == 0 {
 		return
