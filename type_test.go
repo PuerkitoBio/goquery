@@ -13,6 +13,7 @@ import (
 var doc *Document
 var doc2 *Document
 var doc3 *Document
+var doc4 *Document
 var docB *Document
 var docW *Document
 
@@ -42,6 +43,12 @@ func Doc3() *Document {
 }
 func Doc3Clone() *Document {
 	return CloneDocument(Doc3())
+}
+func Doc4() *Document {
+	if doc4 == nil {
+		doc4 = loadDoc("page4.html")
+	}
+	return doc4
 }
 func DocB() *Document {
 	if docB == nil {

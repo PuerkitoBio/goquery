@@ -30,6 +30,7 @@ Please note that because of the net/html dependency, goquery requires Go1.1+.
 
 **Note that goquery's API is now stable, and will not break.**
 
+*    **2015-05-17** : Add `Val` helper method to return the value for input[type=hidden|text|radio|checkbox], textarea, select. [Oleg Shevelev][mantyr].
 *    **2015-04-20** : Add `AttrOr` helper method to return the attribute's value or a default value if absent. Thanks to [piotrkowalczuk][piotr].
 *    **2015-02-04** : Add more manipulation functions - Prepend* - thanks again to [Andrew Stone][thatguystone].
 *    **2014-11-28** : Add more manipulation functions - ReplaceWith*, Wrap* and Unwrap - thanks again to [Andrew Stone][thatguystone].
@@ -111,3 +112,4 @@ The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia'
 [wiki]: https://github.com/PuerkitoBio/goquery/wiki/Tips-and-tricks
 [thatguystone]: https://github.com/thatguystone
 [piotr]: https://github.com/piotrkowalczuk
+[mantyr]: https://github.com/mantyr
