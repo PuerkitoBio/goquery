@@ -1,5 +1,4 @@
 # goquery - a little like that j-thing, only in Go
-**forked from [PuerkitoBio/goquery][forkfrom]**
 
 [![build status](https://secure.travis-ci.org/PuerkitoBio/goquery.png)](http://travis-ci.org/PuerkitoBio/goquery)
 
