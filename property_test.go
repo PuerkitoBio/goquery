@@ -20,6 +20,11 @@ func TestAttrOr(t *testing.T) {
 	} else {
 		t.Logf("Value returned for not existing attribute: %v.", val)
 	}
+	if val := Doc().Find("zz").AttrOr("fake-attribute", "alternative"); val != "alternative" {
+		t.Error("Expected an alternative value for 'fake-attribute' on an empty selection.")
+	} else {
+		t.Logf("Value returned for empty selection: %v.", val)
+	}
 }
 
 func TestAttrNotExist(t *testing.T) {

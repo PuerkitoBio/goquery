@@ -23,7 +23,7 @@ func (s *Selection) Attr(attrName string) (val string, exists bool) {
 // AttrOr works like Attr but returns default value if attribute is not present.
 func (s *Selection) AttrOr(attrName, defaultValue string) string {
 	if len(s.Nodes) == 0 {
-		return ""
+		return defaultValue
 	}
 
 	val, exists := getAttributeValue(attrName, s.Nodes[0])
