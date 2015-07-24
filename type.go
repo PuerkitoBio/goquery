@@ -27,11 +27,24 @@ func NewDocumentFromNode(root *html.Node) *Document {
 }
 
 // NewDocument is a Document constructor that takes a string URL as argument.
+// You can also add a string proxy after this URL. If you have no proxy, add
+// nothing. If you set more than two arguments, it use the second as a proxy.
 // It loads the specified document, parses it, and stores the root Document
 // node, ready to be manipulated.
-func NewDocument(url string) (*Document, error) {
+func NewDocument(URL string, proxy ...string) (*Document, error) {
+	var conn *http.Client = http.DefaultClient
+	//Generate a proxy
+	if len(proxy) != 0 && proxy[0] != "" {
+		proxyUrl, e := url.Parse(proxy[0])
+		if e != nil {
+			return nil, e
+		}
+		conn.Transport = &http.Transport{
+			Proxy: http.ProxyURL(proxyUrl),
+		}
+	}
 	// Load the URL
-	res, e := http.Get(url)
+	res, e := conn.Get(URL)
 	if e != nil {
 		return nil, e
 	}
