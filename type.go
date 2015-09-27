@@ -56,10 +56,12 @@ func NewDocumentFromReader(r io.Reader) (*Document, error) {
 // node, ready to be manipulated. The response's body is closed on return.
 func NewDocumentFromResponse(res *http.Response) (*Document, error) {
 	if res == nil {
-		return nil, errors.New("Response is nil pointer")
+		return nil, errors.New("Response is nil")
 	}
-
 	defer res.Body.Close()
+	if res.Request == nil {
+		return nil, errors.New("Response.Request is nil")
+	}
 
 	// Parse the HTML into nodes
 	root, e := html.Parse(res.Body)
