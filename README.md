@@ -30,6 +30,7 @@ Please note that because of the net/html dependency, goquery requires Go1.1+.
 
 **Note that goquery's API is now stable, and will not break.**
 
+*    **2016-02-02** : Add `NodeName` utility function similar to the DOM's `nodeName` property. It returns the tag name of the first element in a selection, and other relevant values of non-element nodes (see godoc for details). Add `OuterHtml` utility function similar to the DOM's `outerHTML` property (named `OuterHtml` in small caps for consistency with the existing `Html` method on the `Selection`).
 *    **2015-04-20** : Add `AttrOr` helper method to return the attribute's value or a default value if absent. Thanks to [piotrkowalczuk][piotr].
 *    **2015-02-04** : Add more manipulation functions - Prepend* - thanks again to [Andrew Stone][thatguystone].
 *    **2014-11-28** : Add more manipulation functions - ReplaceWith*, Wrap* and Unwrap - thanks again to [Andrew Stone][thatguystone].
@@ -55,6 +56,8 @@ jQuery often has many variants for the same function (no argument, a selector st
 *    The signatures accepting a DOM element as argument in jQuery are defined in goquery as `XxxNodes()` and take a variadic argument of type `*html.Node` (e.g.: `FilterNodes()`)
 *    The signatures accepting a function as argument in jQuery are defined in goquery as `XxxFunction()` and take a function as argument (e.g.: `FilterFunction()`)
 *    The goquery methods that can be called with a selector string have a corresponding version that take a `Matcher` interface and are defined as `XxxMatcher()` (e.g.: `IsMatcher()`)
+
+Utility functions that are not in jQuery but are useful in Go are implemented as functions (that take a `*Selection` as parameter), to avoid a potential naming clash on the `*Selection`'s methods (reserved for jQuery-equivalent behaviour).
 
 The complete [godoc reference documentation can be found here][doc].
 

@@ -35,7 +35,7 @@ Also, because the net/html parser requires UTF-8 encoding, so does goquery: it i
 the caller's responsibility to ensure that the source document provides UTF-8 encoded HTML.
 See the repository's wiki for various options on how to do this.
 
-Syntax-wise, it is as close as possible to jQuery, with the same function names when
+Syntax-wise, it is as close as possible to jQuery, with the same method names when
 possible, and that warm and fuzzy chainable interface. jQuery being the
 ultra-popular library that it is, writing a similar HTML-manipulating
 library was better to follow its API than to start anew (in the same spirit as
@@ -114,5 +114,10 @@ The three dots (...) indicate that various "overloads" are available.
     - Document
     - Selection
     - Matcher
+
+* utilities.go : definition of helper functions (and not methods on a *Selection)
+that are not part of jQuery, but are useful to goquery.
+    - NodeName
+    - OuterHtml
 */
 package goquery
