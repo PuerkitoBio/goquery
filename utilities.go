@@ -1,8 +1,66 @@
 package goquery
 
 import (
+	"bytes"
+
 	"golang.org/x/net/html"
 )
+
+var nodeNames = []string{
+	html.ErrorNode:    "#error",
+	html.TextNode:     "#text",
+	html.DocumentNode: "#document",
+	html.CommentNode:  "#comment",
+}
+
+// NodeName returns the node name of the first element in the selection.
+// It tries to behave in a similar way as the DOM's nodeName property
+// (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeName).
+//
+// Go's net/html package defines the following node types, listed with
+// the corresponding returned value from this function:
+//
+// ErrorNode : #error
+// TextNode : #text
+// DocumentNode : #document
+// ElementNode : the element's tag name
+// CommentNode : #comment
+// DoctypeNode : the name of the document type
+//
+func NodeName(s *Selection) string {
+	if s.Length() == 0 {
+		return ""
+	}
+	switch n := s.Get(0); n.Type {
+	case html.ElementNode, html.DoctypeNode:
+		return n.Data
+	default:
+		if n.Type >= 0 && int(n.Type) < len(nodeNames) {
+			return nodeNames[n.Type]
+		}
+		return ""
+	}
+}
+
+// OuterHtml returns the outer HTML rendering of the first item in
+// the selection - that is, the HTML including the first element's
+// tag and attributes.
+//
+// Unlike InnerHtml, this is a function and not a method on the Selection,
+// because this is not a jQuery method (in javascript-land, this is
+// a property provided by the DOM).
+func OuterHtml(s *Selection) (string, error) {
+	var buf bytes.Buffer
+
+	if s.Length() == 0 {
+		return "", nil
+	}
+	n := s.Get(0)
+	if err := html.Render(&buf, n); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
+}
 
 func getChildren(n *html.Node) (result []*html.Node) {
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
