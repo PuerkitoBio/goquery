@@ -199,7 +199,7 @@ func TestIssue103(t *testing.T) {
 	}
 	text := d.Find("title").Text()
 	for i, r := range text {
-		fmt.Printf("%d: %d - %q\n", i, r, string(r))
+		t.Logf("%d: %d - %q\n", i, r, string(r))
 	}
-	fmt.Println(text)
+	t.Log(text)
 }
