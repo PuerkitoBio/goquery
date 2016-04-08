@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"golang.org/x/net/html"
@@ -189,4 +190,16 @@ func TestNewDocumentFromResponseNil(t *testing.T) {
 	if e == nil {
 		t.Error("Expected error, got none")
 	}
+}
+
+func TestIssue103(t *testing.T) {
+	d, err := NewDocumentFromReader(strings.NewReader("<html><title>Scientists Stored These Images in DNA—Then Flawlessly Retrieved Them</title></html>"))
+	if err != nil {
+		t.Error(err)
+	}
+	text := d.Find("title").Text()
+	for i, r := range text {
+		fmt.Printf("%d: %d - %q\n", i, r, string(r))
+	}
+	fmt.Println(text)
 }

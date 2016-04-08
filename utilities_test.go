@@ -77,7 +77,7 @@ func TestNodeNameMultiSel(t *testing.T) {
 	sort.Strings(in)
 	sort.Strings(out)
 	if !reflect.DeepEqual(in, out) {
-		t.Error("want %v, got %v")
+		t.Errorf("want %v, got %v", in, out)
 	}
 }
 

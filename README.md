@@ -67,7 +67,7 @@ Please note that Cascadia's selectors do not necessarily match all supported sel
 
 See some tips and tricks in the [wiki][].
 
-Taken (and adapted as if executed from outside the goquery package) from example_test.go:
+Adapted from example_test.go:
 
 ```Go
 package main
