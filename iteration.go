@@ -1,7 +1,10 @@
 package goquery
 
 // Each iterates over a Selection object, executing a function for each
-// matched element. It returns the current Selection object.
+// matched element. It returns the current Selection object. The function
+// f is called for each element in the selection with the index of the
+// element in that selection starting at 0, and a *Selection that contains
+// only that element.
 func (s *Selection) Each(f func(int, *Selection)) *Selection {
 	for i, n := range s.Nodes {
 		f(i, newSingleSelection(n, s.document))
@@ -23,7 +26,10 @@ func (s *Selection) EachWithBreak(f func(int, *Selection) bool) *Selection {
 }
 
 // Map passes each element in the current matched set through a function,
-// producing a slice of string holding the returned values.
+// producing a slice of string holding the returned values. The function
+// f is called for each element in the selection with the index of the
+// element in that selection starting at 0, and a *Selection that contains
+// only that element.
 func (s *Selection) Map(f func(int, *Selection) string) (result []string) {
 	for i, n := range s.Nodes {
 		result = append(result, f(i, newSingleSelection(n, s.document)))
