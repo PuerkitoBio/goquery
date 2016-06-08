@@ -185,6 +185,28 @@ func TestNewDocumentFromReader(t *testing.T) {
 	}
 }
 
+func TestNewDocumentFromString(t *testing.T) {
+	_, err := NewDocumentFromString(`<html><head><title>Test</title><body><h1>Hi</h1></body></html>`)
+	if err != nil {
+		t.Errorf("expected no error, got %s", err)
+	}
+	_, err = NewDocumentFromString(`<html><body><aef<eqf>>>qq></body></ht>`)
+	if err != nil {
+		t.Errorf("expected error, got none")
+	}
+}
+
+func TestNewDocumentFromBytes(t *testing.T) {
+	_, err := NewDocumentFromBytes([]byte(`<html><head><title>Test</title><body><h1>Hi</h1></body></html>`))
+	if err != nil {
+		t.Errorf("expected no error, got %s", err)
+	}
+	_, err = NewDocumentFromBytes([]byte(`<html><body><aef<eqf>>>qq></body></ht>`))
+	if err != nil {
+		t.Errorf("expected error, got none")
+	}
+}
+
 func TestNewDocumentFromResponseNil(t *testing.T) {
 	_, e := NewDocumentFromResponse(nil)
 	if e == nil {
