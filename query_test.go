@@ -11,6 +11,13 @@ func TestIs(t *testing.T) {
 	}
 }
 
+func TestIsInvalid(t *testing.T) {
+	sel := Doc().Find(".footer p:nth-child(1)")
+	if sel.Is("") {
+		t.Error("Is should not succeed with invalid selector string")
+	}
+}
+
 func TestIsPositional(t *testing.T) {
 	sel := Doc().Find(".footer p:nth-child(2)")
 	if !sel.Is("p:nth-child(2)") {

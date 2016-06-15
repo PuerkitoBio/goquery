@@ -14,6 +14,11 @@ func TestFilterNone(t *testing.T) {
 	assertLength(t, sel.Nodes, 0)
 }
 
+func TestFilterInvalid(t *testing.T) {
+	sel := Doc().Find(".span12").Filter("")
+	assertLength(t, sel.Nodes, 0)
+}
+
 func TestFilterRollback(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	sel2 := sel.Filter(".alert").End()
@@ -72,6 +77,11 @@ func TestFilterSelectionNil(t *testing.T) {
 func TestNot(t *testing.T) {
 	sel := Doc().Find(".span12").Not(".alert")
 	assertLength(t, sel.Nodes, 1)
+}
+
+func TestNotInvalid(t *testing.T) {
+	sel := Doc().Find(".span12").Not("")
+	assertLength(t, sel.Nodes, 2)
 }
 
 func TestNotRollback(t *testing.T) {
@@ -143,6 +153,11 @@ func TestHas(t *testing.T) {
 	sel := Doc().Find(".container-fluid").Has(".center-content")
 	assertLength(t, sel.Nodes, 2)
 	// Has() returns the high-level .container-fluid div, and the one that is the immediate parent of center-content
+}
+
+func TestHasInvalid(t *testing.T) {
+	sel := Doc().Find(".container-fluid").Has("")
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestHasRollback(t *testing.T) {
