@@ -1,19 +1,16 @@
 package goquery
 
-import (
-	"github.com/andybalholm/cascadia"
-	"golang.org/x/net/html"
-)
+import "golang.org/x/net/html"
 
 // Filter reduces the set of matched elements to those that match the selector string.
 // It returns a new Selection object for this subset of matching elements.
 func (s *Selection) Filter(selector string) *Selection {
-	return s.FilterMatcher(cascadia.MustCompile(selector))
+	return s.FilterMatcher(compileMatcher(selector))
 }
 
 // FilterMatcher reduces the set of matched elements to those that match
-// the given matcher.
-// It returns a new Selection object for this subset of matching elements.
+// the given matcher. It returns a new Selection object for this subset
+// of matching elements.
 func (s *Selection) FilterMatcher(m Matcher) *Selection {
 	return pushStack(s, winnow(s, m, true))
 }
@@ -21,7 +18,7 @@ func (s *Selection) FilterMatcher(m Matcher) *Selection {
 // Not removes elements from the Selection that match the selector string.
 // It returns a new Selection object with the matching elements removed.
 func (s *Selection) Not(selector string) *Selection {
-	return s.NotMatcher(cascadia.MustCompile(selector))
+	return s.NotMatcher(compileMatcher(selector))
 }
 
 // NotMatcher removes elements from the Selection that match the given matcher.

@@ -108,6 +108,19 @@ func printSel(t *testing.T, sel *Selection) {
 	}
 }
 
+func shortPrintSel(t *testing.T, sel *Selection) {
+	sel.Each(func(i int, s *Selection) {
+		h, _ := OuterHtml(s)
+		if ix := strings.Index(h, "\n"); ix >= 0 {
+			h = h[:ix]
+		}
+		if len(h) > 100 {
+			h = h[:100]
+		}
+		fmt.Println(i, ">>> ", h)
+	})
+}
+
 func loadDoc(page string) *Document {
 	var f *os.File
 	var e error

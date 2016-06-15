@@ -21,14 +21,19 @@ func TestFindNotSelf(t *testing.T) {
 	assertLength(t, sel.Nodes, 0)
 }
 
-func TestFindInvalidSelector(t *testing.T) {
-	defer assertPanic(t)
-	Doc().Find(":+ ^")
+func TestFindInvalid(t *testing.T) {
+	sel := Doc().Find(":+ ^")
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestChainedFind(t *testing.T) {
 	sel := Doc().Find("div.hero-unit").Find(".row-fluid")
 	assertLength(t, sel.Nodes, 4)
+}
+
+func TestChainedFindInvalid(t *testing.T) {
+	sel := Doc().Find("div.hero-unit").Find("")
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestChildren(t *testing.T) {
@@ -58,6 +63,11 @@ func TestChildrenFiltered(t *testing.T) {
 	assertLength(t, sel.Nodes, 1)
 }
 
+func TestChildrenFilteredInvalid(t *testing.T) {
+	sel := Doc().Find(".pvk-content").ChildrenFiltered("")
+	assertLength(t, sel.Nodes, 0)
+}
+
 func TestChildrenFilteredRollback(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	sel2 := sel.ChildrenFiltered(".hero-unit").End()
@@ -67,6 +77,11 @@ func TestChildrenFilteredRollback(t *testing.T) {
 func TestContentsFiltered(t *testing.T) {
 	sel := Doc().Find(".pvk-content").ContentsFiltered(".hero-unit")
 	assertLength(t, sel.Nodes, 1)
+}
+
+func TestContentsFilteredInvalid(t *testing.T) {
+	sel := Doc().Find(".pvk-content").ContentsFiltered("~")
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestContentsFilteredRollback(t *testing.T) {
@@ -102,6 +117,11 @@ func TestParentFiltered(t *testing.T) {
 	assertClass(t, sel, "hero-unit")
 }
 
+func TestParentFilteredInvalid(t *testing.T) {
+	sel := Doc().Find(".container-fluid").ParentFiltered("")
+	assertLength(t, sel.Nodes, 0)
+}
+
 func TestParentFilteredRollback(t *testing.T) {
 	sel := Doc().Find(".container-fluid")
 	sel2 := sel.ParentFiltered(".hero-unit").End()
@@ -130,6 +150,11 @@ func TestParentsFiltered(t *testing.T) {
 	assertLength(t, sel.Nodes, 1)
 }
 
+func TestParentsFilteredInvalid(t *testing.T) {
+	sel := Doc().Find(".container-fluid").ParentsFiltered("")
+	assertLength(t, sel.Nodes, 0)
+}
+
 func TestParentsFilteredRollback(t *testing.T) {
 	sel := Doc().Find(".container-fluid")
 	sel2 := sel.ParentsFiltered("body").End()
@@ -139,6 +164,11 @@ func TestParentsFilteredRollback(t *testing.T) {
 func TestParentsUntil(t *testing.T) {
 	sel := Doc().Find(".container-fluid").ParentsUntil("body")
 	assertLength(t, sel.Nodes, 6)
+}
+
+func TestParentsUntilInvalid(t *testing.T) {
+	sel := Doc().Find(".container-fluid").ParentsUntil("")
+	assertLength(t, sel.Nodes, 8)
 }
 
 func TestParentsUntilRollback(t *testing.T) {
@@ -178,6 +208,11 @@ func TestParentsUntilNodesRollback(t *testing.T) {
 func TestParentsFilteredUntil(t *testing.T) {
 	sel := Doc().Find(".container-fluid").ParentsFilteredUntil(".pvk-content", "body")
 	assertLength(t, sel.Nodes, 2)
+}
+
+func TestParentsFilteredUntilInvalid(t *testing.T) {
+	sel := Doc().Find(".container-fluid").ParentsFilteredUntil("", "")
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestParentsFilteredUntilRollback(t *testing.T) {
@@ -240,6 +275,11 @@ func TestSiblingsFiltered(t *testing.T) {
 	assertLength(t, sel.Nodes, 3)
 }
 
+func TestSiblingsFilteredInvalid(t *testing.T) {
+	sel := Doc().Find(".pvk-gutter").SiblingsFiltered("")
+	assertLength(t, sel.Nodes, 0)
+}
+
 func TestSiblingsFilteredRollback(t *testing.T) {
 	sel := Doc().Find(".pvk-gutter")
 	sel2 := sel.SiblingsFiltered(".pvk-content").End()
@@ -270,6 +310,11 @@ func TestNextNone(t *testing.T) {
 func TestNextFiltered(t *testing.T) {
 	sel := Doc().Find(".container-fluid").NextFiltered("div")
 	assertLength(t, sel.Nodes, 2)
+}
+
+func TestNextFilteredInvalid(t *testing.T) {
+	sel := Doc().Find(".container-fluid").NextFiltered("")
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestNextFilteredRollback(t *testing.T) {
@@ -310,6 +355,11 @@ func TestPrevFiltered(t *testing.T) {
 	assertLength(t, sel.Nodes, 5)
 }
 
+func TestPrevFilteredInvalid(t *testing.T) {
+	sel := Doc().Find(".row-fluid").PrevFiltered("")
+	assertLength(t, sel.Nodes, 0)
+}
+
 func TestPrevFilteredRollback(t *testing.T) {
 	sel := Doc().Find(".row-fluid")
 	sel2 := sel.PrevFiltered(".row-fluid").End()
@@ -340,6 +390,11 @@ func TestNextAllNone(t *testing.T) {
 func TestNextAllFiltered(t *testing.T) {
 	sel := Doc().Find("#cf2 .row-fluid").NextAllFiltered("[ng-cloak]")
 	assertLength(t, sel.Nodes, 2)
+}
+
+func TestNextAllFilteredInvalid(t *testing.T) {
+	sel := Doc().Find("#cf2 .row-fluid").NextAllFiltered("")
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestNextAllFilteredRollback(t *testing.T) {
@@ -380,6 +435,11 @@ func TestPrevAllFiltered(t *testing.T) {
 	assertLength(t, sel.Nodes, 3)
 }
 
+func TestPrevAllFilteredInvalid(t *testing.T) {
+	sel := Doc().Find(".pvk-gutter").PrevAllFiltered("")
+	assertLength(t, sel.Nodes, 0)
+}
+
 func TestPrevAllFilteredRollback(t *testing.T) {
 	sel := Doc().Find(".pvk-gutter")
 	sel2 := sel.PrevAllFiltered(".pvk-content").End()
@@ -390,6 +450,11 @@ func TestNextUntil(t *testing.T) {
 	sel := Doc().Find(".alert a").NextUntil("p")
 	assertLength(t, sel.Nodes, 1)
 	assertSelectionIs(t, sel, "h4")
+}
+
+func TestNextUntilInvalid(t *testing.T) {
+	sel := Doc().Find(".alert a").NextUntil("")
+	assertLength(t, sel.Nodes, 2)
 }
 
 func TestNextUntil2(t *testing.T) {
@@ -446,6 +511,11 @@ func TestPrevUntil(t *testing.T) {
 	assertSelectionIs(t, sel, "h4")
 }
 
+func TestPrevUntilInvalid(t *testing.T) {
+	sel := Doc().Find(".alert p").PrevUntil("")
+	assertLength(t, sel.Nodes, 2)
+}
+
 func TestPrevUntil2(t *testing.T) {
 	sel := Doc().Find("[ng-cloak]").PrevUntil(":not([ng-cloak])")
 	assertLength(t, sel.Nodes, 1)
@@ -500,6 +570,11 @@ func TestNextFilteredUntil(t *testing.T) {
 	assertSelectionIs(t, sel, "#n3", "#n5", "#nf3", "#nf5")
 }
 
+func TestNextFilteredUntilInvalid(t *testing.T) {
+	sel := Doc2().Find(".two").NextFilteredUntil("", "")
+	assertLength(t, sel.Nodes, 0)
+}
+
 func TestNextFilteredUntilRollback(t *testing.T) {
 	sel := Doc2().Find(".two")
 	sel2 := sel.NextFilteredUntil(".even", ".six").End()
@@ -540,6 +615,11 @@ func TestPrevFilteredUntil(t *testing.T) {
 	sel := Doc2().Find(".five").PrevFilteredUntil(".odd", ".one")
 	assertLength(t, sel.Nodes, 4)
 	assertSelectionIs(t, sel, "#n4", "#n2", "#nf4", "#nf2")
+}
+
+func TestPrevFilteredUntilInvalid(t *testing.T) {
+	sel := Doc2().Find(".five").PrevFilteredUntil("", "")
+	assertLength(t, sel.Nodes, 0)
 }
 
 func TestPrevFilteredUntilRollback(t *testing.T) {
@@ -595,6 +675,12 @@ func TestClosestNoDupes(t *testing.T) {
 func TestClosestNone(t *testing.T) {
 	sel := Doc().Find("h4")
 	sel2 := sel.Closest("a")
+	assertLength(t, sel2.Nodes, 0)
+}
+
+func TestClosestInvalid(t *testing.T) {
+	sel := Doc().Find("h4")
+	sel2 := sel.Closest("")
 	assertLength(t, sel2.Nodes, 0)
 }
 

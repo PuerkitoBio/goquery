@@ -14,6 +14,11 @@ func TestFirstEmpty(t *testing.T) {
 	assertLength(t, sel.Nodes, 0)
 }
 
+func TestFirstInvalid(t *testing.T) {
+	sel := Doc().Find("").First()
+	assertLength(t, sel.Nodes, 0)
+}
+
 func TestFirstRollback(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	sel2 := sel.First().End()
@@ -33,6 +38,11 @@ func TestLast(t *testing.T) {
 
 func TestLastEmpty(t *testing.T) {
 	sel := Doc().Find(".pvk-zzcontentzz").Last()
+	assertLength(t, sel.Nodes, 0)
+}
+
+func TestLastInvalid(t *testing.T) {
+	sel := Doc().Find("").Last()
 	assertLength(t, sel.Nodes, 0)
 }
 
@@ -63,6 +73,11 @@ func TestEqEmpty(t *testing.T) {
 	assertLength(t, sel.Nodes, 0)
 }
 
+func TestEqInvalid(t *testing.T) {
+	sel := Doc().Find("").Eq(0)
+	assertLength(t, sel.Nodes, 0)
+}
+
 func TestEqInvalidPositive(t *testing.T) {
 	sel := Doc().Find(".pvk-content").Eq(3)
 	assertLength(t, sel.Nodes, 0)
@@ -83,6 +98,16 @@ func TestSlice(t *testing.T) {
 	sel := Doc().Find(".pvk-content").Slice(0, 2)
 
 	assertLength(t, sel.Nodes, 2)
+}
+
+func TestSliceEmpty(t *testing.T) {
+	defer assertPanic(t)
+	Doc().Find("x").Slice(0, 2)
+}
+
+func TestSliceInvalid(t *testing.T) {
+	defer assertPanic(t)
+	Doc().Find("").Slice(0, 2)
 }
 
 func TestSliceOutOfBounds(t *testing.T) {
@@ -154,6 +179,13 @@ func TestIndexSelector(t *testing.T) {
 	sel := Doc().Find(".hero-unit")
 	if i := sel.IndexSelector("div"); i != 4 {
 		t.Errorf("Expected index of 4, got %v.", i)
+	}
+}
+
+func TestIndexSelectorInvalid(t *testing.T) {
+	sel := Doc().Find(".hero-unit")
+	if i := sel.IndexSelector(""); i != -1 {
+		t.Errorf("Expected index of -1, got %v.", i)
 	}
 }
 

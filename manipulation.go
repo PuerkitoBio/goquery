@@ -3,7 +3,6 @@ package goquery
 import (
 	"strings"
 
-	"github.com/andybalholm/cascadia"
 	"golang.org/x/net/html"
 )
 
@@ -15,7 +14,7 @@ import (
 //
 // This follows the same rules as Selection.Append.
 func (s *Selection) After(selector string) *Selection {
-	return s.AfterMatcher(cascadia.MustCompile(selector))
+	return s.AfterMatcher(compileMatcher(selector))
 }
 
 // AfterMatcher applies the matcher from the root document and inserts the matched elements
@@ -66,7 +65,7 @@ func (s *Selection) AfterNodes(ns ...*html.Node) *Selection {
 // appended to all target locations except the last one, which will be moved
 // as noted in (2).
 func (s *Selection) Append(selector string) *Selection {
-	return s.AppendMatcher(cascadia.MustCompile(selector))
+	return s.AppendMatcher(compileMatcher(selector))
 }
 
 // AppendMatcher appends the elements specified by the matcher to the end of each element
@@ -103,7 +102,7 @@ func (s *Selection) AppendNodes(ns ...*html.Node) *Selection {
 //
 // This follows the same rules as Selection.Append.
 func (s *Selection) Before(selector string) *Selection {
-	return s.BeforeMatcher(cascadia.MustCompile(selector))
+	return s.BeforeMatcher(compileMatcher(selector))
 }
 
 // BeforeMatcher inserts the matched elements before each element in the set of matched elements.
@@ -165,7 +164,7 @@ func (s *Selection) Empty() *Selection {
 // Prepend prepends the elements specified by the selector to each element in
 // the set of matched elements, following the same rules as Append.
 func (s *Selection) Prepend(selector string) *Selection {
-	return s.PrependMatcher(cascadia.MustCompile(selector))
+	return s.PrependMatcher(compileMatcher(selector))
 }
 
 // PrependMatcher prepends the elements specified by the matcher to each
@@ -216,7 +215,7 @@ func (s *Selection) Remove() *Selection {
 // RemoveFiltered removes the set of matched elements by selector.
 // It returns the Selection of removed nodes.
 func (s *Selection) RemoveFiltered(selector string) *Selection {
-	return s.RemoveMatcher(cascadia.MustCompile(selector))
+	return s.RemoveMatcher(compileMatcher(selector))
 }
 
 // RemoveMatcher removes the set of matched elements.
@@ -231,7 +230,7 @@ func (s *Selection) RemoveMatcher(m Matcher) *Selection {
 //
 // This follows the same rules as Selection.Append.
 func (s *Selection) ReplaceWith(selector string) *Selection {
-	return s.ReplaceWithMatcher(cascadia.MustCompile(selector))
+	return s.ReplaceWithMatcher(compileMatcher(selector))
 }
 
 // ReplaceWithMatcher replaces each element in the set of matched elements with
@@ -293,7 +292,7 @@ func (s *Selection) Unwrap() *Selection {
 //
 // It returns the original set of elements.
 func (s *Selection) Wrap(selector string) *Selection {
-	return s.WrapMatcher(cascadia.MustCompile(selector))
+	return s.WrapMatcher(compileMatcher(selector))
 }
 
 // WrapMatcher wraps each element in the set of matched elements inside the
@@ -345,7 +344,7 @@ func (s *Selection) wrapNodes(ns ...*html.Node) *Selection {
 //
 // It returns the original set of elements.
 func (s *Selection) WrapAll(selector string) *Selection {
-	return s.WrapAllMatcher(cascadia.MustCompile(selector))
+	return s.WrapAllMatcher(compileMatcher(selector))
 }
 
 // WrapAllMatcher wraps a single HTML structure, matched by the given Matcher,
@@ -415,7 +414,7 @@ func (s *Selection) WrapAllNode(n *html.Node) *Selection {
 //
 // It returns the original set of elements.
 func (s *Selection) WrapInner(selector string) *Selection {
-	return s.WrapInnerMatcher(cascadia.MustCompile(selector))
+	return s.WrapInnerMatcher(compileMatcher(selector))
 }
 
 // WrapInnerMatcher wraps an HTML structure, matched by the given selector,
