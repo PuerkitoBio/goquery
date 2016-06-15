@@ -1,16 +1,13 @@
 package goquery
 
-import (
-	"github.com/andybalholm/cascadia"
-	"golang.org/x/net/html"
-)
+import "golang.org/x/net/html"
 
 // Add adds the selector string's matching nodes to those in the current
 // selection and returns a new Selection object.
 // The selector string is run in the context of the document of the current
 // Selection object.
 func (s *Selection) Add(selector string) *Selection {
-	return s.AddNodes(findWithMatcher([]*html.Node{s.document.rootNode}, cascadia.MustCompile(selector))...)
+	return s.AddNodes(findWithMatcher([]*html.Node{s.document.rootNode}, compileMatcher(selector))...)
 }
 
 // AddMatcher adds the matcher's matching nodes to those in the current

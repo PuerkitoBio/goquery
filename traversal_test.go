@@ -168,7 +168,7 @@ func TestParentsUntil(t *testing.T) {
 
 func TestParentsUntilInvalid(t *testing.T) {
 	sel := Doc().Find(".container-fluid").ParentsUntil("")
-	assertLength(t, sel.Nodes, 666) // TODO : ?
+	assertLength(t, sel.Nodes, 8)
 }
 
 func TestParentsUntilRollback(t *testing.T) {
@@ -454,7 +454,7 @@ func TestNextUntil(t *testing.T) {
 
 func TestNextUntilInvalid(t *testing.T) {
 	sel := Doc().Find(".alert a").NextUntil("")
-	assertLength(t, sel.Nodes, 100) // TODO : ?
+	assertLength(t, sel.Nodes, 2)
 }
 
 func TestNextUntil2(t *testing.T) {
@@ -513,7 +513,7 @@ func TestPrevUntil(t *testing.T) {
 
 func TestPrevUntilInvalid(t *testing.T) {
 	sel := Doc().Find(".alert p").PrevUntil("")
-	assertLength(t, sel.Nodes, 100) // TODO : ?
+	assertLength(t, sel.Nodes, 2)
 }
 
 func TestPrevUntil2(t *testing.T) {

@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/andybalholm/cascadia"
+
 	"golang.org/x/net/html"
 )
 
@@ -113,3 +115,21 @@ type Matcher interface {
 	MatchAll(*html.Node) []*html.Node
 	Filter([]*html.Node) []*html.Node
 }
+
+// compileMatcher compiles the selector string s and returns
+// the corresponding Matcher. If s is an invalid selector string,
+// it returns a Matcher that fails all matches.
+func compileMatcher(s string) Matcher {
+	cs, err := cascadia.Compile(s)
+	if err != nil {
+		return invalidMatcher{}
+	}
+	return cs
+}
+
+// invalidMatcher is a Matcher that always fails to match.
+type invalidMatcher struct{}
+
+func (invalidMatcher) Match(n *html.Node) bool             { return false }
+func (invalidMatcher) MatchAll(n *html.Node) []*html.Node  { return nil }
+func (invalidMatcher) Filter(ns []*html.Node) []*html.Node { return nil }

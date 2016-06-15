@@ -101,13 +101,13 @@ func TestSlice(t *testing.T) {
 }
 
 func TestSliceEmpty(t *testing.T) {
-	sel := Doc().Find("x").Slice(0, 2)
-	assertLength(t, sel.Nodes, 0)
+	defer assertPanic(t)
+	Doc().Find("x").Slice(0, 2)
 }
 
 func TestSliceInvalid(t *testing.T) {
-	sel := Doc().Find("").Slice(0, 2)
-	assertLength(t, sel.Nodes, 0)
+	defer assertPanic(t)
+	Doc().Find("").Slice(0, 2)
 }
 
 func TestSliceOutOfBounds(t *testing.T) {

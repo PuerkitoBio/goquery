@@ -12,8 +12,8 @@ func TestAdd(t *testing.T) {
 func TestAddInvalid(t *testing.T) {
 	sel1 := Doc().Find("div.row-fluid")
 	sel2 := sel1.Add("")
-	assertLength(t, sel1.Nodes, 19)
-	assertLength(t, sel2.Nodes, 19)
+	assertLength(t, sel1.Nodes, 9)
+	assertLength(t, sel2.Nodes, 9)
 	if sel1 == sel2 {
 		t.Errorf("selections should not be the same")
 	}
