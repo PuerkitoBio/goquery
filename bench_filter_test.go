@@ -17,7 +17,9 @@ func BenchmarkFilter(b *testing.B) {
 			sel.Filter(".toclevel-1")
 		}
 	}
-	b.Logf("Filter=%d", n)
+	if n != 13 {
+		b.Fatalf("want 13, got %d", n)
+	}
 }
 
 func BenchmarkNot(b *testing.B) {
@@ -33,7 +35,9 @@ func BenchmarkNot(b *testing.B) {
 			sel.Filter(".toclevel-2")
 		}
 	}
-	b.Logf("Not=%d", n)
+	if n != 371 {
+		b.Fatalf("want 371, got %d", n)
+	}
 }
 
 func BenchmarkFilterFunction(b *testing.B) {
@@ -52,7 +56,9 @@ func BenchmarkFilterFunction(b *testing.B) {
 			sel.FilterFunction(f)
 		}
 	}
-	b.Logf("FilterFunction=%d", n)
+	if n != 112 {
+		b.Fatalf("want 112, got %d", n)
+	}
 }
 
 func BenchmarkNotFunction(b *testing.B) {
@@ -71,7 +77,9 @@ func BenchmarkNotFunction(b *testing.B) {
 			sel.NotFunction(f)
 		}
 	}
-	b.Logf("NotFunction=%d", n)
+	if n != 261 {
+		b.Fatalf("want 261, got %d", n)
+	}
 }
 
 func BenchmarkFilterNodes(b *testing.B) {
@@ -89,7 +97,9 @@ func BenchmarkFilterNodes(b *testing.B) {
 			sel.FilterNodes(nodes...)
 		}
 	}
-	b.Logf("FilterNodes=%d", n)
+	if n != 2 {
+		b.Fatalf("want 2, got %d", n)
+	}
 }
 
 func BenchmarkNotNodes(b *testing.B) {
@@ -107,7 +117,9 @@ func BenchmarkNotNodes(b *testing.B) {
 			sel.NotNodes(nodes...)
 		}
 	}
-	b.Logf("NotNodes=%d", n)
+	if n != 360 {
+		b.Fatalf("want 360, got %d", n)
+	}
 }
 
 func BenchmarkFilterSelection(b *testing.B) {
@@ -124,7 +136,9 @@ func BenchmarkFilterSelection(b *testing.B) {
 			sel.FilterSelection(sel2)
 		}
 	}
-	b.Logf("FilterSelection=%d", n)
+	if n != 2 {
+		b.Fatalf("want 2, got %d", n)
+	}
 }
 
 func BenchmarkNotSelection(b *testing.B) {
@@ -141,7 +155,9 @@ func BenchmarkNotSelection(b *testing.B) {
 			sel.NotSelection(sel2)
 		}
 	}
-	b.Logf("NotSelection=%d", n)
+	if n != 360 {
+		b.Fatalf("want 360, got %d", n)
+	}
 }
 
 func BenchmarkHas(b *testing.B) {
@@ -157,7 +173,9 @@ func BenchmarkHas(b *testing.B) {
 			sel.Has(".editsection")
 		}
 	}
-	b.Logf("Has=%d", n)
+	if n != 13 {
+		b.Fatalf("want 13, got %d", n)
+	}
 }
 
 func BenchmarkHasNodes(b *testing.B) {
@@ -175,7 +193,9 @@ func BenchmarkHasNodes(b *testing.B) {
 			sel.HasNodes(nodes...)
 		}
 	}
-	b.Logf("HasNodes=%d", n)
+	if n != 15 {
+		b.Fatalf("want 15, got %d", n)
+	}
 }
 
 func BenchmarkHasSelection(b *testing.B) {
@@ -192,7 +212,9 @@ func BenchmarkHasSelection(b *testing.B) {
 			sel.HasSelection(sel2)
 		}
 	}
-	b.Logf("HasSelection=%d", n)
+	if n != 15 {
+		b.Fatalf("want 15, got %d", n)
+	}
 }
 
 func BenchmarkEnd(b *testing.B) {
@@ -208,5 +230,7 @@ func BenchmarkEnd(b *testing.B) {
 			sel.End()
 		}
 	}
-	b.Logf("End=%d", n)
+	if n != 373 {
+		b.Fatalf("wnat 373, got %d", n)
+	}
 }

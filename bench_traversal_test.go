@@ -15,7 +15,9 @@ func BenchmarkFind(b *testing.B) {
 			DocB().Find("dd")
 		}
 	}
-	b.Logf("Find=%d", n)
+	if n != 41 {
+		b.Fatalf("want 41, got %d", n)
+	}
 }
 
 func BenchmarkFindWithinSelection(b *testing.B) {
@@ -31,7 +33,9 @@ func BenchmarkFindWithinSelection(b *testing.B) {
 			sel.Find("a[class]")
 		}
 	}
-	b.Logf("FindWithinSelection=%d", n)
+	if n != 39 {
+		b.Fatalf("want 39, got %d", n)
+	}
 }
 
 func BenchmarkFindSelection(b *testing.B) {
@@ -48,7 +52,9 @@ func BenchmarkFindSelection(b *testing.B) {
 			sel.FindSelection(sel2)
 		}
 	}
-	b.Logf("FindSelection=%d", n)
+	if n != 73 {
+		b.Fatalf("want 73, got %d", n)
+	}
 }
 
 func BenchmarkFindNodes(b *testing.B) {
@@ -66,7 +72,9 @@ func BenchmarkFindNodes(b *testing.B) {
 			sel.FindNodes(nodes...)
 		}
 	}
-	b.Logf("FindNodes=%d", n)
+	if n != 73 {
+		b.Fatalf("want 73, got %d", n)
+	}
 }
 
 func BenchmarkContents(b *testing.B) {
@@ -82,7 +90,9 @@ func BenchmarkContents(b *testing.B) {
 			sel.Contents()
 		}
 	}
-	b.Logf("Contents=%d", n)
+	if n != 16 {
+		b.Fatalf("want 16, got %d", n)
+	}
 }
 
 func BenchmarkContentsFiltered(b *testing.B) {
@@ -98,7 +108,9 @@ func BenchmarkContentsFiltered(b *testing.B) {
 			sel.ContentsFiltered("a[href=\"#Examples\"]")
 		}
 	}
-	b.Logf("ContentsFiltered=%d", n)
+	if n != 1 {
+		b.Fatalf("want 1, got %d", n)
+	}
 }
 
 func BenchmarkChildren(b *testing.B) {
@@ -114,7 +126,9 @@ func BenchmarkChildren(b *testing.B) {
 			sel.Children()
 		}
 	}
-	b.Logf("Children=%d", n)
+	if n != 2 {
+		b.Fatalf("want 2, got %d", n)
+	}
 }
 
 func BenchmarkChildrenFiltered(b *testing.B) {
@@ -130,7 +144,9 @@ func BenchmarkChildrenFiltered(b *testing.B) {
 			sel.ChildrenFiltered(".editsection")
 		}
 	}
-	b.Logf("ChildrenFiltered=%d", n)
+	if n != 2 {
+		b.Fatalf("want 2, got %d", n)
+	}
 }
 
 func BenchmarkParent(b *testing.B) {
@@ -146,7 +162,9 @@ func BenchmarkParent(b *testing.B) {
 			sel.Parent()
 		}
 	}
-	b.Logf("Parent=%d", n)
+	if n != 55 {
+		b.Fatalf("want 55, got %d", n)
+	}
 }
 
 func BenchmarkParentFiltered(b *testing.B) {
@@ -162,7 +180,9 @@ func BenchmarkParentFiltered(b *testing.B) {
 			sel.ParentFiltered("ul[id]")
 		}
 	}
-	b.Logf("ParentFiltered=%d", n)
+	if n != 4 {
+		b.Fatalf("want 4, got %d", n)
+	}
 }
 
 func BenchmarkParents(b *testing.B) {
@@ -178,7 +198,9 @@ func BenchmarkParents(b *testing.B) {
 			sel.Parents()
 		}
 	}
-	b.Logf("Parents=%d", n)
+	if n != 73 {
+		b.Fatalf("want 73, got %d", n)
+	}
 }
 
 func BenchmarkParentsFiltered(b *testing.B) {
@@ -194,7 +216,9 @@ func BenchmarkParentsFiltered(b *testing.B) {
 			sel.ParentsFiltered("tr")
 		}
 	}
-	b.Logf("ParentsFiltered=%d", n)
+	if n != 18 {
+		b.Fatalf("want 18, got %d", n)
+	}
 }
 
 func BenchmarkParentsUntil(b *testing.B) {
@@ -210,7 +234,9 @@ func BenchmarkParentsUntil(b *testing.B) {
 			sel.ParentsUntil("table")
 		}
 	}
-	b.Logf("ParentsUntil=%d", n)
+	if n != 52 {
+		b.Fatalf("want 52, got %d", n)
+	}
 }
 
 func BenchmarkParentsUntilSelection(b *testing.B) {
@@ -227,7 +253,9 @@ func BenchmarkParentsUntilSelection(b *testing.B) {
 			sel.ParentsUntilSelection(sel2)
 		}
 	}
-	b.Logf("ParentsUntilSelection=%d", n)
+	if n != 70 {
+		b.Fatalf("want 70, got %d", n)
+	}
 }
 
 func BenchmarkParentsUntilNodes(b *testing.B) {
@@ -245,7 +273,9 @@ func BenchmarkParentsUntilNodes(b *testing.B) {
 			sel.ParentsUntilNodes(nodes...)
 		}
 	}
-	b.Logf("ParentsUntilNodes=%d", n)
+	if n != 70 {
+		b.Fatalf("want 70, got %d", n)
+	}
 }
 
 func BenchmarkParentsFilteredUntil(b *testing.B) {
@@ -261,7 +291,9 @@ func BenchmarkParentsFilteredUntil(b *testing.B) {
 			sel.ParentsFilteredUntil(":nth-child(1)", "ul")
 		}
 	}
-	b.Logf("ParentsFilteredUntil=%d", n)
+	if n != 2 {
+		b.Fatalf("want 2, got %d", n)
+	}
 }
 
 func BenchmarkParentsFilteredUntilSelection(b *testing.B) {
@@ -278,7 +310,9 @@ func BenchmarkParentsFilteredUntilSelection(b *testing.B) {
 			sel.ParentsFilteredUntilSelection(":nth-child(1)", sel2)
 		}
 	}
-	b.Logf("ParentsFilteredUntilSelection=%d", n)
+	if n != 2 {
+		b.Fatalf("want 2, got %d", n)
+	}
 }
 
 func BenchmarkParentsFilteredUntilNodes(b *testing.B) {
@@ -296,7 +330,9 @@ func BenchmarkParentsFilteredUntilNodes(b *testing.B) {
 			sel.ParentsFilteredUntilNodes(":nth-child(1)", nodes...)
 		}
 	}
-	b.Logf("ParentsFilteredUntilNodes=%d", n)
+	if n != 2 {
+		b.Fatalf("want 2, got %d", n)
+	}
 }
 
 func BenchmarkSiblings(b *testing.B) {
@@ -312,7 +348,9 @@ func BenchmarkSiblings(b *testing.B) {
 			sel.Siblings()
 		}
 	}
-	b.Logf("Siblings=%d", n)
+	if n != 293 {
+		b.Fatalf("want 293, got %d", n)
+	}
 }
 
 func BenchmarkSiblingsFiltered(b *testing.B) {
@@ -328,7 +366,9 @@ func BenchmarkSiblingsFiltered(b *testing.B) {
 			sel.SiblingsFiltered("[class]")
 		}
 	}
-	b.Logf("SiblingsFiltered=%d", n)
+	if n != 46 {
+		b.Fatalf("want 46, got %d", n)
+	}
 }
 
 func BenchmarkNext(b *testing.B) {
@@ -344,7 +384,9 @@ func BenchmarkNext(b *testing.B) {
 			sel.Next()
 		}
 	}
-	b.Logf("Next=%d", n)
+	if n != 49 {
+		b.Fatalf("want 49, got %d", n)
+	}
 }
 
 func BenchmarkNextFiltered(b *testing.B) {
@@ -360,7 +402,9 @@ func BenchmarkNextFiltered(b *testing.B) {
 			sel.NextFiltered("[class]")
 		}
 	}
-	b.Logf("NextFiltered=%d", n)
+	if n != 6 {
+		b.Fatalf("want 6, got %d", n)
+	}
 }
 
 func BenchmarkNextAll(b *testing.B) {
@@ -376,7 +420,9 @@ func BenchmarkNextAll(b *testing.B) {
 			sel.NextAll()
 		}
 	}
-	b.Logf("NextAll=%d", n)
+	if n != 234 {
+		b.Fatalf("want 234, got %d", n)
+	}
 }
 
 func BenchmarkNextAllFiltered(b *testing.B) {
@@ -392,7 +438,9 @@ func BenchmarkNextAllFiltered(b *testing.B) {
 			sel.NextAllFiltered("[class]")
 		}
 	}
-	b.Logf("NextAllFiltered=%d", n)
+	if n != 33 {
+		b.Fatalf("want 33, got %d", n)
+	}
 }
 
 func BenchmarkPrev(b *testing.B) {
@@ -408,7 +456,9 @@ func BenchmarkPrev(b *testing.B) {
 			sel.Prev()
 		}
 	}
-	b.Logf("Prev=%d", n)
+	if n != 49 {
+		b.Fatalf("want 49, got %d", n)
+	}
 }
 
 func BenchmarkPrevFiltered(b *testing.B) {
@@ -426,7 +476,9 @@ func BenchmarkPrevFiltered(b *testing.B) {
 	}
 	// There is one more Prev li with a class, compared to Next li with a class
 	// (confirmed by looking at the HTML, this is ok)
-	b.Logf("PrevFiltered=%d", n)
+	if n != 7 {
+		b.Fatalf("want 7, got %d", n)
+	}
 }
 
 func BenchmarkPrevAll(b *testing.B) {
@@ -442,7 +494,9 @@ func BenchmarkPrevAll(b *testing.B) {
 			sel.PrevAll()
 		}
 	}
-	b.Logf("PrevAll=%d", n)
+	if n != 78 {
+		b.Fatalf("want 78, got %d", n)
+	}
 }
 
 func BenchmarkPrevAllFiltered(b *testing.B) {
@@ -458,7 +512,9 @@ func BenchmarkPrevAllFiltered(b *testing.B) {
 			sel.PrevAllFiltered("[class]")
 		}
 	}
-	b.Logf("PrevAllFiltered=%d", n)
+	if n != 6 {
+		b.Fatalf("want 6, got %d", n)
+	}
 }
 
 func BenchmarkNextUntil(b *testing.B) {
@@ -474,7 +530,9 @@ func BenchmarkNextUntil(b *testing.B) {
 			sel.NextUntil(":nth-child(4)")
 		}
 	}
-	b.Logf("NextUntil=%d", n)
+	if n != 84 {
+		b.Fatalf("want 84, got %d", n)
+	}
 }
 
 func BenchmarkNextUntilSelection(b *testing.B) {
@@ -491,7 +549,9 @@ func BenchmarkNextUntilSelection(b *testing.B) {
 			sel.NextUntilSelection(sel2)
 		}
 	}
-	b.Logf("NextUntilSelection=%d", n)
+	if n != 42 {
+		b.Fatalf("want 42, got %d", n)
+	}
 }
 
 func BenchmarkNextUntilNodes(b *testing.B) {
@@ -509,7 +569,9 @@ func BenchmarkNextUntilNodes(b *testing.B) {
 			sel.NextUntilNodes(nodes...)
 		}
 	}
-	b.Logf("NextUntilNodes=%d", n)
+	if n != 12 {
+		b.Fatalf("want 12, got %d", n)
+	}
 }
 
 func BenchmarkPrevUntil(b *testing.B) {
@@ -525,7 +587,9 @@ func BenchmarkPrevUntil(b *testing.B) {
 			sel.PrevUntil(":nth-child(4)")
 		}
 	}
-	b.Logf("PrevUntil=%d", n)
+	if n != 238 {
+		b.Fatalf("want 238, got %d", n)
+	}
 }
 
 func BenchmarkPrevUntilSelection(b *testing.B) {
@@ -542,7 +606,9 @@ func BenchmarkPrevUntilSelection(b *testing.B) {
 			sel.PrevUntilSelection(sel2)
 		}
 	}
-	b.Logf("PrevUntilSelection=%d", n)
+	if n != 49 {
+		b.Fatalf("want 49, got %d", n)
+	}
 }
 
 func BenchmarkPrevUntilNodes(b *testing.B) {
@@ -560,7 +626,9 @@ func BenchmarkPrevUntilNodes(b *testing.B) {
 			sel.PrevUntilNodes(nodes...)
 		}
 	}
-	b.Logf("PrevUntilNodes=%d", n)
+	if n != 11 {
+		b.Fatalf("want 11, got %d", n)
+	}
 }
 
 func BenchmarkNextFilteredUntil(b *testing.B) {
@@ -576,7 +644,9 @@ func BenchmarkNextFilteredUntil(b *testing.B) {
 			sel.NextFilteredUntil("p", "div")
 		}
 	}
-	b.Logf("NextFilteredUntil=%d", n)
+	if n != 22 {
+		b.Fatalf("want 22, got %d", n)
+	}
 }
 
 func BenchmarkNextFilteredUntilSelection(b *testing.B) {
@@ -593,7 +663,9 @@ func BenchmarkNextFilteredUntilSelection(b *testing.B) {
 			sel.NextFilteredUntilSelection("p", sel2)
 		}
 	}
-	b.Logf("NextFilteredUntilSelection=%d", n)
+	if n != 22 {
+		b.Fatalf("want 22, got %d", n)
+	}
 }
 
 func BenchmarkNextFilteredUntilNodes(b *testing.B) {
@@ -611,7 +683,9 @@ func BenchmarkNextFilteredUntilNodes(b *testing.B) {
 			sel.NextFilteredUntilNodes("p", nodes...)
 		}
 	}
-	b.Logf("NextFilteredUntilNodes=%d", n)
+	if n != 22 {
+		b.Fatalf("want 22, got %d", n)
+	}
 }
 
 func BenchmarkPrevFilteredUntil(b *testing.B) {
@@ -627,7 +701,9 @@ func BenchmarkPrevFilteredUntil(b *testing.B) {
 			sel.PrevFilteredUntil("p", "div")
 		}
 	}
-	b.Logf("PrevFilteredUntil=%d", n)
+	if n != 20 {
+		b.Fatalf("want 20, got %d", n)
+	}
 }
 
 func BenchmarkPrevFilteredUntilSelection(b *testing.B) {
@@ -644,7 +720,9 @@ func BenchmarkPrevFilteredUntilSelection(b *testing.B) {
 			sel.PrevFilteredUntilSelection("p", sel2)
 		}
 	}
-	b.Logf("PrevFilteredUntilSelection=%d", n)
+	if n != 20 {
+		b.Fatalf("want 20, got %d", n)
+	}
 }
 
 func BenchmarkPrevFilteredUntilNodes(b *testing.B) {
@@ -662,7 +740,9 @@ func BenchmarkPrevFilteredUntilNodes(b *testing.B) {
 			sel.PrevFilteredUntilNodes("p", nodes...)
 		}
 	}
-	b.Logf("PrevFilteredUntilNodes=%d", n)
+	if n != 20 {
+		b.Fatalf("want 20, got %d", n)
+	}
 }
 
 func BenchmarkClosest(b *testing.B) {
@@ -678,7 +758,9 @@ func BenchmarkClosest(b *testing.B) {
 			sel.Closest(".pvk-content")
 		}
 	}
-	b.Logf("Closest=%d", n)
+	if n != 2 {
+		b.Fatalf("want 2, got %d", n)
+	}
 }
 
 func BenchmarkClosestSelection(b *testing.B) {
@@ -695,7 +777,9 @@ func BenchmarkClosestSelection(b *testing.B) {
 			sel.ClosestSelection(sel2)
 		}
 	}
-	b.Logf("ClosestSelection=%d", n)
+	if n != 2 {
+		b.Fatalf("want 2, got %d", n)
+	}
 }
 
 func BenchmarkClosestNodes(b *testing.B) {
@@ -712,5 +796,7 @@ func BenchmarkClosestNodes(b *testing.B) {
 			sel.ClosestNodes(nodes...)
 		}
 	}
-	b.Logf("ClosestNodes=%d", n)
+	if n != 2 {
+		b.Fatalf("want 2, got %d", n)
+	}
 }

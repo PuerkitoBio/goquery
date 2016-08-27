@@ -13,7 +13,9 @@ func BenchmarkAttr(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		s, _ = sel.Attr("id")
 	}
-	b.Logf("Attr=%s", s)
+	if s != "firstHeading" {
+		b.Fatalf("want firstHeading, got %q", s)
+	}
 }
 
 func BenchmarkText(b *testing.B) {
@@ -34,7 +36,9 @@ func BenchmarkLength(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		n = sel.Length()
 	}
-	b.Logf("Length=%d", n)
+	if n != 14 {
+		b.Fatalf("want 14, got %d", n)
+	}
 }
 
 func BenchmarkHtml(b *testing.B) {

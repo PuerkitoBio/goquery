@@ -70,7 +70,9 @@ func BenchmarkIndex(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		j = sel.Index()
 	}
-	b.Logf("Index=%d", j)
+	if j != 3 {
+		b.Fatalf("want 3, got %d", j)
+	}
 }
 
 func BenchmarkIndexSelector(b *testing.B) {
@@ -82,7 +84,9 @@ func BenchmarkIndexSelector(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		j = sel.IndexSelector("dd")
 	}
-	b.Logf("IndexSelector=%d", j)
+	if j != 4 {
+		b.Fatalf("want 4, got %d", j)
+	}
 }
 
 func BenchmarkIndexOfNode(b *testing.B) {
@@ -96,7 +100,9 @@ func BenchmarkIndexOfNode(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		j = sel.IndexOfNode(n)
 	}
-	b.Logf("IndexOfNode=%d", j)
+	if j != 2 {
+		b.Fatalf("want 2, got %d", j)
+	}
 }
 
 func BenchmarkIndexOfSelection(b *testing.B) {
@@ -108,5 +114,7 @@ func BenchmarkIndexOfSelection(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		j = sel.IndexOfSelection(sel2)
 	}
-	b.Logf("IndexOfSelection=%d", j)
+	if j != 2 {
+		b.Fatalf("want 2, got %d", j)
+	}
 }

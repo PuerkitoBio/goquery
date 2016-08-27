@@ -19,7 +19,9 @@ func BenchmarkEach(b *testing.B) {
 			n = tmp
 		}
 	}
-	b.Logf("Each=%d", n)
+	if n != 59 {
+		b.Fatalf("want 59, got %d", n)
+	}
 }
 
 func BenchmarkMap(b *testing.B) {
@@ -38,7 +40,9 @@ func BenchmarkMap(b *testing.B) {
 			n = tmp
 		}
 	}
-	b.Logf("Map=%d", n)
+	if n != 59 {
+		b.Fatalf("want 59, got %d", n)
+	}
 }
 
 func BenchmarkEachWithBreak(b *testing.B) {
@@ -58,5 +62,7 @@ func BenchmarkEachWithBreak(b *testing.B) {
 			n = tmp
 		}
 	}
-	b.Logf("Each=%d", n)
+	if n != 10 {
+		b.Fatalf("want 10, got %d", n)
+	}
 }

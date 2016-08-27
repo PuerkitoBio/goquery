@@ -13,7 +13,9 @@ func BenchmarkIs(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		y = sel.Is(".toclevel-2")
 	}
-	b.Logf("Is=%v", y)
+	if !y {
+		b.Fatal("want true")
+	}
 }
 
 func BenchmarkIsPositional(b *testing.B) {
@@ -25,7 +27,9 @@ func BenchmarkIsPositional(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		y = sel.Is("li:nth-child(2)")
 	}
-	b.Logf("IsPositional=%v", y)
+	if !y {
+		b.Fatal("want true")
+	}
 }
 
 func BenchmarkIsFunction(b *testing.B) {
@@ -40,7 +44,9 @@ func BenchmarkIsFunction(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		y = sel.IsFunction(f)
 	}
-	b.Logf("IsFunction=%v", y)
+	if !y {
+		b.Fatal("want true")
+	}
 }
 
 func BenchmarkIsSelection(b *testing.B) {
@@ -53,7 +59,9 @@ func BenchmarkIsSelection(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		y = sel.IsSelection(sel2)
 	}
-	b.Logf("IsSelection=%v", y)
+	if !y {
+		b.Fatal("want true")
+	}
 }
 
 func BenchmarkIsNodes(b *testing.B) {
@@ -67,7 +75,9 @@ func BenchmarkIsNodes(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		y = sel.IsNodes(nodes...)
 	}
-	b.Logf("IsNodes=%v", y)
+	if !y {
+		b.Fatal("want true")
+	}
 }
 
 func BenchmarkHasClass(b *testing.B) {
@@ -79,7 +89,9 @@ func BenchmarkHasClass(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		y = sel.HasClass("official")
 	}
-	b.Logf("HasClass=%v", y)
+	if !y {
+		b.Fatal("want true")
+	}
 }
 
 func BenchmarkContains(b *testing.B) {
@@ -93,5 +105,7 @@ func BenchmarkContains(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		y = sel.Contains(node)
 	}
-	b.Logf("Contains=%v", y)
+	if !y {
+		b.Fatal("want true")
+	}
 }

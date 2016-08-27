@@ -37,6 +37,4 @@ func BenchmarkMetalReviewExample(b *testing.B) {
 			}
 		})
 	}
-	b.Log(buf.String())
-	b.Logf("MetalReviewExample=%d", n)
 }
