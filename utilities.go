@@ -114,9 +114,14 @@ func indexInSlice(slice []*html.Node, node *html.Node) int {
 // contain duplicates. The target slice is returned because append() may create
 // a new underlying array.
 func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node) []*html.Node {
+	targetSet := make(map[*html.Node]bool, len(target))
+	for _, n := range target {
+		targetSet[n] = true
+	}
 	for _, n := range nodes {
-		if !isInSlice(target, n) {
+		if !targetSet[n] {
 			target = append(target, n)
+			targetSet[n] = true
 		}
 	}
 
