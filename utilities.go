@@ -62,13 +62,6 @@ func OuterHtml(s *Selection) (string, error) {
 	return buf.String(), nil
 }
 
-func getChildren(n *html.Node) (result []*html.Node) {
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		result = append(result, c)
-	}
-	return result
-}
-
 // Loop through all container nodes to search for the target node.
 func sliceContains(container []*html.Node, contained *html.Node) bool {
 	for _, n := range container {

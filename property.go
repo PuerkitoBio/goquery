@@ -112,7 +112,7 @@ func (s *Selection) AddClass(class ...string) *Selection {
 	for _, n := range s.Nodes {
 		curClasses, attr := getClassesAndAttr(n, true)
 		for _, newClass := range tcls {
-			if strings.Index(curClasses, " "+newClass+" ") == -1 {
+			if !strings.Contains(curClasses, " "+newClass+" ") {
 				curClasses += newClass + " "
 			}
 		}
@@ -129,7 +129,7 @@ func (s *Selection) HasClass(class string) bool {
 	class = " " + class + " "
 	for _, n := range s.Nodes {
 		classes, _ := getClassesAndAttr(n, false)
-		if strings.Index(classes, class) > -1 {
+		if strings.Contains(classes, class) {
 			return true
 		}
 	}
@@ -179,7 +179,7 @@ func (s *Selection) ToggleClass(class ...string) *Selection {
 	for _, n := range s.Nodes {
 		classes, attr := getClassesAndAttr(n, true)
 		for _, tcl := range tcls {
-			if strings.Index(classes, " "+tcl+" ") != -1 {
+			if strings.Contains(classes, " "+tcl+" ") {
 				classes = strings.Replace(classes, " "+tcl+" ", " ", -1)
 			} else {
 				classes += tcl + " "

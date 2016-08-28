@@ -23,44 +23,41 @@ func Doc() *Document {
 	}
 	return doc
 }
-func DocClone() *Document {
-	return CloneDocument(Doc())
-}
+
 func Doc2() *Document {
 	if doc2 == nil {
 		doc2 = loadDoc("page2.html")
 	}
 	return doc2
 }
+
 func Doc2Clone() *Document {
 	return CloneDocument(Doc2())
 }
+
 func Doc3() *Document {
 	if doc3 == nil {
 		doc3 = loadDoc("page3.html")
 	}
 	return doc3
 }
+
 func Doc3Clone() *Document {
 	return CloneDocument(Doc3())
 }
+
 func DocB() *Document {
 	if docB == nil {
 		docB = loadDoc("gotesting.html")
 	}
 	return docB
 }
-func DocBClone() *Document {
-	return CloneDocument(DocB())
-}
+
 func DocW() *Document {
 	if docW == nil {
 		docW = loadDoc("gowiki.html")
 	}
 	return docW
-}
-func DocWClone() *Document {
-	return CloneDocument(DocW())
 }
 
 func assertLength(t *testing.T, nodes []*html.Node, length int) {
@@ -106,19 +103,6 @@ func printSel(t *testing.T, sel *Selection) {
 		}
 		t.Log(h)
 	}
-}
-
-func shortPrintSel(t *testing.T, sel *Selection) {
-	sel.Each(func(i int, s *Selection) {
-		h, _ := OuterHtml(s)
-		if ix := strings.Index(h, "\n"); ix >= 0 {
-			h = h[:ix]
-		}
-		if len(h) > 100 {
-			h = h[:100]
-		}
-		fmt.Println(i, ">>> ", h)
-	})
 }
 
 func loadDoc(page string) *Document {
