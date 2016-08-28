@@ -112,11 +112,25 @@ func indexInSlice(slice []*html.Node, node *html.Node) int {
 // Appends the new nodes to the target slice, making sure no duplicate is added.
 // There is no check to the original state of the target slice, so it may still
 // contain duplicates. The target slice is returned because append() may create
-// a new underlying array.
-func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node) []*html.Node {
-	targetSet := make(map[*html.Node]bool, len(target))
-	for _, n := range target {
-		targetSet[n] = true
+// a new underlying array. If targetSet is nil, a local set is created with the
+// target if len(target) + len(nodes) is greater than minNodesForSet.
+func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet map[*html.Node]bool) []*html.Node {
+	const minNodesForSet = 1000
+
+	if targetSet == nil && len(target)+len(nodes) < minNodesForSet {
+		for _, n := range nodes {
+			if !isInSlice(target, n) {
+				target = append(target, n)
+			}
+		}
+		return target
+	}
+
+	if targetSet == nil {
+		targetSet = make(map[*html.Node]bool, len(target))
+		for _, n := range target {
+			targetSet[n] = true
+		}
 	}
 	for _, n := range nodes {
 		if !targetSet[n] {
