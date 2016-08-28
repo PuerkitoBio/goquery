@@ -117,6 +117,8 @@ func indexInSlice(slice []*html.Node, node *html.Node) int {
 func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet map[*html.Node]bool) []*html.Node {
 	const minNodesForSet = 1000
 
+	// if there are not that many nodes, don't use the map, faster to just use nested loops
+	// (unless a non-nil targetSet is passed, in which case the caller knows better).
 	if targetSet == nil && len(target)+len(nodes) < minNodesForSet {
 		for _, n := range nodes {
 			if !isInSlice(target, n) {
@@ -126,6 +128,8 @@ func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet 
 		return target
 	}
 
+	// if a targetSet is passed, then assume it is reliable, otherwise create one
+	// and initialize it with the current target contents.
 	if targetSet == nil {
 		targetSet = make(map[*html.Node]bool, len(target))
 		for _, n := range target {
