@@ -6,6 +6,11 @@ import (
 	"golang.org/x/net/html"
 )
 
+// used to determine if a set (map[*html.Node]bool) should be used
+// instead of iterating over a slice. The set uses more memory and
+// is slower than slice iteration for small N.
+const minNodesForSet = 1000
+
 var nodeNames = []string{
 	html.ErrorNode:    "#error",
 	html.TextNode:     "#text",
@@ -108,8 +113,6 @@ func indexInSlice(slice []*html.Node, node *html.Node) int {
 // a new underlying array. If targetSet is nil, a local set is created with the
 // target if len(target) + len(nodes) is greater than minNodesForSet.
 func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet map[*html.Node]bool) []*html.Node {
-	const minNodesForSet = 1000
-
 	// if there are not that many nodes, don't use the map, faster to just use nested loops
 	// (unless a non-nil targetSet is passed, in which case the caller knows better).
 	if targetSet == nil && len(target)+len(nodes) < minNodesForSet {
