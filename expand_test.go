@@ -66,6 +66,24 @@ func TestAddNodesRollback(t *testing.T) {
 	assertEqual(t, sel, sel2)
 }
 
+func TestAddNodesBig(t *testing.T) {
+	doc := DocW()
+	sel := doc.Find("li")
+	assertLength(t, sel.Nodes, 373)
+	sel2 := doc.Find("xyz")
+	assertLength(t, sel2.Nodes, 0)
+
+	nodes := sel.Nodes
+	sel2 = sel2.AddNodes(nodes...)
+	assertLength(t, sel2.Nodes, 373)
+	nodes2 := append(nodes, nodes...)
+	sel2 = sel2.End().AddNodes(nodes2...)
+	assertLength(t, sel2.Nodes, 373)
+	nodes3 := append(nodes2, nodes...)
+	sel2 = sel2.End().AddNodes(nodes3...)
+	assertLength(t, sel2.Nodes, 373)
+}
+
 func TestAndSelf(t *testing.T) {
 	sel := Doc().Find(".span12").Last().AndSelf()
 	assertLength(t, sel.Nodes, 2)

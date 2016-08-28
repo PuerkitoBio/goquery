@@ -26,6 +26,16 @@ func TestFindInvalid(t *testing.T) {
 	assertLength(t, sel.Nodes, 0)
 }
 
+func TestFindBig(t *testing.T) {
+	doc := DocW()
+	sel := doc.Find("li")
+	assertLength(t, sel.Nodes, 373)
+	sel2 := doc.Find("span")
+	assertLength(t, sel2.Nodes, 448)
+	sel3 := sel.FindSelection(sel2)
+	assertLength(t, sel3.Nodes, 248)
+}
+
 func TestChainedFind(t *testing.T) {
 	sel := Doc().Find("div.hero-unit").Find(".row-fluid")
 	assertLength(t, sel.Nodes, 4)

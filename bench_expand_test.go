@@ -61,6 +61,30 @@ func BenchmarkAddNodes(b *testing.B) {
 	}
 }
 
+func BenchmarkAddNodesBig(b *testing.B) {
+	var n int
+
+	doc := DocW()
+	sel := doc.Find("li")
+	// make nodes > 1000
+	nodes := sel.Nodes
+	nodes = append(nodes, nodes...)
+	nodes = append(nodes, nodes...)
+	sel = doc.Find("xyz")
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.AddNodes(nodes...).Length()
+		} else {
+			sel.AddNodes(nodes...)
+		}
+	}
+	if n != 373 {
+		b.Fatalf("want 373, got %d", n)
+	}
+}
+
 func BenchmarkAndSelf(b *testing.B) {
 	var n int
 
