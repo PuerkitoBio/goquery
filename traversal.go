@@ -684,9 +684,7 @@ func getParentNodes(nodes []*html.Node) []*html.Node {
 // Returns an array of nodes mapped by calling the callback function once for
 // each node in the source nodes.
 func mapNodes(nodes []*html.Node, f func(int, *html.Node) []*html.Node) (result []*html.Node) {
-	var set map[*html.Node]bool
-
-	set = make(map[*html.Node]bool)
+	set := make(map[*html.Node]bool)
 	for i, n := range nodes {
 		if vals := f(i, n); len(vals) > 0 {
 			result = appendWithoutDuplicates(result, vals, set)
