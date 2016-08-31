@@ -1,5 +1,28 @@
 # Tips and tricks
 
+## Manipulate Big Documents
+
+Some CSS selectors are inherently slower than others, and when manipulating big documents (e.g. tables with thousands of rows), the performance may suffer. In particular, pseudo-classes such as `:nth-child` are slow, and while they are handy when manipulating smaller documents, they can be painful for bigger ones.
+
+In those cases, it can be order of magnitudes faster to use a simpler CSS selector and use goquery methods to do the finer-grained filtering.
+
+For example:
+
+```
+doc, err := goquery.NewDocumentFromReader(bigDocument)
+if err != nil {
+    log.Fatal(err)
+}
+
+// this could be much slower...
+sel := doc.Find("#bigtable tr:nth-child(1) td")
+
+// than this:
+sel := doc.Find("#bigtable tr").First().Find("td")
+```
+
+Other indexes in an `:nth-child(x)` can be translated to `sel.Eq(x)`.
+
 ## Handle Non-UTF8 html Pages
 
 The `go.net/html` package used by `goquery` requires that the html document is UTF-8 encoded. When you know the encoding of the html page is not UTF-8, you can use the `iconv` package to convert it to UTF-8 (there are various implementation of the `iconv` API, see [godoc.org][iconv] for other options):
@@ -13,7 +36,7 @@ and then:
 ```
 // Load the URL
 res, err := http.Get(url)
-if e != nil {
+if err != nil {
     // handle error
 }
 defer res.Body.Close()
@@ -65,4 +88,4 @@ Thanks to github user @jmoiron.
 [otto]: https://github.com/robertkrimen/otto
 [exotto]: https://gist.github.com/cryptix/87127f76a94183747b53
 [iconv]: http://godoc.org/?q=iconv
-[text]: http://godoc.org/code.google.com/p/go.text/encoding
+[text]: https://godoc.org/golang.org/x/text/encoding
