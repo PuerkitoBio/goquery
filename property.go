@@ -63,9 +63,22 @@ func (s *Selection) Text() string {
 	var buf bytes.Buffer
 
 	// Slightly optimized vs calling Each: no single selection object created
-	for _, n := range s.Nodes {
-		buf.WriteString(getNodeText(n))
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.TextNode {
+			// Keep newlines and spaces, like jQuery
+			buf.WriteString(n.Data)
+		}
+		if n.FirstChild != nil {
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				f(c)
+			}
+		}
 	}
+	for _, n := range s.Nodes {
+		f(n)
+	}
+
 	return buf.String()
 }
 
@@ -190,22 +203,6 @@ func (s *Selection) ToggleClass(class ...string) *Selection {
 	}
 
 	return s
-}
-
-// Get the specified node's text content.
-func getNodeText(node *html.Node) string {
-	if node.Type == html.TextNode {
-		// Keep newlines and spaces, like jQuery
-		return node.Data
-	} else if node.FirstChild != nil {
-		var buf bytes.Buffer
-		for c := node.FirstChild; c != nil; c = c.NextSibling {
-			buf.WriteString(getNodeText(c))
-		}
-		return buf.String()
-	}
-
-	return ""
 }
 
 func getAttributePtr(attrName string, n *html.Node) *html.Attribute {
