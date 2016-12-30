@@ -26,6 +26,7 @@ Please note that because of the net/html dependency, goquery requires Go1.1+.
 
 **Note that goquery's API is now stable, and will not break.**
 
+*    **2016-12-29 (v1.0.2)** : Optimize allocations for `Selection.Text` (thanks to @radovskyb).
 *    **2016-08-28 (v1.0.1)** : Optimize performance for large documents.
 *    **2016-07-27 (v1.0.0)** : Tag version 1.0.0.
 *    **2016-06-15** : Invalid selector strings internally compile to a `Matcher` implementation that never matches any node (instead of a panic). So for example, `doc.Find("~")` returns an empty `*Selection` object.
