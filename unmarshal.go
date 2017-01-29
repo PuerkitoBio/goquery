@@ -23,12 +23,15 @@ type CannotUnmarshalError struct {
 }
 
 func (e *CannotUnmarshalError) Error() string {
-	return fmt.Sprintf("Decode(illegal value type %q); cannot proceed because %q", e.V.Type().String(), e.Reason)
+	if e.Error == nil {
+		return fmt.Sprintf("Decode(illegal value type %q); cannot proceed because %q", e.V.Type().String(), e.Reason)
+	}
+	return fmt.Sprintf("An error occurred while decoding value type %q: %s", e.V.Type().String(), e.Err)
 }
 
 // Unmarshaler allows for custom implementations of unmarshaling logic
 type Unmarshaler interface {
-	Unmarshal(*Selection) error
+	UnmarshalSelection(*Selection) error
 }
 
 func Unmarshal(bs []byte, v interface{}) error {
@@ -57,7 +60,7 @@ func UnmarshalDocument(d *Document, iface interface{}) error {
 	u, v := indirect(v)
 
 	if u != nil {
-		return u.Unmarshal(d.Selection)
+		return u.UnmarshalSelection(d.Selection)
 	}
 
 	return unmarshalByType(d.Selection, v)
@@ -67,7 +70,7 @@ func unmarshalByType(s *Selection, v reflect.Value) error {
 	u, v := indirect(v)
 
 	if u != nil {
-		return u.Unmarshal(s)
+		return u.UnmarshalSelection(s)
 	}
 
 	t := v.Type()
@@ -79,11 +82,22 @@ func unmarshalByType(s *Selection, v reflect.Value) error {
 		return unmarshalSlice(s, v)
 	case reflect.Array:
 		return unmarshalArray(s, v)
+	default:
+		return trySetLiteral(s, v)
+	}
+	return nil
+}
+
+func trySetLiteral(s *Selection, v reflect.Value) error {
+	t := v.Type()
+
+	switch t.Kind() {
 	case reflect.String:
 		v.Set(reflect.ValueOf(s.Text()))
 	case reflect.Bool:
 		v.Set(reflect.ValueOf(s.Text() == "true"))
-	case reflect.Int:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		v := reflect.New(v.Type())
 		i, err := strconv.Atoi(s.Text())
 		if err != nil {
 			return err

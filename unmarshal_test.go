@@ -62,7 +62,7 @@ type FooBar struct {
 	unmarshalWasCalled bool
 }
 
-func (f *FooBar) Unmarshal(s *Selection) error {
+func (f *FooBar) UnmarshalSelection(s *Selection) error {
 	f.unmarshalWasCalled = true
 	f.Attrs = []Attr{}
 	for _, node := range s.Find(".foobar thing").Nodes {
