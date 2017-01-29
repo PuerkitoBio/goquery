@@ -12,7 +12,6 @@ import (
 const (
 	NonPointer          = "non-pointer value"
 	NilValue            = "destination argument is nil"
-	UnimplementedType   = "value type unimplemented"
 	DocumentReadError   = "error reading goquery document"
 	ArrayLengthMismatch = "array length does not match document elements found"
 )
@@ -72,6 +71,7 @@ func unmarshalByType(s *Selection, v reflect.Value) error {
 	}
 
 	t := v.Type()
+
 	switch t.Kind() {
 	case reflect.Struct:
 		return unmarshalStruct(s, v)
@@ -81,17 +81,16 @@ func unmarshalByType(s *Selection, v reflect.Value) error {
 		return unmarshalArray(s, v)
 	case reflect.String:
 		v.Set(reflect.ValueOf(s.Text()))
-		return nil
+	case reflect.Bool:
+		v.Set(reflect.ValueOf(s.Text() == "true"))
 	case reflect.Int:
 		i, err := strconv.Atoi(s.Text())
 		if err != nil {
 			return err
 		}
 		v.Set(reflect.ValueOf(i))
-		return nil
 	}
-
-	return &CannotUnmarshalError{V: v, Reason: UnimplementedType}
+	return nil
 }
 
 func unmarshalStruct(root *Selection, v reflect.Value) error {

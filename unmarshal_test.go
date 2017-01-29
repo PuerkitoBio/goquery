@@ -36,6 +36,8 @@ const testPage = `<!DOCTYPE html>
     </h1>
 		<div class="foobar">
 			<thing foo="yes">1</thing>
+			<foo>true</foo>
+			<bar>false</foo>
 		</div>
   </body>
 </html>
@@ -109,4 +111,20 @@ func TestArrayUnmarshal(t *testing.T) {
 	for i, val := range vals {
 		asrt.Equal(val, a.Resources[i].Name)
 	}
+}
+
+func TestBoolean(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		BoolTest struct {
+			Foo bool `goquery:"foo"`
+			Bar bool `goquery:"bar"`
+		} `goquery:".foobar"`
+	}
+
+	asrt.NoError(Unmarshal([]byte(testPage), &a))
+
+	asrt.Equal(true, a.BoolTest.Foo)
+	asrt.Equal(false, a.BoolTest.Bar)
 }
