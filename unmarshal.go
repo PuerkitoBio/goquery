@@ -97,12 +97,23 @@ func trySetLiteral(s *Selection, v reflect.Value) error {
 	case reflect.Bool:
 		v.Set(reflect.ValueOf(s.Text() == "true"))
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		v := reflect.New(v.Type())
-		i, err := strconv.Atoi(s.Text())
+		i, err := strconv.ParseInt(s.Text(), 10, 64)
 		if err != nil {
 			return err
 		}
-		v.Set(reflect.ValueOf(i))
+		v.SetInt(i)
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		i, err := strconv.ParseUint(s.Text(), 10, 64)
+		if err != nil {
+			return err
+		}
+		v.SetUint(i)
+	case reflect.Float32, reflect.Float64:
+		i, err := strconv.ParseFloat(s.Text(), 64)
+		if err != nil {
+			return err
+		}
+		v.SetFloat(i)
 	}
 	return nil
 }

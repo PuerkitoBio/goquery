@@ -38,6 +38,9 @@ const testPage = `<!DOCTYPE html>
 			<thing foo="yes">1</thing>
 			<foo>true</foo>
 			<bar>false</foo>
+			<float>1.2345</float>
+			<int>-123</int>
+			<uint>100</uint>
 		</div>
   </body>
 </html>
@@ -127,4 +130,22 @@ func TestBoolean(t *testing.T) {
 
 	asrt.Equal(true, a.BoolTest.Foo)
 	asrt.Equal(false, a.BoolTest.Bar)
+}
+
+func TestNumbers(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		BoolTest struct {
+			Int   int     `goquery:"int"`
+			Float float32 `goquery:"float"`
+			Uint  uint16  `goquery:"uint"`
+		} `goquery:".foobar"`
+	}
+
+	asrt.NoError(Unmarshal([]byte(testPage), &a))
+
+	asrt.Equal(float32(1.2345), a.BoolTest.Float)
+	asrt.Equal(-123, a.BoolTest.Int)
+	asrt.Equal(uint16(100), a.BoolTest.Uint)
 }
