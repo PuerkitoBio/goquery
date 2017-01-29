@@ -77,6 +77,8 @@ func (f *FooBar) Unmarshal(s *Selection) error {
 	return err
 }
 
+var vals = []string{"Foo", "Bar", "Baz", "Bang", "Zip"}
+
 func TestDecoder(t *testing.T) {
 	asrt := assert.New(t)
 
@@ -84,8 +86,6 @@ func TestDecoder(t *testing.T) {
 
 	asrt.NoError(NewDecoder(strings.NewReader(testPage)).Decode(&p))
 	asrt.Len(p.Resources, 5)
-
-	vals := []string{"Foo", "Bar", "Baz", "Bang", "Zip"}
 
 	for i, val := range vals {
 		asrt.Equal(val, p.Resources[i].Name)
@@ -96,4 +96,17 @@ func TestDecoder(t *testing.T) {
 	asrt.Len(p.FooBar.Attrs, 1)
 	asrt.Equal("foo", p.FooBar.Attrs[0].Key)
 	asrt.Equal("yes", p.FooBar.Attrs[0].Value)
+}
+
+func TestArrayUnmarshal(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		Resources [5]Resource `goquery:"#resources .resource"`
+	}
+
+	asrt.NoError(Unmarshal([]byte(testPage), &a))
+	for i, val := range vals {
+		asrt.Equal(val, a.Resources[i].Name)
+	}
 }

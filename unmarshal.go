@@ -1,29 +1,45 @@
 package goquery
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
 	"strconv"
 )
 
+// All "Reason" fields within CannotUnmarshalError will be constants and part of
+// this list
 const (
-	NonPointer        = "non-pointer value"
-	NilValue          = "destination argument is nil"
-	UnimplementedType = "value type unimplemented"
+	NonPointer          = "non-pointer value"
+	NilValue            = "destination argument is nil"
+	UnimplementedType   = "value type unimplemented"
+	DocumentReadError   = "error reading goquery document"
+	ArrayLengthMismatch = "array length does not match document elements found"
 )
 
 type CannotUnmarshalError struct {
 	V      reflect.Value
 	Reason string
+	Err    error
 }
 
 func (e *CannotUnmarshalError) Error() string {
-	return fmt.Sprintf("Decode(illegal value %s) cannot proceed: %s", e.V.Type().String(), e.Reason)
+	return fmt.Sprintf("Decode(illegal value type %q); cannot proceed because %q", e.V.Type().String(), e.Reason)
 }
 
 // Unmarshaler allows for custom implementations of unmarshaling logic
 type Unmarshaler interface {
 	Unmarshal(*Selection) error
+}
+
+func Unmarshal(bs []byte, v interface{}) error {
+	d, err := NewDocumentFromReader(bytes.NewReader(bs))
+
+	if err != nil {
+		return &CannotUnmarshalError{Err: err, Reason: DocumentReadError}
+	}
+
+	return UnmarshalDocument(d, v)
 }
 
 // UnmarshalDoc will unmarshal a goquery.Document into an interface
@@ -61,8 +77,8 @@ func unmarshalByType(s *Selection, v reflect.Value) error {
 		return unmarshalStruct(s, v)
 	case reflect.Slice:
 		return unmarshalSlice(s, v)
-	// case reflect.Array:
-	// 	return unmarshalArray(s, v)
+	case reflect.Array:
+		return unmarshalArray(s, v)
 	case reflect.String:
 		v.Set(reflect.ValueOf(s.Text()))
 		return nil
@@ -86,7 +102,7 @@ func unmarshalStruct(root *Selection, v reflect.Value) error {
 
 		sel := root
 		if tag != "" {
-			sel = root.Find(tag)
+			sel = sel.Find(tag)
 		}
 
 		err := unmarshalByType(sel, v.Field(i))
@@ -94,6 +110,24 @@ func unmarshalStruct(root *Selection, v reflect.Value) error {
 			return err
 		}
 	}
+	return nil
+}
+
+func unmarshalArray(root *Selection, dest reflect.Value) error {
+	if dest.Type().Len() != root.Length() {
+		return &CannotUnmarshalError{
+			Reason: ArrayLengthMismatch,
+			V:      dest,
+		}
+	}
+
+	for i := 0; i < dest.Type().Len(); i++ {
+		err := unmarshalByType(root.Eq(i), dest.Index(i))
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
