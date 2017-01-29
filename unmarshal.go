@@ -82,9 +82,12 @@ func unmarshalStruct(root *Selection, v reflect.Value) error {
 	t := v.Type()
 
 	for i := 0; i < t.NumField(); i++ {
-		fld := t.Field(i)
-		tag := fld.Tag.Get("goquery")
-		sel := root.Find(tag)
+		tag := t.Field(i).Tag.Get("goquery")
+
+		sel := root
+		if tag != "" {
+			sel = root.Find(tag)
+		}
 
 		err := unmarshalByType(sel, v.Field(i))
 		if err != nil {

@@ -1,6 +1,7 @@
 package goquery
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 
@@ -33,16 +34,47 @@ const testPage = `<!DOCTYPE html>
         </li>
       </ul>
     </h1>
+		<div class="foobar">
+			<thing foo="yes">1</thing>
+		</div>
   </body>
 </html>
 `
 
 type Page struct {
 	Resources []Resource `goquery:"#resources .resource"`
+	FooBar    FooBar
 }
 
 type Resource struct {
 	Name string `goquery:".name"`
+}
+
+type Attr struct {
+	Key, Value string
+}
+
+type FooBar struct {
+	Attrs              []Attr
+	Val                int
+	unmarshalWasCalled bool
+}
+
+func (f *FooBar) Unmarshal(s *Selection) error {
+	f.unmarshalWasCalled = true
+	f.Attrs = []Attr{}
+	for _, node := range s.Find(".foobar thing").Nodes {
+		for _, attr := range node.Attr {
+			f.Attrs = append(f.Attrs, Attr{Key: attr.Key, Value: attr.Val})
+		}
+	}
+	thing := s.Find("thing")
+
+	thingText := thing.Text()
+
+	i, err := strconv.Atoi(thingText)
+	f.Val = i
+	return err
 }
 
 func TestDecoder(t *testing.T) {
@@ -54,7 +86,14 @@ func TestDecoder(t *testing.T) {
 	asrt.Len(p.Resources, 5)
 
 	vals := []string{"Foo", "Bar", "Baz", "Bang", "Zip"}
+
 	for i, val := range vals {
 		asrt.Equal(val, p.Resources[i].Name)
 	}
+
+	asrt.True(p.FooBar.unmarshalWasCalled)
+	asrt.Equal(1, p.FooBar.Val)
+	asrt.Len(p.FooBar.Attrs, 1)
+	asrt.Equal("foo", p.FooBar.Attrs[0].Key)
+	asrt.Equal("yes", p.FooBar.Attrs[0].Value)
 }
