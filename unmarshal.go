@@ -51,7 +51,7 @@ func Unmarshal(bs []byte, v interface{}) error {
 
 // UnmarshalSelection will unmarshal a goquery.Selection into an interface
 // appropriately annoated with goquery tags.
-func UnmarshalSelection(d *Selection, iface interface{}) error {
+func UnmarshalSelection(s *Selection, iface interface{}) error {
 	v := reflect.ValueOf(iface)
 
 	if iface == nil {
@@ -65,10 +65,10 @@ func UnmarshalSelection(d *Selection, iface interface{}) error {
 	u, v := indirect(v)
 
 	if u != nil {
-		return u.UnmarshalSelection(d)
+		return u.UnmarshalSelection(s)
 	}
 
-	return unmarshalByType(d, v)
+	return unmarshalByType(s, v)
 }
 
 func unmarshalByType(s *Selection, v reflect.Value) error {
@@ -88,11 +88,11 @@ func unmarshalByType(s *Selection, v reflect.Value) error {
 	case reflect.Array:
 		return unmarshalArray(s, v)
 	default:
-		return trySetLiteral(s, v)
+		return unmarshalLiteral(s, v)
 	}
 }
 
-func trySetLiteral(s *Selection, v reflect.Value) error {
+func unmarshalLiteral(s *Selection, v reflect.Value) error {
 	t := v.Type()
 
 	switch t.Kind() {
