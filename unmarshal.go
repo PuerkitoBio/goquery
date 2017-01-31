@@ -2,65 +2,11 @@ package goquery
 
 import (
 	"bytes"
-	"fmt"
 	"reflect"
 	"strconv"
 
 	"golang.org/x/net/html"
 )
-
-// All "Reason" fields within CannotUnmarshalError will be constants and part of
-// this list
-const (
-	NonPointer           = "non-pointer value"
-	NilValue             = "destination argument is nil"
-	DocumentReadError    = "error reading goquery document"
-	ArrayLengthMismatch  = "array length does not match document elements found"
-	CustomUnmarshalError = "a custom Unmarshaler implementation threw an error"
-	TypeConversionError  = "a type conversion error occurred"
-)
-
-// CannotUnmarshalError represents an error returned by the goquery Unmarshaler
-// and helps consumers in programmatically diagnosing the cause of their error.
-type CannotUnmarshalError struct {
-	V      reflect.Value
-	Reason string
-	Err    error
-}
-
-// Traverse e.Err, printing hopefully helpful type info until there are no more
-// chained errors.
-func (e *CannotUnmarshalError) unwindReason() string {
-	if e == nil {
-		return ""
-	}
-
-	str := ""
-	ok := true
-	for ok {
-		// Avoid panic if we cannot get a type name for the Value
-		t := "unknown type: invalid value"
-		if e.V.IsValid() {
-			t = e.V.Type().String()
-		}
-
-		str += fmt.Sprintf(": (%s) %s", t, e.Reason)
-
-		// Terminal error was of type *CannotUnmarshalError and had no children
-		if e.Err == nil {
-			return str
-		}
-
-		e, ok = e.Err.(*CannotUnmarshalError)
-	}
-
-	// Child error was not a *CannotUnmarshalError; print its message
-	return fmt.Sprintf("%s: %s", str, e.Error())
-}
-
-func (e *CannotUnmarshalError) Error() string {
-	return "an error occurred while unmarshaling" + e.unwindReason()
-}
 
 // Unmarshaler allows for custom implementations of unmarshaling logic
 type Unmarshaler interface {

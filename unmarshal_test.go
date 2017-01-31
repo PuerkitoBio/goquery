@@ -2,7 +2,6 @@ package goquery
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"testing"
 
@@ -235,10 +234,24 @@ func TestInvalidLiteral(t *testing.T) {
 
 	err := Unmarshal([]byte(testPage), &a)
 
-	log.Println(err)
+	e := checkErr(asrt, err).unwindReason()
 
-	e := checkErr(asrt, err)
-	asrt.Equal(TypeConversionError, e.Reason)
-	e2 := checkErr(asrt, e.Err)
-	asrt.Equal(TypeConversionError, e2.Reason)
+	asrt.Len(e.chain, 2)
+	asrt.Error(e.tail)
+	asrt.Contains(err.Error(), e.tail.Error())
+
+	asrt.Equal(TypeConversionError, e.chain[0].Reason)
+	asrt.Equal(TypeConversionError, e.chain[1].Reason)
+}
+
+func TestInvalidArrayEleType(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		Resources [5]int `goquery:".resource"`
+	}
+
+	err := Unmarshal([]byte(testPage), &a)
+	e := checkErr(asrt, err).unwindReason()
+	asrt.Len(e.chain, 3)
 }
