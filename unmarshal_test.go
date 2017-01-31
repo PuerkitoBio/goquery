@@ -1,6 +1,8 @@
 package goquery
 
 import (
+	"fmt"
+	"log"
 	"strconv"
 	"testing"
 
@@ -87,6 +89,14 @@ func (f *FooBar) UnmarshalHTML(nodes []*html.Node) error {
 	return err
 }
 
+type ErrorFooBar struct{}
+
+var errTestUnmarshal = fmt.Errorf("A wild error appeared")
+
+func (e *ErrorFooBar) UnmarshalHTML([]*html.Node) error {
+	return errTestUnmarshal
+}
+
 var vals = []string{"Foo", "Bar", "Baz", "Bang", "Zip"}
 
 func TestDecoder(t *testing.T) {
@@ -155,4 +165,80 @@ func TestNumbers(t *testing.T) {
 	asrt.Equal(float32(1.2345), a.BoolTest.Float)
 	asrt.Equal(-123, a.BoolTest.Int)
 	asrt.Equal(uint16(100), a.BoolTest.Uint)
+}
+
+func checkErr(asrt *assert.Assertions, err error) *CannotUnmarshalError {
+	asrt.Error(err)
+	asrt.IsType((*CannotUnmarshalError)(nil), err)
+	return err.(*CannotUnmarshalError)
+}
+
+func TestUnmarshalError(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a []ErrorFooBar
+
+	err := Unmarshal([]byte(testPage), &a)
+
+	asrt.Contains(err.Error(), "an error occurred")
+
+	e := checkErr(asrt, err)
+	e2 := checkErr(asrt, e.Err)
+
+	asrt.Equal(errTestUnmarshal, e2.Err)
+	asrt.Equal(CustomUnmarshalError, e2.Reason)
+}
+
+func TestNilUnmarshal(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a *Page
+
+	err := Unmarshal([]byte{}, a)
+	e := checkErr(asrt, err)
+	asrt.Equal(NilValue, e.Reason)
+}
+
+func TestNonPointer(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a Page
+	err := Unmarshal([]byte{}, a)
+	e := checkErr(asrt, err)
+	asrt.Equal(NonPointer, e.Reason)
+}
+
+func TestWrongArrayLength(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		Resources [1]Resource `goquery:".resource"`
+	}
+
+	err := Unmarshal([]byte(testPage), &a)
+
+	e := checkErr(asrt, err)
+	asrt.Equal(TypeConversionError, e.Reason)
+	e2 := checkErr(asrt, e.Err)
+	asrt.Equal(ArrayLengthMismatch, e2.Reason)
+
+	asrt.Contains(e.Error(), "Resource")
+	asrt.Contains(e.Error(), "array length")
+}
+
+func TestInvalidLiteral(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		Foo int `goquery:"foo"`
+	}
+
+	err := Unmarshal([]byte(testPage), &a)
+
+	log.Println(err)
+
+	e := checkErr(asrt, err)
+	asrt.Equal(TypeConversionError, e.Reason)
+	e2 := checkErr(asrt, e.Err)
+	asrt.Equal(TypeConversionError, e2.Reason)
 }

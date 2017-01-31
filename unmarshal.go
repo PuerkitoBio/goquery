@@ -17,6 +17,7 @@ const (
 	DocumentReadError    = "error reading goquery document"
 	ArrayLengthMismatch  = "array length does not match document elements found"
 	CustomUnmarshalError = "a custom Unmarshaler implementation threw an error"
+	TypeConversionError  = "a type conversion error occurred"
 )
 
 // CannotUnmarshalError represents an error returned by the goquery Unmarshaler
@@ -27,11 +28,38 @@ type CannotUnmarshalError struct {
 	Err    error
 }
 
-func (e *CannotUnmarshalError) Error() string {
-	if e.Err == nil {
-		return fmt.Sprintf("Decode(illegal value type %q); cannot proceed because %q", e.V.Type().String(), e.Reason)
+// Traverse e.Err, printing hopefully helpful type info until there are no more
+// chained errors.
+func (e *CannotUnmarshalError) unwindReason() string {
+	if e == nil {
+		return ""
 	}
-	return fmt.Sprintf("an error occurred while decoding value type %q: %s", e.V.Type().String(), e.Err)
+
+	str := ""
+	ok := true
+	for ok {
+		// Avoid panic if we cannot get a type name for the Value
+		t := "unknown type: invalid value"
+		if e.V.IsValid() {
+			t = e.V.Type().String()
+		}
+
+		str += fmt.Sprintf(": (%s) %s", t, e.Reason)
+
+		// Terminal error was of type *CannotUnmarshalError and had no children
+		if e.Err == nil {
+			return str
+		}
+
+		e, ok = e.Err.(*CannotUnmarshalError)
+	}
+
+	// Child error was not a *CannotUnmarshalError; print its message
+	return fmt.Sprintf("%s: %s", str, e.Error())
+}
+
+func (e *CannotUnmarshalError) Error() string {
+	return "an error occurred while unmarshaling" + e.unwindReason()
 }
 
 // Unmarshaler allows for custom implementations of unmarshaling logic
@@ -69,12 +97,13 @@ func wrapUnmErr(err error, v reflect.Value) error {
 func UnmarshalSelection(s *Selection, iface interface{}) error {
 	v := reflect.ValueOf(iface)
 
-	if iface == nil {
-		return &CannotUnmarshalError{V: v, Reason: NilValue}
-	}
-
+	// Must come before v.IsNil() else IsNil panics on NonPointer value
 	if v.Kind() != reflect.Ptr {
 		return &CannotUnmarshalError{V: v, Reason: NonPointer}
+	}
+
+	if iface == nil || v.IsNil() {
+		return &CannotUnmarshalError{V: v, Reason: NilValue}
 	}
 
 	u, v := indirect(v)
@@ -103,7 +132,15 @@ func unmarshalByType(s *Selection, v reflect.Value) error {
 	case reflect.Array:
 		return unmarshalArray(s, v)
 	default:
-		return unmarshalLiteral(s, v)
+		err := unmarshalLiteral(s, v)
+		if err != nil {
+			return &CannotUnmarshalError{
+				V:      v,
+				Reason: TypeConversionError,
+				Err:    err,
+			}
+		}
+		return nil
 	}
 }
 
@@ -154,14 +191,18 @@ func unmarshalStruct(s *Selection, v reflect.Value) error {
 
 		err := unmarshalByType(sel, v.Field(i))
 		if err != nil {
-			return err
+			return &CannotUnmarshalError{
+				Reason: TypeConversionError,
+				Err:    err,
+				V:      v,
+			}
 		}
 	}
 	return nil
 }
 
 func unmarshalArray(s *Selection, v reflect.Value) error {
-	if v.Type().Len() != s.Length() {
+	if v.Type().Len() != len(s.Nodes) {
 		return &CannotUnmarshalError{
 			Reason: ArrayLengthMismatch,
 			V:      v,
@@ -171,7 +212,11 @@ func unmarshalArray(s *Selection, v reflect.Value) error {
 	for i := 0; i < v.Type().Len(); i++ {
 		err := unmarshalByType(s.Eq(i), v.Index(i))
 		if err != nil {
-			return err
+			return &CannotUnmarshalError{
+				Reason: TypeConversionError,
+				Err:    err,
+				V:      v,
+			}
 		}
 	}
 
@@ -189,7 +234,11 @@ func unmarshalSlice(s *Selection, v reflect.Value) error {
 		err := unmarshalByType(s.Eq(i), newV)
 
 		if err != nil {
-			return err
+			return &CannotUnmarshalError{
+				Reason: TypeConversionError,
+				Err:    err,
+				V:      v,
+			}
 		}
 
 		if eleT.Kind() != reflect.Ptr {
