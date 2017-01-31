@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"testing"
 
+	"golang.org/x/net/html"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -64,8 +66,12 @@ type FooBar struct {
 	unmarshalWasCalled bool
 }
 
-func (f *FooBar) UnmarshalSelection(s *Selection) error {
+func (f *FooBar) UnmarshalHTML(nodes []*html.Node) error {
 	f.unmarshalWasCalled = true
+
+	s := &Selection{}
+	s = s.AddNodes(nodes...)
+
 	f.Attrs = []Attr{}
 	for _, node := range s.Find(".foobar thing").Nodes {
 		for _, attr := range node.Attr {
@@ -86,6 +92,8 @@ var vals = []string{"Foo", "Bar", "Baz", "Bang", "Zip"}
 func TestDecoder(t *testing.T) {
 	asrt := assert.New(t)
 
+	asrt.Implements((*Unmarshaler)(nil), new(FooBar))
+
 	var p Page
 
 	asrt.NoError(Unmarshal([]byte(testPage), &p))
@@ -95,7 +103,7 @@ func TestDecoder(t *testing.T) {
 		asrt.Equal(val, p.Resources[i].Name)
 	}
 
-	asrt.True(p.FooBar.unmarshalWasCalled)
+	asrt.True(p.FooBar.unmarshalWasCalled, "Unmarshal should have been called.")
 	asrt.Equal(1, p.FooBar.Val)
 	asrt.Len(p.FooBar.Attrs, 1)
 	asrt.Equal("foo", p.FooBar.Attrs[0].Key)

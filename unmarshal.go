@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+
+	"golang.org/x/net/html"
 )
 
 // All "Reason" fields within CannotUnmarshalError will be constants and part of
 // this list
 const (
-	NonPointer          = "non-pointer value"
-	NilValue            = "destination argument is nil"
-	DocumentReadError   = "error reading goquery document"
-	ArrayLengthMismatch = "array length does not match document elements found"
+	NonPointer           = "non-pointer value"
+	NilValue             = "destination argument is nil"
+	DocumentReadError    = "error reading goquery document"
+	ArrayLengthMismatch  = "array length does not match document elements found"
+	CustomUnmarshalError = "a custom Unmarshaler implementation threw an error"
 )
 
 // CannotUnmarshalError represents an error returned by the goquery Unmarshaler
@@ -28,12 +31,12 @@ func (e *CannotUnmarshalError) Error() string {
 	if e.Err == nil {
 		return fmt.Sprintf("Decode(illegal value type %q); cannot proceed because %q", e.V.Type().String(), e.Reason)
 	}
-	return fmt.Sprintf("An error occurred while decoding value type %q: %s", e.V.Type().String(), e.Err)
+	return fmt.Sprintf("an error occurred while decoding value type %q: %s", e.V.Type().String(), e.Err)
 }
 
 // Unmarshaler allows for custom implementations of unmarshaling logic
 type Unmarshaler interface {
-	UnmarshalSelection(*Selection) error
+	UnmarshalHTML([]*html.Node) error
 }
 
 // Unmarshal takes a byte slice and a destination pointer to any interface{},
@@ -47,6 +50,18 @@ func Unmarshal(bs []byte, v interface{}) error {
 	}
 
 	return UnmarshalSelection(d.Selection, v)
+}
+
+func wrapUnmErr(err error, v reflect.Value) error {
+	if err == nil {
+		return nil
+	}
+
+	return &CannotUnmarshalError{
+		V:      v,
+		Reason: CustomUnmarshalError,
+		Err:    err,
+	}
 }
 
 // UnmarshalSelection will unmarshal a goquery.Selection into an interface
@@ -65,7 +80,7 @@ func UnmarshalSelection(s *Selection, iface interface{}) error {
 	u, v := indirect(v)
 
 	if u != nil {
-		return u.UnmarshalSelection(s)
+		return wrapUnmErr(u.UnmarshalHTML(s.Nodes), v)
 	}
 
 	return unmarshalByType(s, v)
@@ -75,7 +90,7 @@ func unmarshalByType(s *Selection, v reflect.Value) error {
 	u, v := indirect(v)
 
 	if u != nil {
-		return u.UnmarshalSelection(s)
+		return wrapUnmErr(u.UnmarshalHTML(s.Nodes), v)
 	}
 
 	t := v.Type()
