@@ -19,27 +19,45 @@ const testPage = `<!DOCTYPE html>
   <body>
     <h1>
       <ul id="resources">
-        <li class="resource">
+        <li class="resource" order="3">
           <div class="name">Foo</div>
         </li>
-        <li class="resource">
+        <li class="resource" order="1">
           <div class="name">Bar</div>
         </li>
-        <li class="resource">
+        <li class="resource" order="4">
           <div class="name">Baz</div>
         </li>
-        <li class="resource">
+        <li class="resource" order="2">
           <div class="name">Bang</div>
         </li>
-        <li class="resource">
+        <li class="resource" order="5">
           <div class="name">Zip</div>
         </li>
       </ul>
+			<h2 id="anchor-header"><a href="https://foo.com">FOO!!!</a></h2>
     </h1>
+		<ul id="structured-list">
+		  <li name="foo" val="flip">foo</li>
+			<li name="bar" val="flip">bar</li>
+			<li name="baz" val="flip">baz</li>
+		</ul>
+		<ul id="nested-map">
+			<ul name="first">
+				<li name="foo">foo</li>
+				<li name="bar">bar</li>
+				<li name="baz">baz</li>
+			</ul>
+			<ul name="second">
+				<li name="bang">bang</li>
+				<li name="ring">ring</li>
+				<li name="fling">fling</li>
+			</ul>
+		</ul>
 		<div class="foobar">
 			<thing foo="yes">1</thing>
-			<foo>true</foo>
-			<bar>false</foo>
+			<foo arr="true">true</foo>
+			<bar arr="true">false</foo>
 			<float>1.2345</float>
 			<int>-123</int>
 			<uint>100</uint>
@@ -65,6 +83,29 @@ type FooBar struct {
 	Attrs              []Attr
 	Val                int
 	unmarshalWasCalled bool
+}
+
+type AttrSelectorTest struct {
+	Header H2 `goquery:"#anchor-header"`
+}
+
+type H2 struct {
+	Location string `goquery:"a,[href]"`
+}
+
+type sliceAttrSelector struct {
+	// For arrays/slices, type []primitive can use a source attribute
+	Things []bool `goquery:".foobar [arr=\"true\"],[arr]"`
+}
+
+// TODO(andrewstuart) maps are unimplemented
+type MapTest struct {
+	// For map[primitive]primitive we use syntax selector,keySource,valSource
+	Names map[string]string `goquery:"#structured-list li,[name],[val]"`
+	// For map[primitive]Object we use the same syntax as a []primitive
+	Resources map[string]Resource `goquery:"#resources .resource,[order]"`
+
+	Nested map[string]map[string]string `goquery:"#nested-map,[name],[name],text"`
 }
 
 func (f *FooBar) UnmarshalHTML(nodes []*html.Node) error {
@@ -254,4 +295,37 @@ func TestInvalidArrayEleType(t *testing.T) {
 	err := Unmarshal([]byte(testPage), &a)
 	e := checkErr(asrt, err).unwindReason()
 	asrt.Len(e.chain, 3)
+}
+
+func TestAttributeSelector(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a AttrSelectorTest
+
+	asrt.NoError(Unmarshal([]byte(testPage), &a))
+	asrt.Equal("https://foo.com", a.Header.Location)
+}
+
+func TestSliceAttrSelector(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a sliceAttrSelector
+
+	asrt.NoError(Unmarshal([]byte(testPage), &a))
+	asrt.Len(a.Things, 2)
+	asrt.True(a.Things[0])
+	asrt.True(a.Things[1])
+}
+
+func TestMapQuery(t *testing.T) {
+	asrt := assert.New(t)
+
+	a := MapTest{}
+
+	asrt.NoError(Unmarshal([]byte(testPage), &a))
+	asrt.Len(a.Names, 3)
+	asrt.Equal("flip", a.Names["foo"])
+
+	asrt.Len(a.Resources, 5)
+	asrt.Len(a.Nested, 2)
 }

@@ -14,6 +14,7 @@ const (
 	ArrayLengthMismatch  = "array length does not match document elements found"
 	CustomUnmarshalError = "a custom Unmarshaler implementation threw an error"
 	TypeConversionError  = "a type conversion error occurred"
+	NonStringMapKey      = "a map with non-string key type cannot be unmarshaled"
 )
 
 // CannotUnmarshalError represents an error returned by the goquery Unmarshaler

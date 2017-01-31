@@ -2,8 +2,10 @@ package goquery
 
 import (
 	"bytes"
+	"log"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -11,6 +13,78 @@ import (
 // Unmarshaler allows for custom implementations of unmarshaling logic
 type Unmarshaler interface {
 	UnmarshalHTML([]*html.Node) error
+}
+
+type goqueryTag string
+type valFunc func(*Selection) string
+
+func (tag goqueryTag) selector() string {
+	return strings.Split(string(tag), ",")[0]
+}
+
+var (
+	textVal valFunc = func(s *Selection) string {
+		return s.Text()
+	}
+	htmlVal = func(s *Selection) string {
+		str, _ := s.Html()
+		return str
+	}
+
+	vfCache = map[goqueryTag]valFunc{}
+)
+
+func attrFunc(attr string) valFunc {
+	return func(s *Selection) string {
+		str, _ := s.First().Attr(attr)
+		return str
+	}
+}
+
+func (tag goqueryTag) valFunc() valFunc {
+	if fn := vfCache[tag]; fn != nil {
+		return fn
+	}
+
+	srcArr := strings.Split(string(tag), ",")
+	if len(srcArr) < 2 {
+		vfCache[tag] = textVal
+		return textVal
+	}
+
+	src := srcArr[1]
+
+	var f valFunc
+	switch {
+	case src[0] == '[':
+		// [someattr] will return value of .Attr("someattr")
+		attr := src[1 : len(src)-1]
+		f = attrFunc(attr)
+	case src == "html":
+		f = htmlVal
+	default:
+		f = textVal
+	}
+
+	vfCache[tag] = f
+	return f
+}
+
+// popVal should allow us to handle arbitrarily nested maps as well as the
+// cleanly handling the possiblity of map[literal]literal by just delegating
+// back to `unmarshalByType`.
+func (tag goqueryTag) popVal() goqueryTag {
+	arr := strings.Split(string(tag), ",")
+	if len(arr) < 2 {
+		return tag
+	}
+	if len(arr) < 3 {
+		return goqueryTag(arr[0])
+	}
+	newA := []string{arr[0]}
+	newA = append(newA, arr[2:]...)
+
+	return goqueryTag(strings.Join(newA, ","))
 }
 
 // Unmarshal takes a byte slice and a destination pointer to any interface{},
@@ -58,10 +132,10 @@ func UnmarshalSelection(s *Selection, iface interface{}) error {
 		return wrapUnmErr(u.UnmarshalHTML(s.Nodes), v)
 	}
 
-	return unmarshalByType(s, v)
+	return unmarshalByType(s, v, "")
 }
 
-func unmarshalByType(s *Selection, v reflect.Value) error {
+func unmarshalByType(s *Selection, v reflect.Value, f goqueryTag) error {
 	u, v := indirect(v)
 
 	if u != nil {
@@ -74,11 +148,13 @@ func unmarshalByType(s *Selection, v reflect.Value) error {
 	case reflect.Struct:
 		return unmarshalStruct(s, v)
 	case reflect.Slice:
-		return unmarshalSlice(s, v)
+		return unmarshalSlice(s, v, f)
 	case reflect.Array:
-		return unmarshalArray(s, v)
+		return unmarshalArray(s, v, f)
+	case reflect.Map:
+		return unmarshalMap(s, v, f)
 	default:
-		err := unmarshalLiteral(s, v)
+		err := unmarshalLiteral(f.valFunc()(s), v)
 		if err != nil {
 			return &CannotUnmarshalError{
 				V:      v,
@@ -90,32 +166,32 @@ func unmarshalByType(s *Selection, v reflect.Value) error {
 	}
 }
 
-func unmarshalLiteral(s *Selection, v reflect.Value) error {
+func unmarshalLiteral(s string, v reflect.Value) error {
 	t := v.Type()
 
 	switch t.Kind() {
 	case reflect.String:
-		v.SetString(s.Text())
+		v.SetString(s)
 	case reflect.Bool:
-		i, err := strconv.ParseBool(s.Text())
+		i, err := strconv.ParseBool(s)
 		if err != nil {
 			return err
 		}
 		v.SetBool(i)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		i, err := strconv.ParseInt(s.Text(), 10, 64)
+		i, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
 			return err
 		}
 		v.SetInt(i)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		i, err := strconv.ParseUint(s.Text(), 10, 64)
+		i, err := strconv.ParseUint(s, 10, 64)
 		if err != nil {
 			return err
 		}
 		v.SetUint(i)
 	case reflect.Float32, reflect.Float64:
-		i, err := strconv.ParseFloat(s.Text(), 64)
+		i, err := strconv.ParseFloat(s, 64)
 		if err != nil {
 			return err
 		}
@@ -128,14 +204,15 @@ func unmarshalStruct(s *Selection, v reflect.Value) error {
 	t := v.Type()
 
 	for i := 0; i < t.NumField(); i++ {
-		tag := t.Field(i).Tag.Get("goquery")
+		tag := goqueryTag(t.Field(i).Tag.Get("goquery"))
 
 		sel := s
 		if tag != "" {
-			sel = sel.Find(tag)
+			selStr := tag.selector()
+			sel = sel.Find(selStr)
 		}
 
-		err := unmarshalByType(sel, v.Field(i))
+		err := unmarshalByType(sel, v.Field(i), tag)
 		if err != nil {
 			return &CannotUnmarshalError{
 				Reason: TypeConversionError,
@@ -147,7 +224,7 @@ func unmarshalStruct(s *Selection, v reflect.Value) error {
 	return nil
 }
 
-func unmarshalArray(s *Selection, v reflect.Value) error {
+func unmarshalArray(s *Selection, v reflect.Value, f goqueryTag) error {
 	if v.Type().Len() != len(s.Nodes) {
 		return &CannotUnmarshalError{
 			Reason: ArrayLengthMismatch,
@@ -156,7 +233,7 @@ func unmarshalArray(s *Selection, v reflect.Value) error {
 	}
 
 	for i := 0; i < v.Type().Len(); i++ {
-		err := unmarshalByType(s.Eq(i), v.Index(i))
+		err := unmarshalByType(s.Eq(i), v.Index(i), f)
 		if err != nil {
 			return &CannotUnmarshalError{
 				Reason: TypeConversionError,
@@ -169,15 +246,14 @@ func unmarshalArray(s *Selection, v reflect.Value) error {
 	return nil
 }
 
-func unmarshalSlice(s *Selection, v reflect.Value) error {
-
+func unmarshalSlice(s *Selection, v reflect.Value, f goqueryTag) error {
 	slice := v
+	eleT := v.Type().Elem()
 
 	for i := 0; i < s.Length(); i++ {
-		eleT := v.Type().Elem()
 		newV := reflect.New(eleT)
 
-		err := unmarshalByType(s.Eq(i), newV)
+		err := unmarshalByType(s.Eq(i), newV, f)
 
 		if err != nil {
 			return &CannotUnmarshalError{
@@ -195,6 +271,63 @@ func unmarshalSlice(s *Selection, v reflect.Value) error {
 	}
 
 	slice.Set(v)
+	return nil
+}
+
+func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
+	if v.IsNil() {
+		v.Set(reflect.MakeMap(v.Type()))
+	}
+
+	keyT := v.Type().Key()
+
+	if keyT.Kind() != reflect.String {
+		return &CannotUnmarshalError{
+			Reason: NonStringMapKey,
+			V:      v,
+		}
+	}
+
+	kf := f.valFunc()
+	eleT := v.Type().Elem()
+	switch eleT.Kind() {
+	case reflect.Slice, reflect.Array, reflect.Struct:
+	default:
+		f = f.popVal()
+	}
+
+	log.Println(f)
+
+	var err error
+	s.EachWithBreak(func(i int, subS *Selection) bool {
+		newV := reflect.New(eleT)
+
+		err = unmarshalByType(subS, newV, f)
+		if err != nil {
+			return false
+		}
+
+		key := kf(subS)
+
+		log.Println(key)
+
+		if eleT.Kind() != reflect.Ptr {
+			newV = newV.Elem()
+		}
+
+		v.SetMapIndex(reflect.ValueOf(key), newV)
+
+		return true
+	})
+
+	if err != nil {
+		return &CannotUnmarshalError{
+			Reason: TypeConversionError,
+			Err:    err,
+			V:      v,
+		}
+	}
+
 	return nil
 }
 
