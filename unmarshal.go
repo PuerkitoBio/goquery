@@ -16,6 +16,8 @@ const (
 	ArrayLengthMismatch = "array length does not match document elements found"
 )
 
+// CannotUnmarshalError represents an error returned by the goquery Unmarshaler
+// and helps consumers in programmatically diagnosing the cause of their error.
 type CannotUnmarshalError struct {
 	V      reflect.Value
 	Reason string
@@ -23,7 +25,7 @@ type CannotUnmarshalError struct {
 }
 
 func (e *CannotUnmarshalError) Error() string {
-	if e.Error == nil {
+	if e.Err == nil {
 		return fmt.Sprintf("Decode(illegal value type %q); cannot proceed because %q", e.V.Type().String(), e.Reason)
 	}
 	return fmt.Sprintf("An error occurred while decoding value type %q: %s", e.V.Type().String(), e.Err)
@@ -34,6 +36,9 @@ type Unmarshaler interface {
 	UnmarshalSelection(*Selection) error
 }
 
+// Unmarshal takes a byte slice and a destination pointer to any interface{},
+// and unmarshals the document into the destination based on the `goquery`
+// struct tags.
 func Unmarshal(bs []byte, v interface{}) error {
 	d, err := NewDocumentFromReader(bytes.NewReader(bs))
 
@@ -41,12 +46,12 @@ func Unmarshal(bs []byte, v interface{}) error {
 		return &CannotUnmarshalError{Err: err, Reason: DocumentReadError}
 	}
 
-	return UnmarshalDocument(d, v)
+	return UnmarshalSelection(d.Selection, v)
 }
 
-// UnmarshalDoc will unmarshal a goquery.Document into an interface
+// UnmarshalSelection will unmarshal a goquery.Selection into an interface
 // appropriately annoated with goquery tags.
-func UnmarshalDocument(d *Document, iface interface{}) error {
+func UnmarshalSelection(d *Selection, iface interface{}) error {
 	v := reflect.ValueOf(iface)
 
 	if iface == nil {
@@ -60,10 +65,10 @@ func UnmarshalDocument(d *Document, iface interface{}) error {
 	u, v := indirect(v)
 
 	if u != nil {
-		return u.UnmarshalSelection(d.Selection)
+		return u.UnmarshalSelection(d)
 	}
 
-	return unmarshalByType(d.Selection, v)
+	return unmarshalByType(d, v)
 }
 
 func unmarshalByType(s *Selection, v reflect.Value) error {
@@ -85,7 +90,6 @@ func unmarshalByType(s *Selection, v reflect.Value) error {
 	default:
 		return trySetLiteral(s, v)
 	}
-	return nil
 }
 
 func trySetLiteral(s *Selection, v reflect.Value) error {
@@ -93,9 +97,13 @@ func trySetLiteral(s *Selection, v reflect.Value) error {
 
 	switch t.Kind() {
 	case reflect.String:
-		v.Set(reflect.ValueOf(s.Text()))
+		v.SetString(s.Text())
 	case reflect.Bool:
-		v.Set(reflect.ValueOf(s.Text() == "true"))
+		i, err := strconv.ParseBool(s.Text())
+		if err != nil {
+			return err
+		}
+		v.SetBool(i)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		i, err := strconv.ParseInt(s.Text(), 10, 64)
 		if err != nil {
@@ -118,13 +126,13 @@ func trySetLiteral(s *Selection, v reflect.Value) error {
 	return nil
 }
 
-func unmarshalStruct(root *Selection, v reflect.Value) error {
+func unmarshalStruct(s *Selection, v reflect.Value) error {
 	t := v.Type()
 
 	for i := 0; i < t.NumField(); i++ {
 		tag := t.Field(i).Tag.Get("goquery")
 
-		sel := root
+		sel := s
 		if tag != "" {
 			sel = sel.Find(tag)
 		}
@@ -137,16 +145,16 @@ func unmarshalStruct(root *Selection, v reflect.Value) error {
 	return nil
 }
 
-func unmarshalArray(root *Selection, dest reflect.Value) error {
-	if dest.Type().Len() != root.Length() {
+func unmarshalArray(s *Selection, v reflect.Value) error {
+	if v.Type().Len() != s.Length() {
 		return &CannotUnmarshalError{
 			Reason: ArrayLengthMismatch,
-			V:      dest,
+			V:      v,
 		}
 	}
 
-	for i := 0; i < dest.Type().Len(); i++ {
-		err := unmarshalByType(root.Eq(i), dest.Index(i))
+	for i := 0; i < v.Type().Len(); i++ {
+		err := unmarshalByType(s.Eq(i), v.Index(i))
 		if err != nil {
 			return err
 		}
@@ -155,14 +163,15 @@ func unmarshalArray(root *Selection, dest reflect.Value) error {
 	return nil
 }
 
-func unmarshalSlice(root *Selection, slice reflect.Value) error {
-	v := slice
+func unmarshalSlice(s *Selection, v reflect.Value) error {
 
-	for i := 0; i < root.Length(); i++ {
+	slice := v
+
+	for i := 0; i < s.Length(); i++ {
 		eleT := v.Type().Elem()
 		newV := reflect.New(eleT)
 
-		err := unmarshalByType(root.Eq(i), newV)
+		err := unmarshalByType(s.Eq(i), newV)
 
 		if err != nil {
 			return err
@@ -176,11 +185,11 @@ func unmarshalSlice(root *Selection, slice reflect.Value) error {
 	}
 
 	slice.Set(v)
-
 	return nil
 }
 
-// Stolen mostly from pkg/encoding/json/decode.go and altered for goquery usage
+// Stolen mostly from pkg/encoding/json/decode.go and removed some cases
+// (handling `null`) that goquery doesn't need to handle.
 func indirect(v reflect.Value) (Unmarshaler, reflect.Value) {
 	if v.Kind() != reflect.Ptr && v.Type().Name() != "" && v.CanAddr() {
 		v = v.Addr()
@@ -211,5 +220,4 @@ func indirect(v reflect.Value) (Unmarshaler, reflect.Value) {
 		v = v.Elem()
 	}
 	return nil, v
-
 }

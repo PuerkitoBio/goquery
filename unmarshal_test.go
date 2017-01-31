@@ -2,7 +2,6 @@ package goquery
 
 import (
 	"strconv"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -89,7 +88,7 @@ func TestDecoder(t *testing.T) {
 
 	var p Page
 
-	asrt.NoError(NewDecoder(strings.NewReader(testPage)).Decode(&p))
+	asrt.NoError(Unmarshal([]byte(testPage), &p))
 	asrt.Len(p.Resources, 5)
 
 	for i, val := range vals {
