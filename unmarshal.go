@@ -19,20 +19,25 @@ type Unmarshaler interface {
 	UnmarshalHTML([]*html.Node) error
 }
 
-type goqueryTag string
 type valFunc func(*Selection) string
 
+type goqueryTag string
+
 func (tag goqueryTag) selector(which int) string {
-	return strings.Split(string(tag), ",")[which]
+	arr := strings.Split(string(tag), ",")
+	if which > len(arr)-1 {
+		return ""
+	}
+	return arr[which]
 }
 
 var (
 	textVal valFunc = func(s *Selection) string {
-		return s.Text()
+		return strings.TrimSpace(s.Text())
 	}
 	htmlVal = func(s *Selection) string {
 		str, _ := s.Html()
-		return str
+		return strings.TrimSpace(str)
 	}
 
 	vfCache = map[goqueryTag]valFunc{}
@@ -81,9 +86,6 @@ func (tag goqueryTag) popVal() goqueryTag {
 	arr := strings.Split(string(tag), ",")
 	if len(arr) < 2 {
 		return tag
-	}
-	if len(arr) < 3 {
-		return goqueryTag(arr[0])
 	}
 	newA := []string{arr[0]}
 	newA = append(newA, arr[2:]...)
@@ -306,6 +308,14 @@ func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
 	// Make new map here because indirect for some reason doesn't help us out
 	if v.IsNil() {
 		v.Set(reflect.MakeMap(v.Type()))
+	}
+
+	if f.selector(1) == "" {
+		// We need minimum one value selector to determine the map key
+		return &CannotUnmarshalError{
+			Reason: MissingValueSelector,
+			V:      v,
+		}
 	}
 
 	keyT := v.Type().Key()

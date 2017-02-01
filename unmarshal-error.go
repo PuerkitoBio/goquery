@@ -15,6 +15,7 @@ const (
 	CustomUnmarshalError = "a custom Unmarshaler implementation threw an error"
 	TypeConversionError  = "a type conversion error occurred"
 	NonStringMapKey      = "a map with non-string key type cannot be unmarshaled"
+	MissingValueSelector = "at least one value selector must be passed to use as map index"
 )
 
 // CannotUnmarshalError represents an error returned by the goquery Unmarshaler
@@ -89,7 +90,7 @@ func (e errChain) Error() string {
 
 // Traverse e.Err, printing hopefully helpful type info until there are no more
 // chained errors.
-func (e *CannotUnmarshalError) unwindReason() *errChain {
+func (e *CannotUnmarshalError) unwind() *errChain {
 	str := &errChain{chain: []*CannotUnmarshalError{}}
 	for {
 		str.chain = append(str.chain, e)
@@ -111,5 +112,5 @@ func (e *CannotUnmarshalError) unwindReason() *errChain {
 }
 
 func (e *CannotUnmarshalError) Error() string {
-	return e.unwindReason().Error()
+	return e.unwind().Error()
 }

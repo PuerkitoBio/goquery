@@ -98,16 +98,6 @@ type sliceAttrSelector struct {
 	Things []bool `goquery:".foobar [arr=\"true\"],[arr]"`
 }
 
-// TODO(andrewstuart) maps are unimplemented
-type MapTest struct {
-	// For map[primitive]primitive we use syntax selector,keySource,valSource
-	Names map[string]string `goquery:"#structured-list li,[name],[val]"`
-	// For map[primitive]Object we use the same syntax as a []primitive
-	Resources map[string]Resource `goquery:"#resources .resource,[order]"`
-
-	Nested map[string]map[string]string `goquery:"#nested-map,[name],[name],text"`
-}
-
 func (f *FooBar) UnmarshalHTML(nodes []*html.Node) error {
 	f.unmarshalWasCalled = true
 
@@ -275,7 +265,7 @@ func TestInvalidLiteral(t *testing.T) {
 
 	err := Unmarshal([]byte(testPage), &a)
 
-	e := checkErr(asrt, err).unwindReason()
+	e := checkErr(asrt, err).unwind()
 
 	asrt.Len(e.chain, 2)
 	asrt.Error(e.tail)
@@ -293,7 +283,7 @@ func TestInvalidArrayEleType(t *testing.T) {
 	}
 
 	err := Unmarshal([]byte(testPage), &a)
-	e := checkErr(asrt, err).unwindReason()
+	e := checkErr(asrt, err).unwind()
 	asrt.Len(e.chain, 3)
 }
 
@@ -317,6 +307,15 @@ func TestSliceAttrSelector(t *testing.T) {
 	asrt.True(a.Things[1])
 }
 
+type MapTest struct {
+	// For map[primitive]primitive we use syntax selector,keySource,valSource
+	Names map[string]string `goquery:"#structured-list li,[name],[val]"`
+	// For map[primitive]Object we use the same syntax as a []primitive
+	Resources map[string]Resource `goquery:"#resources .resource,[order]"`
+
+	Nested map[string]map[string]string `goquery:"#nested-map,[name],[name],text"`
+}
+
 func TestMapQuery(t *testing.T) {
 	asrt := assert.New(t)
 
@@ -336,11 +335,11 @@ func TestMapNonStringKey(t *testing.T) {
 	asrt := assert.New(t)
 
 	var a struct {
-		Map map[int]Resource `goquery:".resource"`
+		Map map[int]Resource `goquery:".resource,[foo]"`
 	}
 
 	err := checkErr(asrt, Unmarshal([]byte(testPage), &a))
-	asrt.Equal(NonStringMapKey, err.unwindReason().last().Reason)
+	asrt.Equal(NonStringMapKey, err.unwind().last().Reason)
 }
 
 func TestDirectInsertion(t *testing.T) {
@@ -352,4 +351,51 @@ func TestDirectInsertion(t *testing.T) {
 
 	asrt.NoError(Unmarshal([]byte(testPage), &a))
 	asrt.Len(a.Nodes, 5)
+}
+
+func TestInnerHtml(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		HTML []string `goquery:"ul#resources .resource,html"`
+	}
+
+	asrt.NoError(Unmarshal([]byte(testPage), &a))
+	asrt.Len(a.HTML, 5)
+	asrt.Equal(a.HTML[0], `<div class="name">Foo</div>`)
+}
+
+func TestMapShortTag(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		Names map[string]string `goquery:"#structured-list li,[name]"`
+	}
+
+	asrt.NoError(Unmarshal([]byte(testPage), &a))
+	asrt.Len(a.Names, 3)
+	// Test that we just use inner text when missing a value selector
+	asrt.Equal("foo", a.Names["foo"])
+	asrt.Equal("bar", a.Names["bar"])
+}
+
+func TestNoKeySelector(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		Names map[string]string `goquery:"#structured-list li"`
+	}
+
+	err := checkErr(asrt, Unmarshal([]byte(testPage), &a))
+	asrt.Equal(MissingValueSelector, err.unwind().last().Reason)
+}
+
+func TestMapInnerError(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		Names map[string]ErrorFooBar `goquery:"#structured-list li,[name]"`
+	}
+	err := checkErr(asrt, Unmarshal([]byte(testPage), &a))
+	asrt.Equal(errTestUnmarshal, err.unwind().tail)
 }
