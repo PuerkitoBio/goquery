@@ -20,9 +20,11 @@ const (
 // CannotUnmarshalError represents an error returned by the goquery Unmarshaler
 // and helps consumers in programmatically diagnosing the cause of their error.
 type CannotUnmarshalError struct {
-	V      reflect.Value
 	Reason string
 	Err    error
+
+	V        reflect.Value
+	FldOrIdx interface{}
 }
 
 // This type is a mid-level abstraction to help understand the error printing logic
@@ -31,23 +33,54 @@ type errChain struct {
 	tail  error
 }
 
-func (e errChain) Error() string {
-	s := ""
+// tPath returns the type path in the same string format one might use to access
+// the nested value in go code. This should hopefully help make debugging easier.
+func (e errChain) tPath() string {
+	nest := ""
+
 	for _, err := range e.chain {
-		// Avoid panic if we cannot get a type name for the Value
-		t := "unknown type: invalid value"
-		if err.V.IsValid() {
-			t = err.V.Type().String()
+		if err.FldOrIdx != nil {
+			switch nesting := err.FldOrIdx.(type) {
+			case string:
+				switch err.V.Type().Kind() {
+				case reflect.Map:
+					nest += fmt.Sprintf("[%q]", nesting)
+				case reflect.Struct:
+					nest += fmt.Sprintf(".%s", nesting)
+				}
+			case int:
+				nest += fmt.Sprintf("[%d]", nesting)
+			}
 		}
-
-		s += fmt.Sprintf(": (%s) %s", t, err.Reason)
 	}
 
-	if e.tail == nil {
-		return s
+	return nest
+}
+
+// Error gives a human-readable error message for debugging purposes.
+func (e errChain) Error() string {
+	last := e.chain[len(e.chain)-1]
+
+	// Avoid panic if we cannot get a type name for the Value
+	t := "unknown: invalid value"
+	if last.V.IsValid() {
+		t = last.V.Type().String()
 	}
 
-	return s + ": " + e.tail.Error()
+	s := fmt.Sprintf(
+		"could not unmarshal into %s%s (type %s) %s",
+		e.chain[0].V.Type(),
+		e.tPath(),
+		t,
+		last.Reason,
+	)
+
+	// If a generic error was reported elsewhere, report its message last
+	if e.tail != nil {
+		s = s + ": " + e.tail.Error()
+	}
+
+	return s
 }
 
 // Traverse e.Err, printing hopefully helpful type info until there are no more
@@ -74,5 +107,5 @@ func (e *CannotUnmarshalError) unwindReason() *errChain {
 }
 
 func (e *CannotUnmarshalError) Error() string {
-	return "an error occurred while unmarshaling" + e.unwindReason().Error()
+	return e.unwindReason().Error()
 }

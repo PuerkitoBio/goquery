@@ -9,7 +9,9 @@ import (
 	"golang.org/x/net/html"
 )
 
-// Docs
+// Now included in GoQuery is the ability to declaratively unmarshal your HTML
+// j
+//
 // Map, Slice, Array may use value selector if element type is primitive
 
 // Unmarshaler allows for custom implementations of unmarshaling logic
@@ -218,9 +220,10 @@ func unmarshalStruct(s *Selection, v reflect.Value) error {
 		err := unmarshalByType(sel, v.Field(i), tag)
 		if err != nil {
 			return &CannotUnmarshalError{
-				Reason: TypeConversionError,
-				Err:    err,
-				V:      v,
+				Reason:   TypeConversionError,
+				Err:      err,
+				V:        v,
+				FldOrIdx: t.Field(i).Name,
 			}
 		}
 	}
@@ -239,9 +242,10 @@ func unmarshalArray(s *Selection, v reflect.Value, f goqueryTag) error {
 		err := unmarshalByType(s.Eq(i), v.Index(i), f)
 		if err != nil {
 			return &CannotUnmarshalError{
-				Reason: TypeConversionError,
-				Err:    err,
-				V:      v,
+				Reason:   TypeConversionError,
+				Err:      err,
+				V:        v,
+				FldOrIdx: i,
 			}
 		}
 	}
@@ -260,9 +264,10 @@ func unmarshalSlice(s *Selection, v reflect.Value, f goqueryTag) error {
 
 		if err != nil {
 			return &CannotUnmarshalError{
-				Reason: TypeConversionError,
-				Err:    err,
-				V:      v,
+				Reason:   TypeConversionError,
+				Err:      err,
+				V:        v,
+				FldOrIdx: i,
 			}
 		}
 

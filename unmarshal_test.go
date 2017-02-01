@@ -220,7 +220,7 @@ func TestUnmarshalError(t *testing.T) {
 
 	err := Unmarshal([]byte(testPage), &a)
 
-	asrt.Contains(err.Error(), "an error occurred")
+	asrt.Contains(err.Error(), "[]goquery.ErrorFooBar[0]")
 
 	e := checkErr(asrt, err)
 	e2 := checkErr(asrt, e.Err)
