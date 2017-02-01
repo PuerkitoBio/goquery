@@ -328,4 +328,6 @@ func TestMapQuery(t *testing.T) {
 
 	asrt.Len(a.Resources, 5)
 	asrt.Len(a.Nested, 2)
+	asrt.Len(a.Nested["first"], 3)
+	asrt.Len(a.Nested["second"], 3)
 }

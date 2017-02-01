@@ -2,13 +2,15 @@ package goquery
 
 import (
 	"bytes"
-	"log"
 	"reflect"
 	"strconv"
 	"strings"
 
 	"golang.org/x/net/html"
 )
+
+// Docs
+// Map, Slice, Array may use value selector if element type is primitive
 
 // Unmarshaler allows for custom implementations of unmarshaling logic
 type Unmarshaler interface {
@@ -18,8 +20,8 @@ type Unmarshaler interface {
 type goqueryTag string
 type valFunc func(*Selection) string
 
-func (tag goqueryTag) selector() string {
-	return strings.Split(string(tag), ",")[0]
+func (tag goqueryTag) selector(which int) string {
+	return strings.Split(string(tag), ",")[which]
 }
 
 var (
@@ -36,7 +38,7 @@ var (
 
 func attrFunc(attr string) valFunc {
 	return func(s *Selection) string {
-		str, _ := s.First().Attr(attr)
+		str, _ := s.Attr(attr)
 		return str
 	}
 }
@@ -154,7 +156,8 @@ func unmarshalByType(s *Selection, v reflect.Value, f goqueryTag) error {
 	case reflect.Map:
 		return unmarshalMap(s, v, f)
 	default:
-		err := unmarshalLiteral(f.valFunc()(s), v)
+		vf := f.valFunc()
+		err := unmarshalLiteral(vf(s), v)
 		if err != nil {
 			return &CannotUnmarshalError{
 				V:      v,
@@ -208,7 +211,7 @@ func unmarshalStruct(s *Selection, v reflect.Value) error {
 
 		sel := s
 		if tag != "" {
-			selStr := tag.selector()
+			selStr := tag.selector(0)
 			sel = sel.Find(selStr)
 		}
 
@@ -274,7 +277,20 @@ func unmarshalSlice(s *Selection, v reflect.Value, f goqueryTag) error {
 	return nil
 }
 
+func childrenUntilMatch(s *Selection, sel string) *Selection {
+	orig := s
+	s = s.Children()
+	for s.Length() != 0 && s.Filter(sel).Length() == 0 {
+		s = s.Children()
+	}
+	if s.Length() == 0 {
+		return orig
+	}
+	return s.Filter(sel)
+}
+
 func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
+	// Make new map here because indirect for some reason doesn't help us out
 	if v.IsNil() {
 		v.Set(reflect.MakeMap(v.Type()))
 	}
@@ -290,16 +306,16 @@ func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
 
 	kf := f.valFunc()
 	eleT := v.Type().Elem()
+
 	switch eleT.Kind() {
 	case reflect.Slice, reflect.Array, reflect.Struct:
 	default:
+		s = childrenUntilMatch(s, f.selector(1))
 		f = f.popVal()
 	}
 
-	log.Println(f)
-
 	var err error
-	s.EachWithBreak(func(i int, subS *Selection) bool {
+	s.EachWithBreak(func(_ int, subS *Selection) bool {
 		newV := reflect.New(eleT)
 
 		err = unmarshalByType(subS, newV, f)
@@ -308,8 +324,6 @@ func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
 		}
 
 		key := kf(subS)
-
-		log.Println(key)
 
 		if eleT.Kind() != reflect.Ptr {
 			newV = newV.Elem()
