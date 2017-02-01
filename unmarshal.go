@@ -141,7 +141,7 @@ func UnmarshalSelection(s *Selection, iface interface{}) error {
 	return unmarshalByType(s, v, "")
 }
 
-func unmarshalByType(s *Selection, v reflect.Value, f goqueryTag) error {
+func unmarshalByType(s *Selection, v reflect.Value, tag goqueryTag) error {
 	u, v := indirect(v)
 
 	if u != nil {
@@ -162,13 +162,13 @@ func unmarshalByType(s *Selection, v reflect.Value, f goqueryTag) error {
 	case reflect.Struct:
 		return unmarshalStruct(s, v)
 	case reflect.Slice:
-		return unmarshalSlice(s, v, f)
+		return unmarshalSlice(s, v, tag)
 	case reflect.Array:
-		return unmarshalArray(s, v, f)
+		return unmarshalArray(s, v, tag)
 	case reflect.Map:
-		return unmarshalMap(s, v, f)
+		return unmarshalMap(s, v, tag)
 	default:
-		vf := f.valFunc()
+		vf := tag.valFunc()
 		err := unmarshalLiteral(vf(s), v)
 		if err != nil {
 			return &CannotUnmarshalError{
@@ -247,7 +247,7 @@ func unmarshalStruct(s *Selection, v reflect.Value) error {
 	return nil
 }
 
-func unmarshalArray(s *Selection, v reflect.Value, f goqueryTag) error {
+func unmarshalArray(s *Selection, v reflect.Value, tag goqueryTag) error {
 	if v.Type().Len() != len(s.Nodes) {
 		return &CannotUnmarshalError{
 			Reason: ArrayLengthMismatch,
@@ -256,7 +256,7 @@ func unmarshalArray(s *Selection, v reflect.Value, f goqueryTag) error {
 	}
 
 	for i := 0; i < v.Type().Len(); i++ {
-		err := unmarshalByType(s.Eq(i), v.Index(i), f)
+		err := unmarshalByType(s.Eq(i), v.Index(i), tag)
 		if err != nil {
 			return &CannotUnmarshalError{
 				Reason:   TypeConversionError,
@@ -270,14 +270,14 @@ func unmarshalArray(s *Selection, v reflect.Value, f goqueryTag) error {
 	return nil
 }
 
-func unmarshalSlice(s *Selection, v reflect.Value, f goqueryTag) error {
+func unmarshalSlice(s *Selection, v reflect.Value, tag goqueryTag) error {
 	slice := v
 	eleT := v.Type().Elem()
 
 	for i := 0; i < s.Length(); i++ {
 		newV := reflect.New(eleT)
 
-		err := unmarshalByType(s.Eq(i), newV, f)
+		err := unmarshalByType(s.Eq(i), newV, tag)
 
 		if err != nil {
 			return &CannotUnmarshalError{
@@ -311,7 +311,7 @@ func childrenUntilMatch(s *Selection, sel string) *Selection {
 	return s.Filter(sel)
 }
 
-func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
+func unmarshalMap(s *Selection, v reflect.Value, tag goqueryTag) error {
 	// Make new map here because indirect for some reason doesn't help us out
 	if v.IsNil() {
 		v.Set(reflect.MakeMap(v.Type()))
@@ -319,7 +319,7 @@ func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
 
 	keyT, eleT := v.Type().Key(), v.Type().Elem()
 
-	if f.selector(1) == "" {
+	if tag.selector(1) == "" {
 		// We need minimum one value selector to determine the map key
 		return &CannotUnmarshalError{
 			Reason: MissingValueSelector,
@@ -328,14 +328,14 @@ func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
 	}
 
 	// Will be altered shortly
-	valF := f
+	valTag := tag
 	switch eleT.Kind() {
 	case reflect.Slice, reflect.Array, reflect.Struct:
 	default:
 		// Find children at the same level that match the given selector
-		s = childrenUntilMatch(s, f.selector(1))
+		s = childrenUntilMatch(s, tag.selector(1))
 		// Then augment the selector we will pass down to the next unmarshal step
-		valF = valF.popVal()
+		valTag = valTag.popVal()
 	}
 
 	var err error
@@ -343,7 +343,7 @@ func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
 	s.EachWithBreak(func(_ int, subS *Selection) bool {
 		newK, newV := reflect.New(keyT), reflect.New(eleT)
 
-		err = unmarshalByType(subS, newK, f)
+		err = unmarshalByType(subS, newK, tag)
 		fld = newK.Interface()
 		if err != nil {
 			err = &CannotUnmarshalError{
@@ -354,7 +354,7 @@ func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
 			return false
 		}
 
-		err = unmarshalByType(subS, newV, valF)
+		err = unmarshalByType(subS, newV, valTag)
 		if err != nil {
 			return false
 		}
