@@ -342,3 +342,14 @@ func TestMapNonStringKey(t *testing.T) {
 	err := checkErr(asrt, Unmarshal([]byte(testPage), &a))
 	asrt.Equal(NonStringMapKey, err.unwindReason().last().Reason)
 }
+
+func TestDirectInsertion(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		Nodes []*html.Node `goquery:"ul#resources .resource"`
+	}
+
+	asrt.NoError(Unmarshal([]byte(testPage), &a))
+	asrt.Len(a.Nodes, 5)
+}

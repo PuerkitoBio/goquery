@@ -146,6 +146,14 @@ func unmarshalByType(s *Selection, v reflect.Value, f goqueryTag) error {
 		return wrapUnmErr(u.UnmarshalHTML(s.Nodes), v)
 	}
 
+	// Handle special cases where we can just set the value directly
+	switch val := v.Interface().(type) {
+	case []*html.Node:
+		val = append(val, s.Nodes...)
+		v.Set(reflect.ValueOf(val))
+		return nil
+	}
+
 	t := v.Type()
 
 	switch t.Kind() {
