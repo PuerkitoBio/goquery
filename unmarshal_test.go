@@ -233,8 +233,7 @@ func TestNonPointer(t *testing.T) {
 	asrt := assert.New(t)
 
 	var a Page
-	err := Unmarshal([]byte{}, a)
-	e := checkErr(asrt, err)
+	e := checkErr(asrt, Unmarshal([]byte{}, a))
 	asrt.Equal(NonPointer, e.Reason)
 }
 
@@ -335,11 +334,22 @@ func TestMapNonStringKey(t *testing.T) {
 	asrt := assert.New(t)
 
 	var a struct {
-		Map map[int]Resource `goquery:".resource,[foo]"`
+		Map map[int]Resource `goquery:".resource,[order]"`
 	}
 
+	asrt.NoError(Unmarshal([]byte(testPage), &a))
+	asrt.Len(a.Map, 5)
+	asrt.Equal(a.Map[1].Name, "Bar")
+}
+
+func TestErroringKey(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		Map map[ErrorFooBar]Resource `goquery:".resource,[order]"`
+	}
 	err := checkErr(asrt, Unmarshal([]byte(testPage), &a))
-	asrt.Equal(NonStringMapKey, err.unwind().last().Reason)
+	asrt.Equal(errTestUnmarshal, err.unwind().tail)
 }
 
 func TestDirectInsertion(t *testing.T) {
@@ -398,4 +408,13 @@ func TestMapInnerError(t *testing.T) {
 	}
 	err := checkErr(asrt, Unmarshal([]byte(testPage), &a))
 	asrt.Equal(errTestUnmarshal, err.unwind().tail)
+}
+
+func TestInterfaceDecode(t *testing.T) {
+	asrt := assert.New(t)
+	var a struct {
+		IF interface{} `goquery:"#structured-list li"`
+	}
+	asrt.NoError(Unmarshal([]byte(testPage), &a))
+	asrt.Equal("foobarbaz", a.IF.(string))
 }

@@ -51,6 +51,8 @@ func (e errChain) tPath() string {
 				}
 			case int:
 				nest += fmt.Sprintf("[%d]", nesting)
+			default:
+				nest += fmt.Sprintf("[%v]", nesting)
 			}
 		}
 	}

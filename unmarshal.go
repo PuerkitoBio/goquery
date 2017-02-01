@@ -185,8 +185,13 @@ func unmarshalLiteral(s string, v reflect.Value) error {
 	t := v.Type()
 
 	switch t.Kind() {
-	case reflect.String:
-		v.SetString(s)
+	case reflect.Interface:
+		if t.NumMethod() == 0 {
+			// For empty interfaces, just set to a string
+			nv := reflect.New(reflect.TypeOf(s)).Elem()
+			nv.Set(reflect.ValueOf(s))
+			v.Set(nv)
+		}
 	case reflect.Bool:
 		i, err := strconv.ParseBool(s)
 		if err != nil {
@@ -211,6 +216,8 @@ func unmarshalLiteral(s string, v reflect.Value) error {
 			return err
 		}
 		v.SetFloat(i)
+	case reflect.String:
+		v.SetString(s)
 	}
 	return nil
 }
@@ -310,6 +317,8 @@ func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
 		v.Set(reflect.MakeMap(v.Type()))
 	}
 
+	keyT, eleT := v.Type().Key(), v.Type().Elem()
+
 	if f.selector(1) == "" {
 		// We need minimum one value selector to determine the map key
 		return &CannotUnmarshalError{
@@ -318,50 +327,56 @@ func unmarshalMap(s *Selection, v reflect.Value, f goqueryTag) error {
 		}
 	}
 
-	keyT := v.Type().Key()
-
-	if keyT.Kind() != reflect.String {
-		return &CannotUnmarshalError{
-			Reason: NonStringMapKey,
-			V:      v,
-		}
-	}
-
-	kf := f.valFunc()
-	eleT := v.Type().Elem()
-
+	// Will be altered shortly
+	valF := f
 	switch eleT.Kind() {
 	case reflect.Slice, reflect.Array, reflect.Struct:
 	default:
+		// Find children at the same level that match the given selector
 		s = childrenUntilMatch(s, f.selector(1))
-		f = f.popVal()
+		// Then augment the selector we will pass down to the next unmarshal step
+		valF = valF.popVal()
 	}
 
 	var err error
+	var fld interface{}
 	s.EachWithBreak(func(_ int, subS *Selection) bool {
-		newV := reflect.New(eleT)
+		newK, newV := reflect.New(keyT), reflect.New(eleT)
 
-		err = unmarshalByType(subS, newV, f)
+		err = unmarshalByType(subS, newK, f)
+		fld = newK.Interface()
+		if err != nil {
+			err = &CannotUnmarshalError{
+				Reason: NonStringMapKey,
+				V:      v,
+				Err:    err,
+			}
+			return false
+		}
+
+		err = unmarshalByType(subS, newV, valF)
 		if err != nil {
 			return false
 		}
 
-		key := kf(subS)
-
 		if eleT.Kind() != reflect.Ptr {
 			newV = newV.Elem()
 		}
+		if keyT.Kind() != reflect.Ptr {
+			newK = newK.Elem()
+		}
 
-		v.SetMapIndex(reflect.ValueOf(key), newV)
+		v.SetMapIndex(newK, newV)
 
 		return true
 	})
 
 	if err != nil {
 		return &CannotUnmarshalError{
-			Reason: TypeConversionError,
-			Err:    err,
-			V:      v,
+			Reason:   TypeConversionError,
+			Err:      err,
+			V:        v,
+			FldOrIdx: fld,
 		}
 	}
 
