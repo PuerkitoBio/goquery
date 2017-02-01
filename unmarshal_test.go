@@ -331,3 +331,14 @@ func TestMapQuery(t *testing.T) {
 	asrt.Len(a.Nested["first"], 3)
 	asrt.Len(a.Nested["second"], 3)
 }
+
+func TestMapNonStringKey(t *testing.T) {
+	asrt := assert.New(t)
+
+	var a struct {
+		Map map[int]Resource `goquery:".resource"`
+	}
+
+	err := checkErr(asrt, Unmarshal([]byte(testPage), &a))
+	asrt.Equal(NonStringMapKey, err.unwindReason().last().Reason)
+}

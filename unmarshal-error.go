@@ -57,9 +57,13 @@ func (e errChain) tPath() string {
 	return nest
 }
 
+func (e errChain) last() *CannotUnmarshalError {
+	return e.chain[len(e.chain)-1]
+}
+
 // Error gives a human-readable error message for debugging purposes.
 func (e errChain) Error() string {
-	last := e.chain[len(e.chain)-1]
+	last := e.last()
 
 	// Avoid panic if we cannot get a type name for the Value
 	t := "unknown: invalid value"
@@ -68,7 +72,7 @@ func (e errChain) Error() string {
 	}
 
 	s := fmt.Sprintf(
-		"could not unmarshal into %s%s (type %s) %s",
+		"could not unmarshal into %s%s (type %s): %s",
 		e.chain[0].V.Type(),
 		e.tPath(),
 		t,
