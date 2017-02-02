@@ -572,7 +572,7 @@ type page struct {
 
 type item struct {
 	Link string `goquery:".title a,[href]"`
-	Site string `goquery:".title .sitebit,text"`
+	Site string `goquery:".title .sitestr,text"`
 }
 
 func TestHNPage(t *testing.T) {
@@ -583,4 +583,8 @@ func TestHNPage(t *testing.T) {
 	asrt.NoError(Unmarshal([]byte(hnPage), &p))
 	asrt.Len(p.Items, 30)
 	asrt.NotNil(p.Items[13546354])
+
+	i := *p.Items[13546354]
+	asrt.Equal("http://crypto.stackexchange.com/questions/26336/sha512-faster-than-sha256", i.Link)
+	asrt.Equal("stackexchange.com", i.Site)
 }

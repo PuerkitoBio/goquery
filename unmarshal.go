@@ -325,12 +325,19 @@ func unmarshalArray(s *Selection, v reflect.Value, tag goqueryTag) error {
 	return nil
 }
 
+func typeDeref(t reflect.Type) reflect.Type {
+	for t != nil && t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	return t
+}
+
 func unmarshalSlice(s *Selection, v reflect.Value, tag goqueryTag) error {
 	slice := v
 	eleT := v.Type().Elem()
 
 	for i := 0; i < s.Length(); i++ {
-		newV := reflect.New(eleT)
+		newV := reflect.New(typeDeref(eleT))
 
 		err := unmarshalByType(s.Eq(i), newV, tag)
 
@@ -396,7 +403,7 @@ func unmarshalMap(s *Selection, v reflect.Value, tag goqueryTag) error {
 	var err error
 	var fld interface{}
 	s.EachWithBreak(func(_ int, subS *Selection) bool {
-		newK, newV := reflect.New(keyT), reflect.New(eleT)
+		newK, newV := reflect.New(typeDeref(keyT)), reflect.New(typeDeref(eleT))
 
 		err = unmarshalByType(subS, newK, tag)
 		fld = newK.Interface()
@@ -460,7 +467,7 @@ func indirect(v reflect.Value) (Unmarshaler, reflect.Value) {
 		}
 
 		if v.IsNil() {
-			v.Set(reflect.New(v.Type().Elem()))
+			v.Set(reflect.New(typeDeref(v.Type())))
 		}
 		if v.Type().NumMethod() > 0 {
 			if u, ok := v.Interface().(Unmarshaler); ok {
