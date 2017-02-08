@@ -270,6 +270,29 @@ func (s *Selection) ReplaceWithNodes(ns ...*html.Node) *Selection {
 	return s.Remove()
 }
 
+// Set nodes to specified nodes.
+func SetNodes(s *Selection, ns ...*html.Node) *Selection {
+	for _, n := range s.Nodes {
+		for c := n.FirstChild; c != nil; c = n.FirstChild {
+			n.RemoveChild(c)
+		}
+		for _, c := range ns {
+			n.AppendChild(cloneNode(c))
+		}
+	}
+	return s
+}
+
+// Sets HTML of selected nodes to specified string.
+func (s *Selection) SetHtml(html string) *Selection {
+	return SetNodes(s, parseHtml(html)...)
+}
+
+// Sets text of selected nodes to specified string. Text is HTML escaped
+func (s *Selection) SetText(text string) *Selection {
+	return s.SetHtml(html.EscapeString(text))
+}
+
 // Unwrap removes the parents of the set of matched elements, leaving the matched
 // elements (and their siblings, if any) in their place.
 // It returns the original selection.
