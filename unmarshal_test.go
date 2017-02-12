@@ -2,6 +2,7 @@ package goquery
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"testing"
 
@@ -211,6 +212,8 @@ func TestUnmarshalError(t *testing.T) {
 	err := Unmarshal([]byte(testPage), &a)
 
 	asrt.Contains(err.Error(), "[]goquery.ErrorFooBar[0]")
+
+	log.Println(err)
 
 	e := checkErr(asrt, err)
 	e2 := checkErr(asrt, e.Err)

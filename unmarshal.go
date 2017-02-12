@@ -166,7 +166,7 @@ func wrapUnmErr(err error, v reflect.Value) error {
 	}
 
 	return &CannotUnmarshalError{
-		V:      v,
+		v:      v,
 		reason: customUnmarshalError,
 		Err:    err,
 	}
@@ -179,11 +179,11 @@ func UnmarshalSelection(s *Selection, iface interface{}) error {
 
 	// Must come before v.IsNil() else IsNil panics on NonPointer value
 	if v.Kind() != reflect.Ptr {
-		return &CannotUnmarshalError{V: v, reason: nonPointer}
+		return &CannotUnmarshalError{v: v, reason: nonPointer}
 	}
 
 	if iface == nil || v.IsNil() {
-		return &CannotUnmarshalError{V: v, reason: nilValue}
+		return &CannotUnmarshalError{v: v, reason: nilValue}
 	}
 
 	u, v := indirect(v)
@@ -226,7 +226,7 @@ func unmarshalByType(s *Selection, v reflect.Value, tag goqueryTag) error {
 		err := unmarshalLiteral(vf(s), v)
 		if err != nil {
 			return &CannotUnmarshalError{
-				V:      v,
+				v:      v,
 				reason: typeConversionError,
 				Err:    err,
 				Val:    vf(s),
@@ -294,7 +294,7 @@ func unmarshalStruct(s *Selection, v reflect.Value) error {
 			return &CannotUnmarshalError{
 				reason:   typeConversionError,
 				Err:      err,
-				V:        v,
+				v:        v,
 				FldOrIdx: t.Field(i).Name,
 			}
 		}
@@ -306,7 +306,7 @@ func unmarshalArray(s *Selection, v reflect.Value, tag goqueryTag) error {
 	if v.Type().Len() != len(s.Nodes) {
 		return &CannotUnmarshalError{
 			reason: arrayLengthMismatch,
-			V:      v,
+			v:      v,
 		}
 	}
 
@@ -316,7 +316,7 @@ func unmarshalArray(s *Selection, v reflect.Value, tag goqueryTag) error {
 			return &CannotUnmarshalError{
 				reason:   typeConversionError,
 				Err:      err,
-				V:        v,
+				v:        v,
 				FldOrIdx: i,
 			}
 		}
@@ -345,7 +345,7 @@ func unmarshalSlice(s *Selection, v reflect.Value, tag goqueryTag) error {
 			return &CannotUnmarshalError{
 				reason:   typeConversionError,
 				Err:      err,
-				V:        v,
+				v:        v,
 				FldOrIdx: i,
 			}
 		}
@@ -385,7 +385,7 @@ func unmarshalMap(s *Selection, v reflect.Value, tag goqueryTag) error {
 		// We need minimum one value selector to determine the map key
 		return &CannotUnmarshalError{
 			reason: missingValueSelector,
-			V:      v,
+			v:      v,
 		}
 	}
 
@@ -410,7 +410,7 @@ func unmarshalMap(s *Selection, v reflect.Value, tag goqueryTag) error {
 		if err != nil {
 			err = &CannotUnmarshalError{
 				reason: nonStringMapKey,
-				V:      v,
+				v:      v,
 				Err:    err,
 			}
 			return false
@@ -437,7 +437,7 @@ func unmarshalMap(s *Selection, v reflect.Value, tag goqueryTag) error {
 		return &CannotUnmarshalError{
 			reason:   typeConversionError,
 			Err:      err,
-			V:        v,
+			v:        v,
 			FldOrIdx: fld,
 		}
 	}
