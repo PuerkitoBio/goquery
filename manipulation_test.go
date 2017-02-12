@@ -281,7 +281,7 @@ func TestReplaceWithHtml(t *testing.T) {
 func TestSetHtml(t *testing.T) {
 	doc := Doc2Clone()
 	q := doc.Find("#main, #foot")
-	q.SetHtml("<div id=\"replace\">test</div>")
+	q.SetHtml(`<div id="replace">test</div>`)
 
 	assertLength(t, doc.Find("#replace").Nodes, 2)
 	assertLength(t, doc.Find("#main, #foot").Nodes, 2)
@@ -290,6 +290,26 @@ func TestSetHtml(t *testing.T) {
 		t.Errorf("Expected text to be %v, found %v", "testtest", q.Text())
 	}
 
+	printSel(t, doc.Selection)
+}
+
+func TestSetHtmlNoMatch(t *testing.T) {
+	doc := Doc2Clone()
+	q := doc.Find("#notthere")
+	q.SetHtml(`<div id="replace">test</div>`)
+
+	assertLength(t, doc.Find("#replace").Nodes, 0)
+
+	printSel(t, doc.Selection)
+}
+
+func TestSetHtmlEmpty(t *testing.T) {
+	doc := Doc2Clone()
+	q := doc.Find("#main")
+	q.SetHtml(``)
+
+	assertLength(t, doc.Find("#main").Nodes, 1)
+	assertLength(t, doc.Find("#main").Children().Nodes, 0)
 	printSel(t, doc.Selection)
 }
 

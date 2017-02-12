@@ -270,25 +270,13 @@ func (s *Selection) ReplaceWithNodes(ns ...*html.Node) *Selection {
 	return s.Remove()
 }
 
-// Set nodes to specified nodes.
-func SetNodes(s *Selection, ns ...*html.Node) *Selection {
-	for _, n := range s.Nodes {
-		for c := n.FirstChild; c != nil; c = n.FirstChild {
-			n.RemoveChild(c)
-		}
-		for _, c := range ns {
-			n.AppendChild(cloneNode(c))
-		}
-	}
-	return s
-}
-
-// Sets HTML of selected nodes to specified string.
+// Set the html content of each element in the selection to specified html string.
 func (s *Selection) SetHtml(html string) *Selection {
-	return SetNodes(s, parseHtml(html)...)
+	return setHtmlNodes(s, parseHtml(html)...)
 }
 
-// Sets text of selected nodes to specified string. Text is HTML escaped
+// Set the content of each element in the selection to specified content. The
+// provided text string is escaped.
 func (s *Selection) SetText(text string) *Selection {
 	return s.SetHtml(html.EscapeString(text))
 }
@@ -502,6 +490,18 @@ func parseHtml(h string) []*html.Node {
 		panic("goquery: failed to parse HTML: " + err.Error())
 	}
 	return nodes
+}
+
+func setHtmlNodes(s *Selection, ns ...*html.Node) *Selection {
+	for _, n := range s.Nodes {
+		for c := n.FirstChild; c != nil; c = n.FirstChild {
+			n.RemoveChild(c)
+		}
+		for _, c := range ns {
+			n.AppendChild(cloneNode(c))
+		}
+	}
+	return s
 }
 
 // Get the first child that is an ElementNode
