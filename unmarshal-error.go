@@ -8,14 +8,14 @@ import (
 // All "Reason" fields within CannotUnmarshalError will be constants and part of
 // this list
 const (
-	NonPointer           = "non-pointer value"
-	NilValue             = "destination argument is nil"
-	DocumentReadError    = "error reading goquery document"
-	ArrayLengthMismatch  = "array length does not match document elements found"
-	CustomUnmarshalError = "a custom Unmarshaler implementation threw an error"
-	TypeConversionError  = "a type conversion error occurred"
-	NonStringMapKey      = "a map with non-string key type cannot be unmarshaled"
-	MissingValueSelector = "at least one value selector must be passed to use as map index"
+	nonPointer           = "non-pointer value"
+	nilValue             = "destination argument is nil"
+	documentReadError    = "error reading goquery document"
+	arrayLengthMismatch  = "array length does not match document elements found"
+	customUnmarshalError = "a custom Unmarshaler implementation threw an error"
+	typeConversionError  = "a type conversion error occurred"
+	nonStringMapKey      = "a map with non-string key type cannot be unmarshaled"
+	missingValueSelector = "at least one value selector must be passed to use as map index"
 )
 
 // CannotUnmarshalError represents an error returned by the goquery Unmarshaler
@@ -24,8 +24,9 @@ type CannotUnmarshalError struct {
 	Reason string
 	Err    error
 
-	V        reflect.Value
-	FldOrIdx interface{}
+	Selection *Selection
+	V         reflect.Value
+	FldOrIdx  interface{}
 }
 
 // This type is a mid-level abstraction to help understand the error printing logic
