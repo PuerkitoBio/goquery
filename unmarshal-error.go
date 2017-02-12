@@ -21,17 +21,18 @@ const (
 // CannotUnmarshalError represents an error returned by the goquery Unmarshaler
 // and helps consumers in programmatically diagnosing the cause of their error.
 type CannotUnmarshalError struct {
-	Reason string
-	Err    error
+	Err      error
+	Val      string
+	V        reflect.Value
+	FldOrIdx interface{}
 
-	Selection *Selection
-	V         reflect.Value
-	FldOrIdx  interface{}
+	reason string
 }
 
 // This type is a mid-level abstraction to help understand the error printing logic
 type errChain struct {
 	chain []*CannotUnmarshalError
+	val   string
 	tail  error
 }
 
@@ -76,11 +77,12 @@ func (e errChain) Error() string {
 	}
 
 	s := fmt.Sprintf(
-		"could not unmarshal into %s%s (type %s): %s",
+		"could not unmarshal %q into %s%s (type %s): %s",
+		e.val,
 		e.chain[0].V.Type(),
 		e.tPath(),
 		t,
-		last.Reason,
+		last.reason,
 	)
 
 	// If a generic error was reported elsewhere, report its message last
@@ -97,6 +99,10 @@ func (e *CannotUnmarshalError) unwind() *errChain {
 	str := &errChain{chain: []*CannotUnmarshalError{}}
 	for {
 		str.chain = append(str.chain, e)
+
+		if e.Val != "" {
+			str.val = e.Val
+		}
 
 		// Terminal error was of type *CannotUnmarshalError and had no children
 		if e.Err == nil {
