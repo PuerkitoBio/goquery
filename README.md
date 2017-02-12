@@ -13,7 +13,7 @@ Please note that because of the net/html dependency, goquery requires Go1.1+.
     $ go get github.com/PuerkitoBio/goquery
 
 (optional) To run unit tests:
-    
+
     $ cd $GOPATH/src/github.com/PuerkitoBio/goquery
     $ go test
 
@@ -26,6 +26,7 @@ Please note that because of the net/html dependency, goquery requires Go1.1+.
 
 **Note that goquery's API is now stable, and will not break.**
 
+*    **2017-02-12 (v1.1.0)** : Add `SetHtml` and `SetText` (thanks to @glebtv).
 *    **2016-12-29 (v1.0.2)** : Optimize allocations for `Selection.Text` (thanks to @radovskyb).
 *    **2016-08-28 (v1.0.1)** : Optimize performance for large documents.
 *    **2016-07-27 (v1.0.0)** : Tag version 1.0.0.
@@ -85,7 +86,7 @@ import (
 )
 
 func ExampleScrape() {
-  doc, err := goquery.NewDocument("http://metalsucks.net") 
+  doc, err := goquery.NewDocument("http://metalsucks.net")
   if err != nil {
     log.Fatal(err)
   }
