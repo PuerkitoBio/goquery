@@ -216,7 +216,7 @@ func TestUnmarshalError(t *testing.T) {
 	e2 := checkErr(asrt, e.Err)
 
 	asrt.Equal(errTestUnmarshal, e2.Err)
-	asrt.Equal(CustomUnmarshalError, e2.Reason)
+	asrt.Equal(customUnmarshalError, e2.reason)
 }
 
 func TestNilUnmarshal(t *testing.T) {
@@ -226,7 +226,7 @@ func TestNilUnmarshal(t *testing.T) {
 
 	err := Unmarshal([]byte{}, a)
 	e := checkErr(asrt, err)
-	asrt.Equal(NilValue, e.Reason)
+	asrt.Equal(nilValue, e.reason)
 }
 
 func TestNonPointer(t *testing.T) {
@@ -234,7 +234,7 @@ func TestNonPointer(t *testing.T) {
 
 	var a Page
 	e := checkErr(asrt, Unmarshal([]byte{}, a))
-	asrt.Equal(NonPointer, e.Reason)
+	asrt.Equal(nonPointer, e.reason)
 }
 
 func TestWrongArrayLength(t *testing.T) {
@@ -247,9 +247,9 @@ func TestWrongArrayLength(t *testing.T) {
 	err := Unmarshal([]byte(testPage), &a)
 
 	e := checkErr(asrt, err)
-	asrt.Equal(TypeConversionError, e.Reason)
+	asrt.Equal(typeConversionError, e.reason)
 	e2 := checkErr(asrt, e.Err)
-	asrt.Equal(ArrayLengthMismatch, e2.Reason)
+	asrt.Equal(arrayLengthMismatch, e2.reason)
 
 	asrt.Contains(e.Error(), "Resource")
 	asrt.Contains(e.Error(), "array length")
@@ -270,8 +270,8 @@ func TestInvalidLiteral(t *testing.T) {
 	asrt.Error(e.tail)
 	asrt.Contains(err.Error(), e.tail.Error())
 
-	asrt.Equal(TypeConversionError, e.chain[0].Reason)
-	asrt.Equal(TypeConversionError, e.chain[1].Reason)
+	asrt.Equal(typeConversionError, e.chain[0].reason)
+	asrt.Equal(typeConversionError, e.chain[1].reason)
 }
 
 func TestInvalidArrayEleType(t *testing.T) {
@@ -397,7 +397,7 @@ func TestNoKeySelector(t *testing.T) {
 	}
 
 	err := checkErr(asrt, Unmarshal([]byte(testPage), &a))
-	asrt.Equal(MissingValueSelector, err.unwind().last().Reason)
+	asrt.Equal(missingValueSelector, err.unwind().last().reason)
 }
 
 func TestMapInnerError(t *testing.T) {
