@@ -197,10 +197,10 @@ func TestNumbers(t *testing.T) {
 	asrt.Equal(uint16(100), a.BoolTest.Uint)
 }
 
-func checkErr(asrt *assert.Assertions, err error) *CannotUnmarshalError {
+func checkErr(asrt *assert.Assertions, err error) *cannotUnmarshalError {
 	asrt.Error(err)
-	asrt.IsType((*CannotUnmarshalError)(nil), err)
-	return err.(*CannotUnmarshalError)
+	asrt.IsType((*cannotUnmarshalError)(nil), err)
+	return err.(*cannotUnmarshalError)
 }
 
 func TestUnmarshalError(t *testing.T) {

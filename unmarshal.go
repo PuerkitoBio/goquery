@@ -154,7 +154,7 @@ func Unmarshal(bs []byte, v interface{}) error {
 	d, err := NewDocumentFromReader(bytes.NewReader(bs))
 
 	if err != nil {
-		return &CannotUnmarshalError{Err: err, reason: documentReadError}
+		return &cannotUnmarshalError{Err: err, reason: documentReadError}
 	}
 
 	return UnmarshalSelection(d.Selection, v)
@@ -165,7 +165,7 @@ func wrapUnmErr(err error, v reflect.Value) error {
 		return nil
 	}
 
-	return &CannotUnmarshalError{
+	return &cannotUnmarshalError{
 		v:      v,
 		reason: customUnmarshalError,
 		Err:    err,
@@ -179,11 +179,11 @@ func UnmarshalSelection(s *Selection, iface interface{}) error {
 
 	// Must come before v.IsNil() else IsNil panics on NonPointer value
 	if v.Kind() != reflect.Ptr {
-		return &CannotUnmarshalError{v: v, reason: nonPointer}
+		return &cannotUnmarshalError{v: v, reason: nonPointer}
 	}
 
 	if iface == nil || v.IsNil() {
-		return &CannotUnmarshalError{v: v, reason: nilValue}
+		return &cannotUnmarshalError{v: v, reason: nilValue}
 	}
 
 	u, v := indirect(v)
@@ -225,7 +225,7 @@ func unmarshalByType(s *Selection, v reflect.Value, tag goqueryTag) error {
 		vf := tag.valFunc()
 		err := unmarshalLiteral(vf(s), v)
 		if err != nil {
-			return &CannotUnmarshalError{
+			return &cannotUnmarshalError{
 				v:      v,
 				reason: typeConversionError,
 				Err:    err,
@@ -291,7 +291,7 @@ func unmarshalStruct(s *Selection, v reflect.Value) error {
 
 		err := unmarshalByType(sel, v.Field(i), tag)
 		if err != nil {
-			return &CannotUnmarshalError{
+			return &cannotUnmarshalError{
 				reason:   typeConversionError,
 				Err:      err,
 				v:        v,
@@ -304,7 +304,7 @@ func unmarshalStruct(s *Selection, v reflect.Value) error {
 
 func unmarshalArray(s *Selection, v reflect.Value, tag goqueryTag) error {
 	if v.Type().Len() != len(s.Nodes) {
-		return &CannotUnmarshalError{
+		return &cannotUnmarshalError{
 			reason: arrayLengthMismatch,
 			v:      v,
 		}
@@ -313,7 +313,7 @@ func unmarshalArray(s *Selection, v reflect.Value, tag goqueryTag) error {
 	for i := 0; i < v.Type().Len(); i++ {
 		err := unmarshalByType(s.Eq(i), v.Index(i), tag)
 		if err != nil {
-			return &CannotUnmarshalError{
+			return &cannotUnmarshalError{
 				reason:   typeConversionError,
 				Err:      err,
 				v:        v,
@@ -342,7 +342,7 @@ func unmarshalSlice(s *Selection, v reflect.Value, tag goqueryTag) error {
 		err := unmarshalByType(s.Eq(i), newV, tag)
 
 		if err != nil {
-			return &CannotUnmarshalError{
+			return &cannotUnmarshalError{
 				reason:   typeConversionError,
 				Err:      err,
 				v:        v,
@@ -383,7 +383,7 @@ func unmarshalMap(s *Selection, v reflect.Value, tag goqueryTag) error {
 
 	if tag.selector(1) == "" {
 		// We need minimum one value selector to determine the map key
-		return &CannotUnmarshalError{
+		return &cannotUnmarshalError{
 			reason: missingValueSelector,
 			v:      v,
 		}
@@ -408,7 +408,7 @@ func unmarshalMap(s *Selection, v reflect.Value, tag goqueryTag) error {
 		err = unmarshalByType(subS, newK, tag)
 		fld = newK.Interface()
 		if err != nil {
-			err = &CannotUnmarshalError{
+			err = &cannotUnmarshalError{
 				reason: nonStringMapKey,
 				v:      v,
 				Err:    err,
@@ -434,7 +434,7 @@ func unmarshalMap(s *Selection, v reflect.Value, tag goqueryTag) error {
 	})
 
 	if err != nil {
-		return &CannotUnmarshalError{
+		return &cannotUnmarshalError{
 			reason:   typeConversionError,
 			Err:      err,
 			v:        v,
