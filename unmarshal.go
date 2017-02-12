@@ -154,7 +154,7 @@ func Unmarshal(bs []byte, v interface{}) error {
 	d, err := NewDocumentFromReader(bytes.NewReader(bs))
 
 	if err != nil {
-		return &cannotUnmarshalError{Err: err, reason: documentReadError}
+		return err
 	}
 
 	return UnmarshalSelection(d.Selection, v)
