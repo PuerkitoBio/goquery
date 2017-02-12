@@ -2,7 +2,6 @@ package goquery
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"testing"
 
@@ -213,8 +212,6 @@ func TestUnmarshalError(t *testing.T) {
 
 	asrt.Contains(err.Error(), "[]goquery.ErrorFooBar[0]")
 
-	log.Println(err)
-
 	e := checkErr(asrt, err)
 	e2 := checkErr(asrt, e.Err)
 
@@ -272,6 +269,8 @@ func TestInvalidLiteral(t *testing.T) {
 	asrt.Len(e.chain, 2)
 	asrt.Error(e.tail)
 	asrt.Contains(err.Error(), e.tail.Error())
+	asrt.Contains(err.Error(), "\"true\"")
+	asrt.Equal("true", e.val)
 
 	asrt.Equal(typeConversionError, e.chain[0].reason)
 	asrt.Equal(typeConversionError, e.chain[1].reason)

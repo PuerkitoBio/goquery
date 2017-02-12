@@ -83,7 +83,7 @@ func (e errChain) Error() string {
 	}
 
 	msg += fmt.Sprintf(
-		"into %s%s (type %s): %s",
+		"into '%s%s' (type %s): %s",
 		e.chain[0].v.Type(),
 		e.tPath(),
 		t,
