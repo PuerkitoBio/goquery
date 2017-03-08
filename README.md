@@ -1,4 +1,6 @@
-# goquery - a little like that j-thing, only in Go [![build status](https://secure.travis-ci.org/PuerkitoBio/goquery.png)](http://travis-ci.org/PuerkitoBio/goquery) [![GoDoc](https://godoc.org/github.com/PuerkitoBio/goquery?status.png)](http://godoc.org/github.com/PuerkitoBio/goquery)
+# goquery - a little like that j-thing, only in Go 
+[![build status](https://secure.travis-ci.org/PuerkitoBio/goquery.png)](http://travis-ci.org/PuerkitoBio/goquery) [![GoDoc](https://godoc.org/github.com/PuerkitoBio/goquery?status.png)](http://godoc.org/github.com/PuerkitoBio/goquery) [![Sourcegraph Badge](https://sourcegraph.com/github.com/PuerkitoBio/goquery/-/badge.svg)](https://sourcegraph.com/github.com/PuerkitoBio/goquery?badge)
+
 
 goquery brings a syntax and a set of features similar to [jQuery][] to the [Go language][go]. It is based on Go's [net/html package][html] and the CSS Selector library [cascadia][]. Since the net/html parser returns nodes, and not a full-featured DOM tree, jQuery's stateful manipulation functions (like height(), css(), detach()) have been left off.
 
