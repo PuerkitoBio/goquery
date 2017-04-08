@@ -1,8 +1,10 @@
 package goquery
 
 import (
+	"bytes"
 	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 
@@ -65,8 +67,28 @@ func NewDocumentFromResponse(res *http.Response) (*Document, error) {
 		return nil, errors.New("Response.Request is nil")
 	}
 
+	bytesData, e := ioutil.ReadAll(res.Body)
+	if e != nil {
+		return nil, e
+	}
+	charset, e := detectDataCharset(bytesData)
+	if e != nil {
+		return nil, e
+	}
+
+	if (charset == "UTF-8") {
+		// Parse the HTML into nodes
+		root, e := html.Parse(bytes.NewReader(bytesData))
+		if e != nil {
+			return nil, e
+		}
+
+		// Create and fill the document
+		return newDocument(root, res.Request.URL), nil
+	}
+
 	// Parse the HTML into nodes
-	root, e := html.Parse(res.Body)
+	root, e := html.Parse(bytes.NewReader(convertDataToUtf8(bytesData, charset)))
 	if e != nil {
 		return nil, e
 	}
