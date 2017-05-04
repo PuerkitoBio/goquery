@@ -20,6 +20,24 @@ func TestEach(t *testing.T) {
 	assertLength(t, sel.Nodes, 6)
 }
 
+func TestIteration(t *testing.T) {
+	var cnt int
+
+	sel := Doc().Find(".hero-unit .row-fluid")
+
+	for n := range  sel.Iteration(){
+		cnt++
+		t.Logf("node %v", n.Nodes[0].Data)
+	}
+
+	sel = sel.Find("a")
+
+	if cnt != 4 {
+		t.Errorf("Expected Each() to call function 4 times, got %v times.", cnt)
+	}
+	assertLength(t, sel.Nodes, 6)
+}
+
 func TestEachWithBreak(t *testing.T) {
 	var cnt int
 
