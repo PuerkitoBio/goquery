@@ -111,6 +111,11 @@ func main() {
 
 The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia's license is [here][caslic].
 
+## Downstream Projects
+
+- [Goq][goq], an HTML deserialization and scraping library based on goquery and struct
+    tags.
+
 [jquery]: http://jquery.com/
 [go]: http://golang.org/
 [cascadia]: https://github.com/andybalholm/cascadia
@@ -124,3 +129,4 @@ The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia'
 [wiki]: https://github.com/PuerkitoBio/goquery/wiki/Tips-and-tricks
 [thatguystone]: https://github.com/thatguystone
 [piotr]: https://github.com/piotrkowalczuk
+[goq]: https://github.com/andrewstuart/goq
