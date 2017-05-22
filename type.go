@@ -1,6 +1,7 @@
 package goquery
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"net/http"
@@ -51,6 +52,18 @@ func NewDocumentFromReader(r io.Reader) (*Document, error) {
 		return nil, e
 	}
 	return newDocument(root, nil), nil
+}
+
+// NewDocumentFromString returns a Document from a HTML string.
+// It returns an error as second value if the string cannot be parsed as html.
+func NewDocumentFromString(body string) (*Document, error) {
+	return NewDocumentFromReader(bytes.NewBufferString(body))
+}
+
+// NewDocumentFromBytes returns a Document from a HTML array of bytes.
+// It returns an error as second value if the array cannot be parsed as html.
+func NewDocumentFromBytes(body []byte) (*Document, error) {
+	return NewDocumentFromReader(bytes.NewBuffer(body))
 }
 
 // NewDocumentFromResponse is another Document constructor that takes an http response as argument.
