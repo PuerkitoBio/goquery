@@ -17,7 +17,8 @@ func (s *Selection) Attr(attrName string) (val string, exists bool) {
 	if len(s.Nodes) == 0 {
 		return
 	}
-	return getAttributeValue(attrName, s.Nodes[0])
+	val, exists = getAttributeValue(attrName, s.Nodes[0])
+	return s.document.DecodeString(val), exists
 }
 
 // AttrOr works like Attr but returns default value if attribute is not present.

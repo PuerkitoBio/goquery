@@ -1,14 +1,18 @@
 package goquery
 
 import (
+	"bytes"
 	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 
 	"github.com/andybalholm/cascadia"
 
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/charset"
+	"golang.org/x/text/encoding"
 )
 
 // Document represents an HTML document to be manipulated. Unlike jQuery, which
@@ -20,12 +24,24 @@ type Document struct {
 	*Selection
 	Url      *url.URL
 	rootNode *html.Node
+	charset  *encoding.Decoder
+}
+
+// DecodeString decodes given string by this document's charset.
+func (doc *Document) DecodeString(src string) string {
+	if doc.charset == nil {
+		return src
+	}
+	if dest, e := doc.charset.String(src); e == nil {
+		return dest
+	}
+	return src
 }
 
 // NewDocumentFromNode is a Document constructor that takes a root html Node
 // as argument.
 func NewDocumentFromNode(root *html.Node) *Document {
-	return newDocument(root, nil)
+	return newDocument(root, nil, nil)
 }
 
 // NewDocument is a Document constructor that takes a string URL as argument.
@@ -46,11 +62,7 @@ func NewDocument(url string) (*Document, error) {
 // provided reader is never closed by this call, it is the responsibility
 // of the caller to close it if required.
 func NewDocumentFromReader(r io.Reader) (*Document, error) {
-	root, e := html.Parse(r)
-	if e != nil {
-		return nil, e
-	}
-	return newDocument(root, nil), nil
+	return parseReader(r, nil)
 }
 
 // NewDocumentFromResponse is another Document constructor that takes an http response as argument.
@@ -65,25 +77,28 @@ func NewDocumentFromResponse(res *http.Response) (*Document, error) {
 		return nil, errors.New("Response.Request is nil")
 	}
 
-	// Parse the HTML into nodes
-	root, e := html.Parse(res.Body)
+	return parseReader(res.Body, res.Request.URL)
+}
+
+func parseReader(r io.Reader, url *url.URL) (*Document, error) {
+	b, _ := ioutil.ReadAll(r)
+	enc, _, _ := charset.DetermineEncoding(b, "text/html")
+	root, e := html.Parse(bytes.NewReader(b))
 	if e != nil {
 		return nil, e
 	}
-
-	// Create and fill the document
-	return newDocument(root, res.Request.URL), nil
+	return newDocument(root, url, enc.NewDecoder()), nil
 }
 
 // CloneDocument creates a deep-clone of a document.
 func CloneDocument(doc *Document) *Document {
-	return newDocument(cloneNode(doc.rootNode), doc.Url)
+	return newDocument(cloneNode(doc.rootNode), doc.Url, nil)
 }
 
 // Private constructor, make sure all fields are correctly filled.
-func newDocument(root *html.Node, url *url.URL) *Document {
+func newDocument(root *html.Node, url *url.URL, decoder *encoding.Decoder) *Document {
 	// Create and fill the document
-	d := &Document{nil, url, root}
+	d := &Document{Selection: nil, Url: url, rootNode: root, charset: decoder}
 	d.Selection = newSingleSelection(root, d)
 	return d
 }
