@@ -12,6 +12,22 @@ func (s *Selection) Each(f func(int, *Selection)) *Selection {
 	return s
 }
 
+// Each iterates over a Selection object, executing a function for each
+// matched element. It returns the current Selection object. The function
+// f is called for each element in the selection with the index of the
+// element in that selection starting at 0, and a *Selection that contains
+// only that element.
+func (s *Selection) Iteration() chan *Selection {
+	o := make(chan *Selection)
+	go func() {
+		for _, n := range s.Nodes {
+			o <- newSingleSelection(n, s.document)
+		}
+		close(o)
+	}()
+	return o
+}
+
 // EachWithBreak iterates over a Selection object, executing a function for each
 // matched element. It is identical to Each except that it is possible to break
 // out of the loop by returning false in the callback function. It returns the
