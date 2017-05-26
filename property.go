@@ -65,7 +65,7 @@ func (s *Selection) Text() string {
 	// Slightly optimized vs calling Each: no single selection object created
 	var f func(*html.Node)
 	f = func(n *html.Node) {
-		if n.Type == html.TextNode {
+		if n.Type == html.TextNode && "" == n.DataAtom.String() {
 			// Keep newlines and spaces, like jQuery
 			buf.WriteString(n.Data)
 		}
