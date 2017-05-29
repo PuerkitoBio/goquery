@@ -3,6 +3,9 @@ package goquery
 import (
 	"bytes"
 
+	"github.com/djimenez/iconv-go"
+	"github.com/saintfish/chardet"
+
 	"golang.org/x/net/html"
 )
 
@@ -140,6 +143,25 @@ func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet 
 	}
 
 	return target
+}
+
+//Converts data from slice of bytes to UTF-8
+func convertDataToUtf8(bytesData []byte, charset string) []byte {
+	out := make([]byte, len(bytesData))
+	iconv.Convert(bytesData, out, charset, "UTF-8")
+
+	return out
+}
+
+//Detects charset from slice of bytes
+func detectDataCharset(bytesData []byte) (string, error) {
+	charDetector := chardet.NewHtmlDetector()
+	detected, e := charDetector.DetectBest(bytesData)
+	if e != nil {
+		return "", e
+	}
+
+	return detected.Charset, nil
 }
 
 // Loop through a selection, returning only those nodes that pass the predicate
