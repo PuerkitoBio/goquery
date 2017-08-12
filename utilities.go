@@ -18,6 +18,62 @@ var nodeNames = []string{
 	html.CommentNode:  "#comment",
 }
 
+// PathForNode returns a unique path to retrieve the specified node
+// from its document tree. The path is a slice of int indices, starting
+// at the root of the tree.
+func PathForNode(n *html.Node) []int {
+	var indices []int
+	for n := n; n != nil; n = n.Parent {
+		ix := 0
+		for prev := n.PrevSibling; prev != nil; prev = prev.PrevSibling {
+			ix++
+		}
+		indices = append(indices, ix)
+	}
+
+	// reverse the slice of indices
+	for l, r := 0, len(indices)-1; l < r; l, r = l+1, r-1 {
+		indices[l], indices[r] = indices[r], indices[l]
+	}
+	return indices
+}
+
+// NodeAtPath returns the HTML node at the specified path in the
+// document tree of the specified n node. The path is followed from
+// the root of the tree. If no node is found by following the path,
+// nil is returned.
+func NodeAtPath(path []int, n *html.Node) *html.Node {
+	if n == nil {
+		return n
+	}
+
+	// start at root
+	for n.Parent != nil {
+		n = n.Parent
+	}
+	for n.PrevSibling != nil {
+		n = n.PrevSibling
+	}
+
+	for i, ix := range path {
+		if i > 0 {
+			n = n.FirstChild
+			if n == nil {
+				return n
+			}
+		}
+
+		for j := 0; j < ix; j++ {
+			n = n.NextSibling
+			if n == nil {
+				return n
+			}
+		}
+	}
+
+	return n
+}
+
 // NodeName returns the node name of the first element in the selection.
 // It tries to behave in a similar way as the DOM's nodeName property
 // (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeName).
