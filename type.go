@@ -31,12 +31,27 @@ func NewDocumentFromNode(root *html.Node) *Document {
 // NewDocument is a Document constructor that takes a string URL as argument.
 // It loads the specified document, parses it, and stores the root Document
 // node, ready to be manipulated.
-func NewDocument(url string) (*Document, error) {
+func NewDocument(u string, vr ...map[string]string) (*Document, error) {
 	// Load the URL
-	res, e := http.Get(url)
+	var res *http.Response
+	var e error
+
+	if len(vr) == 0 {
+		res, e = http.Get(u)
+	} else {
+		values := url.Values{}
+		for _, m := range vr {
+			for k, v := range m {
+				values.Add(k, v)
+			}
+		}
+		res, e = http.PostForm(u, values)
+	}
+
 	if e != nil {
 		return nil, e
 	}
+
 	return NewDocumentFromResponse(res)
 }
 
