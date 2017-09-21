@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/andybalholm/cascadia"
 
@@ -51,6 +52,12 @@ func NewDocumentFromReader(r io.Reader) (*Document, error) {
 		return nil, e
 	}
 	return newDocument(root, nil), nil
+}
+
+// NewDocumentFromReader returns a Document from a string.
+// It returns an error as second value if the reader's data cannot be parsed as html.
+func NewDocumentFromString(str string) (*Document, error) {
+	return NewDocumentFromReader(strings.NewReader(str))
 }
 
 // NewDocumentFromResponse is another Document constructor that takes an http response as argument.
