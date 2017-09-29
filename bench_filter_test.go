@@ -231,6 +231,6 @@ func BenchmarkEnd(b *testing.B) {
 		}
 	}
 	if n != 373 {
-		b.Fatalf("wnat 373, got %d", n)
+		b.Fatalf("want 373, got %d", n)
 	}
 }
