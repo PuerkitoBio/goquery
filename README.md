@@ -121,6 +121,7 @@ func main() {
 - [Goq][goq], an HTML deserialization and scraping library based on goquery and struct tags.
 - [andybalholm/cascadia][cascadia], the CSS selector library used by goquery.
 - [suntong/cascadia][cascadiacli], a command-line interface to the cascadia CSS selector library, useful to test selectors.
+- [asciimoo/colly](https://github.com/asciimoo/colly), a lightning fast and elegant Scraping Framework
 
 ## License
 
