@@ -1,6 +1,7 @@
 package goquery
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"net/http"
@@ -38,6 +39,14 @@ func NewDocument(url string) (*Document, error) {
 		return nil, e
 	}
 	return NewDocumentFromResponse(res)
+}
+
+// NewDocumentFromReader returns a Document from bytes.
+// It returns an error as second value if the reader's data cannot be parsed
+// as html.
+func NewDocumentFromBytes(b []byte) (*Document, error) {
+	// No need to close reader since `bytes.Reader` does not provide not provide a close method.
+	return NewDocumentFromReader(bytes.NewReader(b))
 }
 
 // NewDocumentFromReader returns a Document from a generic reader.
