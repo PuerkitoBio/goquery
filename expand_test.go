@@ -94,3 +94,25 @@ func TestAndSelfRollback(t *testing.T) {
 	sel2 := sel.Find("a").AndSelf().End().End()
 	assertEqual(t, sel, sel2)
 }
+
+func TestAddBack(t *testing.T) {
+	sel := Doc().Find(".span12").Last().AddBack()
+	assertLength(t, sel.Nodes, 2)
+}
+
+func TestAddBackRollback(t *testing.T) {
+	sel := Doc().Find(".pvk-content")
+	sel2 := sel.Find("a").AddBack().End().End()
+	assertEqual(t, sel, sel2)
+}
+
+func TestAddBackFiltered(t *testing.T) {
+	sel := Doc().Find(".span12, .footer").Find("h1").AddBackFiltered(".footer")
+	assertLength(t, sel.Nodes, 2)
+}
+
+func TestAddBackFilteredRollback(t *testing.T) {
+	sel := Doc().Find(".span12, .footer")
+	sel2 := sel.Find("h1").AddBackFiltered(".footer").End().End()
+	assertEqual(t, sel, sel2)
+}
