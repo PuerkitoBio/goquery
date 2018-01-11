@@ -38,10 +38,10 @@ func (s *Selection) AddNodes(nodes ...*html.Node) *Selection {
 	return pushStack(s, appendWithoutDuplicates(s.Nodes, nodes, nil))
 }
 
-// Deprecated: This function has been deprecated and is now an alias for AddBack().
 // AndSelf adds the previous set of elements on the stack to the current set.
 // It returns a new Selection object containing the current Selection combined
 // with the previous one.
+// Deprecated: This function has been deprecated and is now an alias for AddBack().
 func (s *Selection) AndSelf() *Selection {
 	return s.AddBack()
 }
