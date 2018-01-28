@@ -146,6 +146,11 @@ func TestSliceRollback(t *testing.T) {
 	assertEqual(t, sel, sel2)
 }
 
+func TestSliceNoEnd(t *testing.T) {
+	sel := Doc().Find(".pvk-content").Slice(1)
+	assertLength(t, sel.Nodes, 2)
+}
+
 func TestGet(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	node := sel.Get(1)

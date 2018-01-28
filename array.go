@@ -36,14 +36,20 @@ func (s *Selection) Eq(index int) *Selection {
 
 // Slice reduces the set of matched elements to a subset specified by a range
 // of indices.
-func (s *Selection) Slice(start, end int) *Selection {
+func (s *Selection) Slice(start int, end ...int) *Selection {
+	var e int
+	if len(end) > 0 {
+		e = end[0]
+	} else {
+		e = len(s.Nodes)
+	}
 	if start < 0 {
 		start += len(s.Nodes)
 	}
-	if end < 0 {
-		end += len(s.Nodes)
+	if e < 0 {
+		e += len(s.Nodes)
 	}
-	return pushStack(s, s.Nodes[start:end])
+	return pushStack(s, s.Nodes[start:e])
 }
 
 // Get retrieves the underlying node at the specified index.
