@@ -98,6 +98,17 @@ func TestSlice(t *testing.T) {
 	sel := Doc().Find(".pvk-content").Slice(0, 2)
 
 	assertLength(t, sel.Nodes, 2)
+	assertSelectionIs(t, sel, "#pc1", "#pc2")
+}
+
+func TestSliceToEnd(t *testing.T) {
+	sel := Doc().Find(".pvk-content").Slice(1, ToEnd)
+
+	assertLength(t, sel.Nodes, 2)
+	assertSelectionIs(t, sel.Eq(0), "#pc2")
+	if _, ok := sel.Eq(1).Attr("id"); ok {
+		t.Error("Want no attribute ID, got one")
+	}
 }
 
 func TestSliceEmpty(t *testing.T) {
@@ -108,6 +119,11 @@ func TestSliceEmpty(t *testing.T) {
 func TestSliceInvalid(t *testing.T) {
 	defer assertPanic(t)
 	Doc().Find("").Slice(0, 2)
+}
+
+func TestSliceInvalidToEnd(t *testing.T) {
+	defer assertPanic(t)
+	Doc().Find("").Slice(2, ToEnd)
 }
 
 func TestSliceOutOfBounds(t *testing.T) {
@@ -133,6 +149,12 @@ func TestNegativeSliceBoth(t *testing.T) {
 	assertLength(t, sel.Nodes, 2)
 	assertSelectionIs(t, sel.Eq(0), "#cf2")
 	assertSelectionIs(t, sel.Eq(1), "#cf3")
+}
+
+func TestNegativeSliceToEnd(t *testing.T) {
+	sel := Doc().Find(".container-fluid").Slice(-3, ToEnd)
+	assertLength(t, sel.Nodes, 3)
+	assertSelectionIs(t, sel, "#cf2", "#cf3", "#cf4")
 }
 
 func TestNegativeSliceOutOfBounds(t *testing.T) {
