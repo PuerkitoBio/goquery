@@ -53,6 +53,10 @@ func DocB() *Document {
 	return docB
 }
 
+func DocBClone() *Document {
+	return CloneDocument(DocB())
+}
+
 func DocW() *Document {
 	if docW == nil {
 		docW = loadDoc("gowiki.html")

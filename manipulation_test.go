@@ -56,6 +56,13 @@ func TestAfterHtml(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
+func TestAfterHtmlContext(t *testing.T) {
+	doc := DocBClone()
+	doc.Find("table tr td").AfterHtml("<td>Test</td>")
+	assertLength(t, doc.Find("table tr td").Nodes, 14)
+	printSel(t, doc.Selection)
+}
+
 func TestAppend(t *testing.T) {
 	doc := Doc2Clone()
 	doc.Find("#main").Append("#nf6")
@@ -113,6 +120,15 @@ func TestAppendHtml(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
+func TestAppendHtmlContext(t *testing.T) {
+	doc := DocBClone()
+	doc.Find("table tr").AppendHtml("<td class='new-node'>new node</td>")
+
+	assertLength(t, doc.Find("table td").Nodes, 11)
+	assertLength(t, doc.Find("table tr td.new-node:last-child").Nodes, 4)
+	printSel(t, doc.Selection)
+}
+
 func TestBefore(t *testing.T) {
 	doc := Doc2Clone()
 	doc.Find("#main").Before("#nf6")
@@ -148,6 +164,14 @@ func TestBeforeHtml(t *testing.T) {
 	doc.Find("#main").BeforeHtml("<strong>new node</strong>")
 
 	assertLength(t, doc.Find("body > strong:first-child").Nodes, 1)
+	printSel(t, doc.Selection)
+}
+
+func TestBeforeHtmlContext(t *testing.T) {
+	doc := DocBClone()
+	doc.Find("table tr td:first-child").BeforeHtml("<td class='new-node'>new node</td>")
+
+	assertLength(t, doc.Find("table td.new-node:first-child").Nodes, 3)
 	printSel(t, doc.Selection)
 }
 
@@ -218,6 +242,15 @@ func TestPrependHtml(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
+func TestPrependHtmlContext(t *testing.T) {
+	doc := DocBClone()
+	doc.Find("table tr").PrependHtml("<td class='new-node'>new node</td>")
+
+	assertLength(t, doc.Find("table td").Nodes, 11)
+	assertLength(t, doc.Find("table tr td.new-node:first-child").Nodes, 4)
+	printSel(t, doc.Selection)
+}
+
 func TestRemove(t *testing.T) {
 	doc := Doc2Clone()
 	doc.Find("#nf1").Remove()
@@ -278,6 +311,15 @@ func TestReplaceWithHtml(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
+func TestReplaceWithHtmlContext(t *testing.T) {
+	doc := DocBClone()
+	doc.Find("table th").ReplaceWithHtml("<td>Test</td><td>Replace</td>")
+
+	assertLength(t, doc.Find("table th").Nodes, 0)
+	assertLength(t, doc.Find("table tr:first-child td").Nodes, 6)
+	printSel(t, doc.Selection)
+}
+
 func TestSetHtml(t *testing.T) {
 	doc := Doc2Clone()
 	q := doc.Find("#main, #foot")
@@ -310,6 +352,15 @@ func TestSetHtmlEmpty(t *testing.T) {
 
 	assertLength(t, doc.Find("#main").Nodes, 1)
 	assertLength(t, doc.Find("#main").Children().Nodes, 0)
+	printSel(t, doc.Selection)
+}
+
+func TestSetHtmlContext(t *testing.T) {
+	doc := DocBClone()
+	doc.Find("table tr").SetHtml("<td class='new-node'>Test</td>")
+
+	assertLength(t, doc.Find("table th").Nodes, 0)
+	assertLength(t, doc.Find("table td.new-node").Nodes, 4)
 	printSel(t, doc.Selection)
 }
 
