@@ -68,6 +68,8 @@ func (s *Selection) Text() string {
 		if n.Type == html.TextNode {
 			// Keep newlines and spaces, like jQuery
 			buf.WriteString(n.Data)
+		} else if n.Data == "br" {
+			buf.WriteString(" ")
 		}
 		if n.FirstChild != nil {
 			for c := n.FirstChild; c != nil; c = c.NextSibling {
