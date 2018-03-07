@@ -2,13 +2,13 @@ package goquery
 
 import (
 	"errors"
+	"github.com/andybalholm/cascadia"
+	"golang.org/x/net/html"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
-
-	"github.com/andybalholm/cascadia"
-
-	"golang.org/x/net/html"
+	"time"
 )
 
 // Document represents an HTML document to be manipulated. Unlike jQuery, which
@@ -34,6 +34,34 @@ func NewDocumentFromNode(root *html.Node) *Document {
 func NewDocument(url string) (*Document, error) {
 	// Load the URL
 	res, e := http.Get(url)
+	if e != nil {
+		return nil, e
+	}
+	return NewDocumentFromResponse(res)
+}
+
+func NewDocumentWithTimeout(url string, timeout time.Duration) (*Document, error) {
+	// Load the URL
+	var netTransport = &http.Transport{
+		Dial: (&net.Dialer{
+			Timeout: timeout,
+		}).Dial,
+		TLSHandshakeTimeout: 60 * time.Second,
+	}
+	client := &http.Client{
+		Timeout:   timeout,
+		Transport: netTransport,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+	req, e := http.NewRequest(http.MethodGet, url, nil)
+	if e != nil {
+		return nil, e
+	}
+
+	res, e := client.Do(req)
+	//res, e := http.Get(url)
 	if e != nil {
 		return nil, e
 	}
