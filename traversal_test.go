@@ -378,7 +378,7 @@ func TestPrevFilteredRollback(t *testing.T) {
 
 func TestNextAll(t *testing.T) {
 	sel := Doc().Find("#cf2 div:nth-child(1)").NextAll()
-	assertLength(t, sel.Nodes, 3)
+	assertLength(t, sel.Nodes, 4)
 }
 
 func TestNextAllRollback(t *testing.T) {
@@ -389,7 +389,7 @@ func TestNextAllRollback(t *testing.T) {
 
 func TestNextAll2(t *testing.T) {
 	sel := Doc().Find("div[ng-cloak]").NextAll()
-	assertLength(t, sel.Nodes, 1)
+	assertLength(t, sel.Nodes, 2)
 }
 
 func TestNextAllNone(t *testing.T) {

@@ -102,6 +102,16 @@ func TestText3(t *testing.T) {
 	}
 }
 
+func TestText4(t *testing.T) {
+	txt := Doc().Find(".hero-unit .container-fluid #cf2-5").Text()
+		if ok, e := regexp.MatchString(`^\s+Beta Version\.\s+Things may change\.\s+Or disappear\.\s+$`, txt); !ok || e != nil {
+		t.Errorf("Expected text to be Beta Version. Things may change. Or disappear., found %s.", txt)
+		if e != nil {
+			t.Logf("Error: %s.", e.Error())
+		}
+	}
+}
+
 func TestHtml(t *testing.T) {
 	txt, e := Doc().Find("h1").Html()
 	if e != nil {
