@@ -1,7 +1,6 @@
 # goquery - a little like that j-thing, only in Go
 [![build status](https://secure.travis-ci.org/PuerkitoBio/goquery.svg?branch=master)](http://travis-ci.org/PuerkitoBio/goquery) [![GoDoc](https://godoc.org/github.com/PuerkitoBio/goquery?status.png)](http://godoc.org/github.com/PuerkitoBio/goquery) [![Sourcegraph Badge](https://sourcegraph.com/github.com/PuerkitoBio/goquery/-/badge.svg)](https://sourcegraph.com/github.com/PuerkitoBio/goquery?badge)
 
-
 goquery brings a syntax and a set of features similar to [jQuery][] to the [Go language][go]. It is based on Go's [net/html package][html] and the CSS Selector library [cascadia][]. Since the net/html parser returns nodes, and not a full-featured DOM tree, jQuery's stateful manipulation functions (like height(), css(), detach()) have been left off.
 
 Also, because the net/html parser requires UTF-8 encoding, so does goquery: it is the caller's responsibility to ensure that the source document provides UTF-8 encoded HTML. See the [wiki][] for various options to do this.
@@ -15,6 +14,7 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 * [API](#api)
 * [Examples](#examples)
 * [Related Projects](#related-projects)
+* [Support](#support)
 * [License](#license)
 
 ## Installation
@@ -124,6 +124,22 @@ func main() {
 - [andybalholm/cascadia][cascadia], the CSS selector library used by goquery.
 - [suntong/cascadia][cascadiacli], a command-line interface to the cascadia CSS selector library, useful to test selectors.
 - [asciimoo/colly](https://github.com/asciimoo/colly), a lightning fast and elegant Scraping Framework
+
+## Support
+
+There are a number of ways you can support the project:
+
+* Use it, star it, build something with it, spread the word!
+  - If you do build something open-source or otherwise publicly-visible, let me know so I can add it to the [Related Projects](#related-projects) section!
+* Raise issues to improve the project (note: doc typos and clarifications are issues too!)
+  - Please search existing issues before opening a new one - it may have already been adressed.
+* Pull requests: please discuss new code in an issue first, unless the fix is really trivial.
+  - Make sure new code is tested.
+  - Be mindful of existing code - PRs that break existing code have a high probability of being declined, unless it fixes a serious issue.
+
+If you desperately want to send money my way, I have a BuyMeACoffee.com page:
+
+<a href="https://www.buymeacoffee.com/mna" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
 ## License
 
