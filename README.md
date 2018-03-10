@@ -135,6 +135,7 @@ There are a number of ways you can support the project:
   - Please search existing issues before opening a new one - it may have already been adressed.
 * Pull requests: please discuss new code in an issue first, unless the fix is really trivial.
   - Make sure new code is tested.
+  - Be mindful of existing code - PRs that break existing code have a high probability of being declined, unless it fixes a serious issue.
 
 If you desperately want to send money my way, I have a BuyMeACoffee.com page:
 
