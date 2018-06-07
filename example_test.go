@@ -43,7 +43,7 @@ func Example() {
 }
 
 // This example shows how to use NewDocumentFromReader from a file.
-func ExampleNewDocumentFromReader() {
+func ExampleNewDocumentFromReader_file() {
 	// create from a file
 	f, err := os.Open("some/file.html")
 	if err != nil {
