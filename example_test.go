@@ -42,7 +42,7 @@ func Example() {
 	// xOutput: voluntarily fail the Example output.
 }
 
-// This example shows how to use NewDocumentFromReader.
+// This example shows how to use NewDocumentFromReader from a file.
 func ExampleNewDocumentFromReader() {
 	// create from a file
 	f, err := os.Open("some/file.html")
@@ -58,6 +58,7 @@ func ExampleNewDocumentFromReader() {
 	_ = doc.Find("h1")
 }
 
+// This example shows how to use NewDocumentFromReader from a string.
 func ExampleNewDocumentFromReader_string() {
 	// create from a string
 	data := `
