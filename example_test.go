@@ -60,7 +60,8 @@ func ExampleNewDocumentFromReader() {
 
 func ExampleNewDocumentFromReader_string() {
 	// create from a string
-	data := `<html>
+	data := `
+<html>
 	<head>
 		<title>My document</title>
 	</head>
