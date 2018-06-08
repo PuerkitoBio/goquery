@@ -12,6 +12,18 @@ func (s *Selection) Each(f func(int, *Selection)) *Selection {
 	return s
 }
 
+// EachReverse iterates over a Selection object, executing a function for each
+// matched element. It returns the current Selection object. The function
+// f is called for each element in the selection with the index of the
+// element in that selection starting at last, and a *Selection that contains
+// only that element.
+func (s *Selection) EachReverse(f func(int, *Selection)) *Selection {
+	for i := len(s.Nodes) - 1; i >= 0; i-- {
+		f(i, newSingleSelection(s.Nodes[i], s.document))
+	}
+	return s
+}
+
 // EachWithBreak iterates over a Selection object, executing a function for each
 // matched element. It is identical to Each except that it is possible to break
 // out of the loop by returning false in the callback function. It returns the
