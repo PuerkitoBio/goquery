@@ -139,6 +139,7 @@ func main() {
 - [suntong/cascadia][cascadiacli], a command-line interface to the cascadia CSS selector library, useful to test selectors.
 - [asciimoo/colly](https://github.com/asciimoo/colly), a lightning fast and elegant Scraping Framework
 - [gnulnx/goperf](https://github.com/gnulnx/goperf), a website performance test tool that also fetches static assets.
+- [MontFerret/ferret](https://github.com/MontFerret/ferret), declarative web scraping.
 
 ## Support
 
