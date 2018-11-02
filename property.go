@@ -59,7 +59,7 @@ func (s *Selection) SetAttr(attrName, val string) *Selection {
 
 // Text gets the combined text contents of each element in the set of matched
 // elements, including their descendants.
-func (s *Selection) Text() string {
+func (s *Selection) Text(bIncludeJS bool) string {
 	var buf bytes.Buffer
 
 	// Slightly optimized vs calling Each: no single selection object created
@@ -105,6 +105,32 @@ func (s *Selection) Html() (ret string, e error) {
 			if e != nil {
 				return
 			}
+		}
+		ret = buf.String()
+	}
+
+	return
+}
+
+// Html gets the HTML contents of the first element in the set of matched
+// elements. It includes text and comment nodes.
+func (s *Selection) HtmlNoJS() (ret string, e error) {
+	// Since there is no .innerHtml, the HTML content must be re-created from
+	// the nodes using html.Render.
+	var buf bytes.Buffer
+
+	if len(s.Nodes) > 0 {
+		for c := s.Nodes[0].FirstChild; c != nil; c = c.NextSibling {
+
+			if c.Type == html.ElementNode && c.Data == "script" {
+				//do nothing for js
+			} else {
+				e = html.Render(&buf, c)
+				if e != nil {
+					return
+				}
+			}
+
 		}
 		ret = buf.String()
 	}
