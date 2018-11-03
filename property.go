@@ -59,7 +59,7 @@ func (s *Selection) SetAttr(attrName, val string) *Selection {
 
 // Text gets the combined text contents of each element in the set of matched
 // elements, including their descendants.
-func (s *Selection) Text(bIncludeJS bool) string {
+func (s *Selection) Text() string {
 	var buf bytes.Buffer
 
 	// Slightly optimized vs calling Each: no single selection object created
@@ -72,6 +72,37 @@ func (s *Selection) Text(bIncludeJS bool) string {
 		if n.FirstChild != nil {
 			for c := n.FirstChild; c != nil; c = c.NextSibling {
 				f(c)
+			}
+		}
+	}
+	for _, n := range s.Nodes {
+		f(n)
+	}
+
+	return buf.String()
+}
+
+// Text gets the combined text contents of each element in the set of matched
+// elements, including their descendants without js.
+func (s *Selection) TextWithoutJS() string {
+	var buf bytes.Buffer
+
+	// Slightly optimized vs calling Each: no single selection object created
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.TextNode {
+			// Keep newlines and spaces, like jQuery
+			buf.WriteString(n.Data)
+		}
+
+		if n.FirstChild != nil {
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				//just skip SCRIPT nodes
+				if c.Type == html.ElementNode && c.Data == "script" {
+					//do nothing for script nodes
+				} else { //other nodes
+					f(c)
+				}
 			}
 		}
 	}
@@ -113,8 +144,8 @@ func (s *Selection) Html() (ret string, e error) {
 }
 
 // Html gets the HTML contents of the first element in the set of matched
-// elements. It includes text and comment nodes.
-func (s *Selection) HtmlNoJS() (ret string, e error) {
+// elements. It includes text and comment nodes but script nodes.
+func (s *Selection) HtmlWithoutJS() (ret string, e error) {
 	// Since there is no .innerHtml, the HTML content must be re-created from
 	// the nodes using html.Render.
 	var buf bytes.Buffer
