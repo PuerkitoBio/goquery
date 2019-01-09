@@ -142,6 +142,7 @@ func main() {
 - [gnulnx/goperf](https://github.com/gnulnx/goperf), a website performance test tool that also fetches static assets.
 - [MontFerret/ferret](https://github.com/MontFerret/ferret), declarative web scraping.
 - [tacusci/berrycms](https://github.com/tacusci/berrycms), a modern simple to use CMS with easy to write plugins
+- [Dataflow kit](https://github.com/slotix/dataflowkit), Web Scraping framework for Gophers.  
 
 ## Support
 
