@@ -158,7 +158,7 @@ func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet 
 }
 
 func sortWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet map[*html.Node]bool) []*html.Node {
-	// If there are no nodes to add in, keep the target nodes (odering) untouched
+	// If there are no nodes to add in, keep the target nodes (ordering) untouched
 	if len(nodes) == 0 {
 		return target
 	}
