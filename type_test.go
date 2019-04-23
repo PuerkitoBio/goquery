@@ -87,6 +87,12 @@ func assertEqual(t *testing.T, s1 *Selection, s2 *Selection) {
 	}
 }
 
+func assertData(t *testing.T, s1, s2 string) {
+	if s1 != s2 {
+		t.Error("Expected node data to be the same.")
+	}
+}
+
 func assertSelectionIs(t *testing.T, sel *Selection, is ...string) {
 	for i := 0; i < sel.Length(); i++ {
 		if !sel.Eq(i).Is(is[i]) {

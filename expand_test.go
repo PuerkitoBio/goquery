@@ -116,3 +116,13 @@ func TestAddBackFilteredRollback(t *testing.T) {
 	sel2 := sel.Find("h1").AddBackFiltered(".footer").End().End()
 	assertEqual(t, sel, sel2)
 }
+
+func TestAddOrdering(t *testing.T) {
+	sel := Doc().Find("h1").Add("h4").Add("p")
+	assertData(t, sel.Nodes[0].Data, "h1")
+	assertData(t, sel.Nodes[1].Data, "p")
+	assertData(t, sel.Nodes[2].Data, "h4")
+	assertData(t, sel.Nodes[3].Data, "p")
+	assertData(t, sel.Nodes[4].Data, "p")
+	assertData(t, sel.Nodes[5].Data, "p")
+}

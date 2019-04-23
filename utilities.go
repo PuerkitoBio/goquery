@@ -2,6 +2,7 @@ package goquery
 
 import (
 	"bytes"
+	"sort"
 
 	"golang.org/x/net/html"
 )
@@ -10,6 +11,20 @@ import (
 // instead of iterating over a slice. The set uses more memory and
 // is slower than slice iteration for small N.
 const minNodesForSet = 1000
+
+// Used to determine the relative position of two nodes
+// Reference: https://dom.spec.whatwg.org/#dom-node-comparedocumentposition
+type Position uint8
+
+// Used to determine the relative position of two nodes
+// Reference: https://dom.spec.whatwg.org/#dom-node-comparedocumentposition
+const (
+	DISCONNECTED Position = 1 << iota
+	PRECEDING
+	FOLLOWING
+	CONTAINS
+	CONTAINED_BY
+)
 
 var nodeNames = []string{
 	html.ErrorNode:    "#error",
@@ -140,6 +155,93 @@ func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet 
 	}
 
 	return target
+}
+
+func sortWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet map[*html.Node]bool) []*html.Node {
+	// If there are no nodes to add in, keep the target nodes (odering) untouched
+	if len(nodes) == 0 {
+		return target
+	}
+
+	return uniqueSort(appendWithoutDuplicates(target, nodes, targetSet))
+}
+
+func uniqueSort(nodes []*html.Node) []*html.Node {
+	sort.SliceStable(nodes, func(i, j int) bool {
+		relative := compareDocumentPosition(nodes[i], nodes[j])
+		if (relative & PRECEDING) != 0 {
+			return true
+		} else if (relative & FOLLOWING) != 0 {
+			return false
+		}
+
+		return true
+	})
+
+	return nodes
+}
+
+// Compare the position of one node against another node in the same document.
+func compareDocumentPosition(nodeA *html.Node, nodeB *html.Node) Position {
+	var aParents, bParents []*html.Node
+	if nodeA == nodeB {
+		return 0
+	}
+
+	current := nodeA
+	for current != nil {
+		aParents = append([]*html.Node{current}, aParents...)
+		current = current.Parent
+	}
+
+	current = nodeB
+	for current != nil {
+		bParents = append([]*html.Node{current}, bParents...)
+		current = current.Parent
+	}
+
+	if len(aParents) == 0 || len(bParents) == 0 {
+		return DISCONNECTED
+	}
+
+	idx := 0
+	aLastIndex := len(aParents) - 1
+	bLastIndex := len(bParents) - 1
+	for aParents[idx] == bParents[idx] {
+		if idx == aLastIndex {
+			return PRECEDING | CONTAINS
+		} else if idx == bLastIndex {
+			return FOLLOWING | CONTAINED_BY
+		}
+
+		idx++
+	}
+
+	if idx == 0 {
+		return DISCONNECTED
+	}
+
+	var i, aIndex, bIndex int
+	sharedParent := aParents[idx-1]
+	aSibling := aParents[idx]
+	bSibling := bParents[idx]
+	for c := sharedParent.FirstChild; c != nil; c = c.NextSibling {
+		if c == aSibling {
+			aIndex = i
+		} else if c == bSibling {
+			bIndex = i
+		}
+
+		i++
+	}
+
+	if aIndex < bIndex {
+		return PRECEDING
+	} else if aIndex > bIndex {
+		return FOLLOWING
+	}
+
+	return 0
 }
 
 // Loop through a selection, returning only those nodes that pass the predicate
