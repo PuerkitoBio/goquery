@@ -166,18 +166,24 @@ func sortWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet ma
 	return uniqueSort(appendWithoutDuplicates(target, nodes, targetSet))
 }
 
-func uniqueSort(nodes []*html.Node) []*html.Node {
-	sort.SliceStable(nodes, func(i, j int) bool {
-		relative := compareDocumentPosition(nodes[i], nodes[j])
-		if (relative & PRECEDING) != 0 {
-			return true
-		} else if (relative & FOLLOWING) != 0 {
-			return false
-		}
+// NodeSlice is slice of Nodes used for sorting nodes.
+type NodeSlice []*html.Node
 
+func (ns NodeSlice) Len() int      { return len(ns) }
+func (ns NodeSlice) Swap(i, j int) { ns[i], ns[j] = ns[j], ns[i] }
+func (ns NodeSlice) Less(i, j int) bool {
+	relative := compareDocumentPosition(ns[i], ns[j])
+	if (relative & PRECEDING) != 0 {
 		return true
-	})
+	} else if (relative & FOLLOWING) != 0 {
+		return false
+	}
 
+	return true
+}
+
+func uniqueSort(nodes []*html.Node) []*html.Node {
+	sort.Sort(NodeSlice(nodes))
 	return nodes
 }
 
