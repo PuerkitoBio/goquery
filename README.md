@@ -37,6 +37,7 @@ Please note that because of the net/html dependency, goquery requires Go1.1+.
 
 **Note that goquery's API is now stable, and will not break.**
 
+*    **2020-02-04 (v1.5.1)** : Update module dependencies.
 *    **2018-11-15 (v1.5.0)** : Go module support (thanks @Zaba505).
 *    **2018-06-07 (v1.4.1)** : Add `NewDocumentFromReader` examples.
 *    **2018-03-24 (v1.4.0)** : Deprecate `NewDocument(url)` and `NewDocumentFromResponse(response)`.
