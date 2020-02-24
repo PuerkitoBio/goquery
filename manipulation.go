@@ -212,14 +212,19 @@ func (s *Selection) Remove() *Selection {
 	return s
 }
 
-// RemoveFiltered removes the set of matched elements by selector.
-// It returns the Selection of removed nodes.
+// RemoveFiltered removes from the current set of matched elements those that
+// match the selector filter. It returns the Selection of removed nodes.
+//
+// For example if the selection s contains "<h1>", "<h2>" and "<h3>"
+// and s.RemoveFiltered("h2") is called, only the "<h2>" node is removed
+// (and returned), while "<h1>" and "<h3>" are kept in the document.
 func (s *Selection) RemoveFiltered(selector string) *Selection {
 	return s.RemoveMatcher(compileMatcher(selector))
 }
 
-// RemoveMatcher removes the set of matched elements.
-// It returns the Selection of removed nodes.
+// RemoveMatcher removes from the current set of matched elements those that
+// match the Matcher filter. It returns the Selection of removed nodes.
+// See RemoveFiltered for additional information.
 func (s *Selection) RemoveMatcher(m Matcher) *Selection {
 	return s.FilterMatcher(m).Remove()
 }
