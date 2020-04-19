@@ -145,6 +145,7 @@ func main() {
 - [tacusci/berrycms](https://github.com/tacusci/berrycms), a modern simple to use CMS with easy to write plugins
 - [Dataflow kit](https://github.com/slotix/dataflowkit), Web Scraping framework for Gophers.  
 - [Geziyor](https://github.com/geziyor/geziyor), a fast web crawling & scraping framework for Go. Supports JS rendering.
+- [Pagser](https://github.com/foolin/pagser), a simple, easy, extensible, configurable HTML parser to struct based on goquery and struct tags.
 
 ## Support
 
