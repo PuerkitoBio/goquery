@@ -14,3 +14,8 @@ tags
 # coverage and profilte outputs
 *.out
 
+.idea/goquery.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/thriftCompiler.xml
+.idea/vcs.xml

@@ -1,9 +1,7 @@
 package goquery
 
 import (
-	"errors"
 	"io"
-	"net/http"
 	"net/url"
 
 	"github.com/andybalholm/cascadia"
@@ -28,22 +26,6 @@ func NewDocumentFromNode(root *html.Node) *Document {
 	return newDocument(root, nil)
 }
 
-// NewDocument is a Document constructor that takes a string URL as argument.
-// It loads the specified document, parses it, and stores the root Document
-// node, ready to be manipulated.
-//
-// Deprecated: Use the net/http standard library package to make the request
-// and validate the response before calling goquery.NewDocumentFromReader
-// with the response's body.
-func NewDocument(url string) (*Document, error) {
-	// Load the URL
-	res, e := http.Get(url)
-	if e != nil {
-		return nil, e
-	}
-	return NewDocumentFromResponse(res)
-}
-
 // NewDocumentFromReader returns a Document from an io.Reader.
 // It returns an error as second value if the reader's data cannot be parsed
 // as html. It does not check if the reader is also an io.Closer, the
@@ -55,30 +37,6 @@ func NewDocumentFromReader(r io.Reader) (*Document, error) {
 		return nil, e
 	}
 	return newDocument(root, nil), nil
-}
-
-// NewDocumentFromResponse is another Document constructor that takes an http response as argument.
-// It loads the specified response's document, parses it, and stores the root Document
-// node, ready to be manipulated. The response's body is closed on return.
-//
-// Deprecated: Use goquery.NewDocumentFromReader with the response's body.
-func NewDocumentFromResponse(res *http.Response) (*Document, error) {
-	if res == nil {
-		return nil, errors.New("Response is nil")
-	}
-	defer res.Body.Close()
-	if res.Request == nil {
-		return nil, errors.New("Response.Request is nil")
-	}
-
-	// Parse the HTML into nodes
-	root, e := html.Parse(res.Body)
-	if e != nil {
-		return nil, e
-	}
-
-	// Create and fill the document
-	return newDocument(root, res.Request.URL), nil
 }
 
 // CloneDocument creates a deep-clone of a document.
