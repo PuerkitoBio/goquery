@@ -1,7 +1,7 @@
 package goquery
 
 import (
-	"fmt"
+	"strconv"
 	"testing"
 )
 
@@ -32,7 +32,7 @@ func BenchmarkMap(b *testing.B) {
 	sel := DocW().Find("td")
 	f := func(i int, s *Selection) string {
 		tmp++
-		return fmt.Sprintf("%d", tmp)
+		return strconv.Itoa(tmp)
 	}
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
