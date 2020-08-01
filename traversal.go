@@ -556,7 +556,7 @@ func findWithMatcher(nodes []*html.Node, m Matcher) []*html.Node {
 func getParentsNodes(nodes []*html.Node, stopm Matcher, stopNodes []*html.Node) []*html.Node {
 	return mapNodes(nodes, func(i int, n *html.Node) (result []*html.Node) {
 		for p := n.Parent; p != nil; p = p.Parent {
-			sel := newSingleSelection(p, nil)
+			sel := NewSingleSelection(p, nil)
 			if stopm != nil {
 				if sel.IsMatcher(stopm) {
 					break
@@ -584,11 +584,11 @@ func getSiblingNodes(nodes []*html.Node, st siblingType, untilm Matcher, untilNo
 		f = func(n *html.Node) bool {
 			if untilm != nil {
 				// Matcher-based condition
-				sel := newSingleSelection(n, nil)
+				sel := NewSingleSelection(n, nil)
 				return sel.IsMatcher(untilm)
 			} else if len(untilNodes) > 0 {
 				// Nodes-based condition
-				sel := newSingleSelection(n, nil)
+				sel := NewSingleSelection(n, nil)
 				return sel.IsNodes(untilNodes...)
 			}
 			return false

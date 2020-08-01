@@ -146,7 +146,7 @@ func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet 
 // function.
 func grep(sel *Selection, predicate func(i int, s *Selection) bool) (result []*html.Node) {
 	for i, n := range sel.Nodes {
-		if predicate(i, newSingleSelection(n, sel.document)) {
+		if predicate(i, NewSingleSelection(n, sel.document)) {
 			result = append(result, n)
 		}
 	}

@@ -90,7 +90,7 @@ func CloneDocument(doc *Document) *Document {
 func newDocument(root *html.Node, url *url.URL) *Document {
 	// Create and fill the document
 	d := &Document{nil, url, root}
-	d.Selection = newSingleSelection(root, d)
+	d.Selection = NewSingleSelection(root, d)
 	return d
 }
 
@@ -108,8 +108,8 @@ func newEmptySelection(doc *Document) *Selection {
 	return &Selection{nil, doc, nil}
 }
 
-// Helper constructor to create a selection of only one node
-func newSingleSelection(node *html.Node, doc *Document) *Selection {
+// NewSingleSelection is a helper constructor to create a selection of only one node
+func NewSingleSelection(node *html.Node, doc *Document) *Selection {
 	return &Selection{[]*html.Node{node}, doc, nil}
 }
 

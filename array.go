@@ -81,7 +81,7 @@ func (s *Selection) Get(index int) *html.Node {
 // relative to its sibling elements.
 func (s *Selection) Index() int {
 	if len(s.Nodes) > 0 {
-		return newSingleSelection(s.Nodes[0], s.document).PrevAll().Length()
+		return NewSingleSelection(s.Nodes[0], s.document).PrevAll().Length()
 	}
 	return -1
 }

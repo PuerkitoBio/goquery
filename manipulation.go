@@ -420,7 +420,7 @@ func (s *Selection) WrapAllNode(n *html.Node) *Selection {
 		wrap = c
 	}
 
-	newSingleSelection(wrap, s.document).AppendSelection(s)
+	NewSingleSelection(wrap, s.document).AppendSelection(s)
 
 	return s
 }

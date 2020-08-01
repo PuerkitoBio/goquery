@@ -7,7 +7,7 @@ package goquery
 // only that element.
 func (s *Selection) Each(f func(int, *Selection)) *Selection {
 	for i, n := range s.Nodes {
-		f(i, newSingleSelection(n, s.document))
+		f(i, NewSingleSelection(n, s.document))
 	}
 	return s
 }
@@ -18,7 +18,7 @@ func (s *Selection) Each(f func(int, *Selection)) *Selection {
 // current Selection object.
 func (s *Selection) EachWithBreak(f func(int, *Selection) bool) *Selection {
 	for i, n := range s.Nodes {
-		if !f(i, newSingleSelection(n, s.document)) {
+		if !f(i, NewSingleSelection(n, s.document)) {
 			return s
 		}
 	}
@@ -32,7 +32,7 @@ func (s *Selection) EachWithBreak(f func(int, *Selection) bool) *Selection {
 // only that element.
 func (s *Selection) Map(f func(int, *Selection) string) (result []string) {
 	for i, n := range s.Nodes {
-		result = append(result, f(i, newSingleSelection(n, s.document)))
+		result = append(result, f(i, NewSingleSelection(n, s.document)))
 	}
 
 	return result

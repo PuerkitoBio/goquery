@@ -52,7 +52,7 @@ func TestNodeName(t *testing.T) {
 		{nText, html.TextNode, nodeNames[html.TextNode]},
 	}
 	for i, c := range cases {
-		got := NodeName(newSingleSelection(c.node, doc))
+		got := NodeName(NewSingleSelection(c.node, doc))
 		if c.node.Type != c.typ {
 			t.Errorf("%d: want type %v, got %v", i, c.typ, c.node.Type)
 		}
@@ -114,7 +114,7 @@ func TestOuterHtml(t *testing.T) {
 	}
 	for i, c := range cases {
 		if c.sel == nil {
-			c.sel = newSingleSelection(c.node, doc)
+			c.sel = NewSingleSelection(c.node, doc)
 		}
 		got, err := OuterHtml(c.sel)
 		if err != nil {
