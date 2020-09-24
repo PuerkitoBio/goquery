@@ -4,13 +4,13 @@
 
 The `go.net/html` package used by `goquery` requires that the html document is UTF-8 encoded. When you know the encoding of the html page is not UTF-8, you can use the `iconv` package to convert it to UTF-8 (there are various implementation of the `iconv` API, see [godoc.org][iconv] for other options):
 
-```
+```bash
 $ go get -u github.com/djimenez/iconv-go
 ```
 
 and then:
 
-```
+```golang
 // Load the URL
 res, err := http.Get(url)
 if err != nil {
@@ -51,7 +51,7 @@ You can find a code example using `otto` [in this gist][exotto]. Thanks to githu
 
 If all you need is a normal `for` loop over all nodes in the current selection, where `Map/Each`-style iteration is not necessary, you can use the following:
 
-```
+```golang
 sel := Doc().Find(".selector")
 for i := range sel.Nodes {
 	single := sel.Eq(i)
