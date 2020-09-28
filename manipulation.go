@@ -578,18 +578,6 @@ func parseHtmlWithContext(h string, context *html.Node) []*html.Node {
 	return nodes
 }
 
-func setHtmlNodes(s *Selection, ns ...*html.Node) *Selection {
-	for _, n := range s.Nodes {
-		for c := n.FirstChild; c != nil; c = n.FirstChild {
-			n.RemoveChild(c)
-		}
-		for _, c := range ns {
-			n.AppendChild(cloneNode(c))
-		}
-	}
-	return s
-}
-
 // Get the first child that is an ElementNode
 func getFirstChildEl(n *html.Node) *html.Node {
 	c := n.FirstChild
@@ -658,22 +646,27 @@ func (s *Selection) manipulateNodes(ns []*html.Node, reverse bool,
 	return s
 }
 
-func (s *Selection) eachNodeHtml(htmlStr string, parent bool, fn func(n *html.Node, nodes []*html.Node)) *Selection {
-	nodesMap := make(map[html.NodeType][]*html.Node)
+// eachNodeHtml parses the given html string and inserts the resulting nodes in the dom with the mergeFn.
+// The parsed nodes are inserted for each element of the selection.
+// isParent can be used to indicate that the elements of the selection should be treated as the parent for the parsed html.
+// A cache is used to avoid parsing the html multiple times should the elements of the selection result in the same context.
+func (s *Selection) eachNodeHtml(htmlStr string, isParent bool, mergeFn func(n *html.Node, nodes []*html.Node)) *Selection {
+	// cache to avoid parsing the html for the same context multiple times
+	nodeCache := make(map[string][]*html.Node)
 	var context *html.Node
 	for _, n := range s.Nodes {
-		if parent {
+		if isParent {
 			context = n.Parent
 		} else {
 			context = n
 		}
 		if context != nil {
-			nodes, found := nodesMap[context.Type]
+			nodes, found := nodeCache[nodeName(context)]
 			if !found {
 				nodes = parseHtmlWithContext(htmlStr, context)
-				nodesMap[context.Type] = nodes
+				nodeCache[nodeName(context)] = nodes
 			}
-			fn(n, cloneNodes(nodes))
+			mergeFn(n, cloneNodes(nodes))
 		}
 	}
 	return s

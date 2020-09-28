@@ -57,9 +57,19 @@ func TestAfterHtml(t *testing.T) {
 }
 
 func TestAfterHtmlContext(t *testing.T) {
-	doc := DocBClone()
+	doc := loadString(`
+		<html>
+			<body>
+				<table>
+					<tr>
+						<td>Before</td>
+					</tr
+				</table>
+			</body>
+		</html>`,
+		t)
 	doc.Find("table tr td").AfterHtml("<td>Test</td>")
-	assertLength(t, doc.Find("table tr td").Nodes, 14)
+	assertLength(t, doc.Find("table tr td").Nodes, 2)
 	printSel(t, doc.Selection)
 }
 
@@ -121,11 +131,21 @@ func TestAppendHtml(t *testing.T) {
 }
 
 func TestAppendHtmlContext(t *testing.T) {
-	doc := DocBClone()
+	doc := loadString(`
+		<html>
+			<body>
+				<table>
+					<tr>
+						<td>Before</td>
+					</tr
+				</table>
+			</body>
+		</html>`,
+		t)
 	doc.Find("table tr").AppendHtml("<td class='new-node'>new node</td>")
 
-	assertLength(t, doc.Find("table td").Nodes, 11)
-	assertLength(t, doc.Find("table tr td.new-node:last-child").Nodes, 4)
+	assertLength(t, doc.Find("table td").Nodes, 2)
+	assertClass(t, doc.Find("table td").Last(), "new-node")
 	printSel(t, doc.Selection)
 }
 
@@ -168,10 +188,20 @@ func TestBeforeHtml(t *testing.T) {
 }
 
 func TestBeforeHtmlContext(t *testing.T) {
-	doc := DocBClone()
+	doc := loadString(`
+		<html>
+			<body>
+				<table>
+					<tr>
+						<td>Before</td>
+					</tr
+				</table>
+			</body>
+		</html>`,
+		t)
 	doc.Find("table tr td:first-child").BeforeHtml("<td class='new-node'>new node</td>")
 
-	assertLength(t, doc.Find("table td.new-node:first-child").Nodes, 3)
+	assertClass(t, doc.Find("table td").First(), "new-node")
 	printSel(t, doc.Selection)
 }
 
@@ -243,11 +273,21 @@ func TestPrependHtml(t *testing.T) {
 }
 
 func TestPrependHtmlContext(t *testing.T) {
-	doc := DocBClone()
+	doc := loadString(`
+		<html>
+			<body>
+				<table>
+					<tr>
+						<td>Before</td>
+					</tr
+				</table>
+			</body>
+		</html>`,
+		t)
 	doc.Find("table tr").PrependHtml("<td class='new-node'>new node</td>")
 
-	assertLength(t, doc.Find("table td").Nodes, 11)
-	assertLength(t, doc.Find("table tr td.new-node:first-child").Nodes, 4)
+	assertLength(t, doc.Find("table td").Nodes, 2)
+	assertClass(t, doc.Find("table tr td").First(), "new-node")
 	printSel(t, doc.Selection)
 }
 
@@ -312,11 +352,21 @@ func TestReplaceWithHtml(t *testing.T) {
 }
 
 func TestReplaceWithHtmlContext(t *testing.T) {
-	doc := DocBClone()
+	doc := loadString(`
+		<html>
+			<body>
+				<table>
+					<tr>
+						<th>Before</th>
+					</tr
+				</table>
+			</body>
+		</html>`,
+		t)
 	doc.Find("table th").ReplaceWithHtml("<td>Test</td><td>Replace</td>")
 
 	assertLength(t, doc.Find("table th").Nodes, 0)
-	assertLength(t, doc.Find("table tr:first-child td").Nodes, 6)
+	assertLength(t, doc.Find("table tr td").Nodes, 2)
 	printSel(t, doc.Selection)
 }
 
@@ -356,11 +406,21 @@ func TestSetHtmlEmpty(t *testing.T) {
 }
 
 func TestSetHtmlContext(t *testing.T) {
-	doc := DocBClone()
+	doc := loadString(`
+		<html>
+			<body>
+				<table>
+					<tr>
+						<th>Before</th>
+					</tr
+				</table>
+			</body>
+		</html>`,
+		t)
 	doc.Find("table tr").SetHtml("<td class='new-node'>Test</td>")
 
 	assertLength(t, doc.Find("table th").Nodes, 0)
-	assertLength(t, doc.Find("table td.new-node").Nodes, 4)
+	assertLength(t, doc.Find("table td.new-node").Nodes, 1)
 	printSel(t, doc.Selection)
 }
 
@@ -561,4 +621,54 @@ func TestWrapInnerHtml(t *testing.T) {
 	assertLength(t, foot.Nodes, 1)
 
 	printSel(t, doc.Selection)
+}
+
+func TestParsingRespectsVaryingContext(t *testing.T) {
+	docA := loadString(`
+	<html>
+		<body>
+			<a class="x"></a>
+		</body>
+	</html>`,
+	t)
+	docTable := loadString(`
+	<html>
+		<body>
+			<table class="x"></table>
+		</body>
+	</html>`,
+	t)
+	docBoth := loadString(`
+	<html>
+		<body>
+			<table class="x"></table>
+			<a class="x"></a>
+		</body>
+	</html>`,
+	t)
+
+	sA := docA.Find(".x").AppendHtml("<tr><td>Hello</td></tr>")
+	sTable := docTable.Find(".x").AppendHtml("<tr><td>Hello</td></tr>")
+	sBoth := docBoth.Find(".x").AppendHtml("<tr><td>Hello</td></tr>")
+
+	oA, _ := sA.Html()
+	oTable, _ := sTable.Html()
+
+	if oA == oTable {
+		t.Errorf("Expected inner html of <a> and <table> to not be equal, but got %s and %s", oA, oTable)
+	}
+
+	oBothTable, _ := sBoth.First().Html()
+	if oBothTable != oTable {
+		t.Errorf("Expected inner html of <table> and <table> in doc containing both tags to be equal, but got %s and %s",
+			oTable,
+			oBothTable)
+	}
+
+	oBothA, _ := sBoth.Last().Html()
+	if oBothA != oA {
+		t.Errorf("Expected inner html of <a> and <a> in doc containing both tags to be equal, but got %s and %s",
+			oA,
+			oBothA)
+	}
 }

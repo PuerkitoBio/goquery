@@ -53,10 +53,6 @@ func DocB() *Document {
 	return docB
 }
 
-func DocBClone() *Document {
-	return CloneDocument(DocB())
-}
-
 func DocW() *Document {
 	if docW == nil {
 		docW = loadDoc("gowiki.html")
@@ -123,6 +119,14 @@ func loadDoc(page string) *Document {
 		panic(e.Error())
 	}
 	return NewDocumentFromNode(node)
+}
+
+func loadString(doc string, t *testing.T) *Document {
+	d, err := NewDocumentFromReader(strings.NewReader(doc))
+	if err != nil {
+		t.Error("Failed to parse test document")
+	}
+	return d
 }
 
 func TestNewDocument(t *testing.T) {
