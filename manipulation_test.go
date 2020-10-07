@@ -434,7 +434,7 @@ func TestSetHtmlContext(t *testing.T) {
 
 	assertLength(t, doc.Find("table th").Nodes, 0)
 	assertLength(t, doc.Find("table td").Nodes, 4)
-	assertLength(t, doc.Find("table t2").Nodes, 2)
+	assertLength(t, doc.Find("table tr").Nodes, 2)
 	printSel(t, doc.Selection)
 }
 

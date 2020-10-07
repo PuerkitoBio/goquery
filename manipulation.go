@@ -202,8 +202,9 @@ func (s *Selection) PrependSelection(sel *Selection) *Selection {
 // PrependHtml parses the html and prepends it to the set of matched elements.
 func (s *Selection) PrependHtml(htmlStr string) *Selection {
 	return s.eachNodeHtml(htmlStr, false, func(node *html.Node, nodes []*html.Node) {
+		firstChild := node.FirstChild
 		for _, n := range nodes {
-			node.InsertBefore(n, node.FirstChild)
+			node.InsertBefore(n, firstChild)
 		}
 	})
 }
@@ -283,9 +284,10 @@ func (s *Selection) ReplaceWithSelection(sel *Selection) *Selection {
 // This follows the same rules as Selection.Append.
 func (s *Selection) ReplaceWithHtml(htmlStr string) *Selection {
 	s.eachNodeHtml(htmlStr, true, func(node *html.Node, nodes []*html.Node) {
+		nextSibling := node.NextSibling
 		for _, n := range nodes {
 			if node.Parent != nil {
-				node.Parent.InsertBefore(n, node.NextSibling)
+				node.Parent.InsertBefore(n, nextSibling)
 			}
 		}
 	})
@@ -310,7 +312,7 @@ func (s *Selection) SetHtml(htmlStr string) *Selection {
 			context.RemoveChild(c)
 		}
 	}
-	return s.eachNodeHtml(htmlStr, true, func(node *html.Node, nodes []*html.Node) {
+	return s.eachNodeHtml(htmlStr, false, func(node *html.Node, nodes []*html.Node) {
 		for _, n := range nodes {
 			node.AppendChild(n)
 		}
@@ -371,7 +373,7 @@ func (s *Selection) WrapSelection(sel *Selection) *Selection {
 //
 // It returns the original set of elements.
 func (s *Selection) WrapHtml(htmlStr string) *Selection {
-	nodesMap := make(map[html.NodeType][]*html.Node)
+	nodesMap := make(map[string][]*html.Node)
 	for _, context := range s.Nodes {
 		var parent *html.Node
 		if context.Parent != nil {
@@ -379,10 +381,10 @@ func (s *Selection) WrapHtml(htmlStr string) *Selection {
 		} else {
 			parent = &html.Node{Type: html.ElementNode}
 		}
-		nodes, found := nodesMap[parent.Type]
+		nodes, found := nodesMap[nodeName(parent)]
 		if !found {
 			nodes = parseHtmlWithContext(htmlStr, parent)
-			nodesMap[parent.Type] = nodes
+			nodesMap[nodeName(parent)] = nodes
 		}
 		newSingleSelection(context, s.document).wrapAllNodes(cloneNodes(nodes)...)
 	}
@@ -519,12 +521,12 @@ func (s *Selection) WrapInnerSelection(sel *Selection) *Selection {
 //
 // It returns the original set of elements.
 func (s *Selection) WrapInnerHtml(htmlStr string) *Selection {
-	nodesMap := make(map[html.NodeType][]*html.Node)
+	nodesMap := make(map[string][]*html.Node)
 	for _, context := range s.Nodes {
-		nodes, found := nodesMap[context.Type]
+		nodes, found := nodesMap[nodeName(context)]
 		if !found {
 			nodes = parseHtmlWithContext(htmlStr, context)
-			nodesMap[context.Type] = nodes
+			nodesMap[nodeName(context)] = nodes
 		}
 		newSingleSelection(context, s.document).wrapInnerNodes(cloneNodes(nodes)...)
 	}
