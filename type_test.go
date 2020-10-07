@@ -121,7 +121,7 @@ func loadDoc(page string) *Document {
 	return NewDocumentFromNode(node)
 }
 
-func loadString(doc string, t *testing.T) *Document {
+func loadString(t *testing.T, doc string) *Document {
 	d, err := NewDocumentFromReader(strings.NewReader(doc))
 	if err != nil {
 		t.Error("Failed to parse test document")

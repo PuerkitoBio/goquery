@@ -372,8 +372,8 @@ func (s *Selection) WrapSelection(sel *Selection) *Selection {
 // It returns the original set of elements.
 func (s *Selection) WrapHtml(htmlStr string) *Selection {
 	nodesMap := make(map[html.NodeType][]*html.Node)
-	var parent *html.Node
 	for _, context := range s.Nodes {
+		var parent *html.Node
 		if context.Parent != nil {
 			parent = context.Parent
 		} else {
