@@ -121,6 +121,14 @@ func loadDoc(page string) *Document {
 	return NewDocumentFromNode(node)
 }
 
+func loadString(t *testing.T, doc string) *Document {
+	d, err := NewDocumentFromReader(strings.NewReader(doc))
+	if err != nil {
+		t.Error("Failed to parse test document")
+	}
+	return d
+}
+
 func TestNewDocument(t *testing.T) {
 	if f, e := os.Open("./testdata/page.html"); e != nil {
 		t.Error(e.Error())
