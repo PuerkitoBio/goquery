@@ -70,8 +70,9 @@ func TestAfterHtmlContext(t *testing.T) {
 				</table>
 			</body>
 		</html>`)
-	doc.Find("table tr td").AfterHtml("<td>Test</td>")
-	assertLength(t, doc.Find("table tr td").Nodes, 4)
+	doc.Find("table tr td").AfterHtml("<td class='c1'>Test</td><td class='c2'>Again</td>")
+	assertLength(t, doc.Find("table tr td").Nodes, 6)
+	assertClass(t, doc.Find("table tr td").Last(), "c2")
 	printSel(t, doc.Selection)
 }
 
@@ -146,10 +147,10 @@ func TestAppendHtmlContext(t *testing.T) {
 				</table>
 			</body>
 		</html>`)
-	doc.Find("table tr").AppendHtml("<td class='new-node'>new node</td>")
+	doc.Find("table tr").AppendHtml("<td class='c1'>new1</td><td class='c2'>new2</td>")
 
-	assertLength(t, doc.Find("table td").Nodes, 4)
-	assertClass(t, doc.Find("table td").Last(), "new-node")
+	assertLength(t, doc.Find("table td").Nodes, 6)
+	assertClass(t, doc.Find("table td").Last(), "c2")
 	printSel(t, doc.Selection)
 }
 
@@ -205,10 +206,10 @@ func TestBeforeHtmlContext(t *testing.T) {
 				</table>
 			</body>
 		</html>`)
-	doc.Find("table tr td:first-child").BeforeHtml("<td class='new-node'>new node</td>")
+	doc.Find("table tr td:first-child").BeforeHtml("<td class='c1'>new1</td><td class='c2'>new2</td>")
 
-	assertLength(t, doc.Find("table td").Nodes, 4)
-	assertClass(t, doc.Find("table td").First(), "new-node")
+	assertLength(t, doc.Find("table td").Nodes, 6)
+	assertClass(t, doc.Find("table td").First(), "c1")
 	printSel(t, doc.Selection)
 }
 
@@ -374,10 +375,11 @@ func TestReplaceWithHtmlContext(t *testing.T) {
 				</table>
 			</body>
 		</html>`)
-	doc.Find("table th").ReplaceWithHtml("<td>Test</td><td>Replace</td>")
+	doc.Find("table th").ReplaceWithHtml("<td class='c1'>Test</td><td class='c2'>Replace</td>")
 
 	assertLength(t, doc.Find("table th").Nodes, 0)
 	assertLength(t, doc.Find("table tr td").Nodes, 4)
+	assertClass(t, doc.Find("table tr td").First(), "c1")
 	printSel(t, doc.Selection)
 }
 

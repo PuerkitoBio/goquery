@@ -41,9 +41,10 @@ func (s *Selection) AfterSelection(sel *Selection) *Selection {
 // This follows the same rules as Selection.Append.
 func (s *Selection) AfterHtml(htmlStr string) *Selection {
 	return s.eachNodeHtml(htmlStr, true, func(node *html.Node, nodes []*html.Node) {
+		nextSibling := node.NextSibling
 		for _, n := range nodes {
 			if node.Parent != nil {
-				node.Parent.InsertBefore(n, node.NextSibling)
+				node.Parent.InsertBefore(n, nextSibling)
 			}
 		}
 	})
