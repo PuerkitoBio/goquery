@@ -3,6 +3,8 @@ package goquery
 import (
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFind(t *testing.T) {
@@ -34,6 +36,104 @@ func TestFindBig(t *testing.T) {
 	assertLength(t, sel2.Nodes, 448)
 	sel3 := sel.FindSelection(sel2)
 	assertLength(t, sel3.Nodes, 248)
+}
+
+func TestFindParent(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader(`
+	<html a="0" b="0">
+		<div a="1" b="1">
+			<div a="2" b=2>
+				<a href="abc">
+					<div a="3" b="3">mylink</div>
+				</a>
+			</div>
+		</div>
+	</htnl>
+	`))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Move to the a-tag.
+	link := doc.Find("a")
+	if !assert.Equal(t, 1, len(link.Nodes), "wrong number of elements") {
+		t.Fail()
+	}
+
+	// Run test.
+	gotDiv := link.FindParent("[a='1']")
+
+	// Check result.
+	if !assert.Equal(t, "1", gotDiv.AttrOr("b", "")) {
+		t.Fail()
+	}
+
+	html := doc.Find("html")
+	if !assert.Equal(t, 1, len(html.Nodes)) {
+		t.Fail()
+	}
+
+	gotHopefullyEmpty := html.FindParent("div")
+	if !assert.Equal(t, 0, len(gotHopefullyEmpty.Nodes),
+		"findParent on outermost html-tag should return empty because there is no parent with a possible selector matching",
+	) {
+		t.Errorf("findParent(html, \"div\":\nwant: empty\n got: %v",
+			*gotHopefullyEmpty,
+		)
+		t.Fail()
+	}
+}
+
+func TestFindPrevious(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader(`
+	<html a="0" b="0">
+		<div a="4" b="4">
+			<div a="1" b="1"></div>
+			<div a="2" b="2"></div>
+			<div a="3" b="3"></div>
+		</div>
+	</htnl>
+	`))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	div1 := doc.Find("div[a='1']")
+	if !assert.Equal(t, 1, len(div1.Nodes), "wrong number of elements") {
+		t.Fail()
+	}
+
+	gotHopefullyEmpty := div1.FindPrevious("div")
+	if !assert.Equal(t, 0, len(gotHopefullyEmpty.Nodes)) {
+		t.Fail()
+	}
+
+	div2 := doc.Find("div[a='2']")
+	if !assert.Equal(t, 1, len(div2.Nodes), "wrong number of elements") {
+		t.Fail()
+	}
+
+	got := div2.FindPrevious("div")
+	if !assert.Equal(t, 1, len(got.Nodes)) ||
+		!assert.Equal(t, "1", got.AttrOr("b", "")) {
+		t.Fail()
+	}
+
+	div3 := doc.Find("div[a='3']")
+	if !assert.Equal(t, 1, len(div3.Nodes), "wrong number of elements") {
+		t.Fail()
+	}
+
+	got = div3.FindPrevious("div[a='1']")
+	if !assert.Equal(t, 1, len(got.Nodes)) ||
+		!assert.Equal(t, "1", got.AttrOr("b", "")) {
+		t.Fail()
+	}
+
+	got = div3.FindPrevious("div[a='4']")
+	if !assert.Equal(t, 0, len(got.Nodes)) {
+		t.Fail()
+	}
 }
 
 func TestChainedFind(t *testing.T) {

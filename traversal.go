@@ -53,6 +53,44 @@ func (s *Selection) FindNodes(nodes ...*html.Node) *Selection {
 	}))
 }
 
+// FindParent traverses from parent to parent of s until it finds
+// a matching parent or there is no parent anymore,
+// in which case an empty selection is returned.
+func (s *Selection) FindParent(selector string) *Selection {
+	parent := s.Parent()
+
+	for {
+		if len(parent.Nodes) == 0 {
+			return &Selection{}
+		}
+
+		if parent.Is(selector) {
+			return parent
+		}
+
+		parent = parent.Parent()
+	}
+}
+
+// FindPrevious traverses from previous to previous until it finds
+// a matching previous selection or there is no previous node anymore,
+// in which case an empty selection is returend.
+func (s *Selection) FindPrevious(selector string) *Selection {
+	previous := s.Prev()
+
+	for {
+		if len(previous.Nodes) == 0 {
+			return &Selection{}
+		}
+
+		if previous.Is(selector) {
+			return previous
+		}
+
+		previous = previous.Prev()
+	}
+}
+
 // Contents gets the children of each element in the Selection,
 // including text and comment nodes. It returns a new Selection object
 // containing these elements.
