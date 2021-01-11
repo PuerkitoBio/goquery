@@ -572,6 +572,12 @@ func parseHtml(h string) []*html.Node {
 }
 
 func parseHtmlWithContext(h string, context *html.Node) []*html.Node {
+
+	// Avoid issue where h is <p></p> and a panic is thrown
+	if context != nil && context.Type != html.ElementNode {
+		return []*html.Node{context}
+	}
+
 	// Errors are only returned when the io.Reader returns any error besides
 	// EOF, but strings.Reader never will
 	nodes, err := html.ParseFragment(strings.NewReader(h), context)
