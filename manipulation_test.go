@@ -1,6 +1,7 @@
 package goquery
 
 import (
+	"log"
 	"testing"
 )
 
@@ -687,5 +688,52 @@ func TestParsingRespectsVaryingContext(t *testing.T) {
 		t.Errorf("Expected inner html of <a> and <a> in doc containing both tags to be equal, but got %s and %s",
 			oA,
 			oBothA)
+	}
+}
+
+func TestHtmlWithNonElementNode(t *testing.T) {
+	const data = `
+<html>
+  <head>
+  </head>
+  <body>
+    <p>
+      This is <span>some</span><b>text</b>.
+    </p>
+  </body>
+</html>
+`
+
+	cases := map[string]func(*Selection, string) *Selection{
+		"AfterHtml":       (*Selection).AfterHtml,
+		"AppendHtml":      (*Selection).AppendHtml,
+		"BeforeHtml":      (*Selection).BeforeHtml,
+		"PrependHtml":     (*Selection).PrependHtml,
+		"ReplaceWithHtml": (*Selection).ReplaceWithHtml,
+		"SetHtml":         (*Selection).SetHtml,
+	}
+	for nm, fn := range cases {
+		// this test is only to make sure that the HTML parsing/manipulation
+		// methods do not raise panics when executed over Selections that contain
+		// non-Element nodes.
+		t.Run(nm, func(t *testing.T) {
+			doc := loadString(t, data)
+			sel := doc.Find("p").Contents()
+			func() {
+				defer func() {
+					if err := recover(); err != nil {
+						t.Fatal(err)
+					}
+				}()
+				fn(sel, "<div></div>")
+			}()
+
+			// print the resulting document in verbose mode
+			h, err := OuterHtml(doc.Selection)
+			if err != nil {
+				log.Fatal(err)
+			}
+			t.Log(h)
+		})
 	}
 }
