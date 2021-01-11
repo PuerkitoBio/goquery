@@ -2,6 +2,8 @@ package goquery
 
 import (
 	"testing"
+
+	"golang.org/x/net/html"
 )
 
 const (
@@ -688,4 +690,23 @@ func TestParsingRespectsVaryingContext(t *testing.T) {
 			oA,
 			oBothA)
 	}
+}
+
+func TestParseHtmlWithContext(t *testing.T) {
+	h := "<p></p>"
+	context := &html.Node{
+		Type: html.TextNode,
+		Data: "<p></p>",
+	}
+	out := []*html.Node{context}
+	res := parseHtmlWithContext(h, context)
+	if len(out) != 1 && len(res) != 1 {
+		t.Errorf("Expected results to only have one entry")
+	}
+
+	if out[0] != res[0] {
+		t.Errorf("Expected values to be the same %v, %v",
+			out[0], res[0])
+	}
+
 }
