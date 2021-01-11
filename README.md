@@ -37,6 +37,7 @@ Please note that because of the net/html dependency, goquery requires Go1.1+.
 
 **Note that goquery's API is now stable, and will not break.**
 
+*    **2021-01-11 (v1.6.1)** : Fix panic when calling `{Prepend,Append,Set}Html` on a `Selection` that contains non-Element nodes.
 *    **2020-10-08 (v1.6.0)** : Parse html in context of the container node for all functions that deal with html strings (`AfterHtml`, `AppendHtml`, etc.). Thanks to [@thiemok][thiemok] and [@davidjwilkins][djw] for their work on this.
 *    **2020-02-04 (v1.5.1)** : Update module dependencies.
 *    **2018-11-15 (v1.5.0)** : Go module support (thanks @Zaba505).
