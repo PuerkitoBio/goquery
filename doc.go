@@ -43,7 +43,7 @@ Go's fmt package), even though some of its methods are less than intuitive (look
 at you, index()...).
 
 It is hosted on GitHub, along with additional documentation in the README.md
-file: https://github.com/puerkitobio/goquery
+file: https://github.com/fresh8/goquery
 
 Please note that because of the net/html dependency, goquery requires Go1.1+.
 

@@ -456,4 +456,4 @@ bench_traversal_test.go:715: 	ClosestNodes=2
 bench_traversal_test.go:715: 	ClosestNodes=2
 bench_traversal_test.go:715: 	ClosestNodes=2
 bench_traversal_test.go:715: 	ClosestNodes=2
-ok  	github.com/PuerkitoBio/goquery	192.541s
+ok  	github.com/fresh8/goquery	192.541s

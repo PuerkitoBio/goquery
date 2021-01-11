@@ -433,4 +433,4 @@ BenchmarkPrevFilteredUntilNodes	   10000	    150584 ns/op
 	bench_traversal_test.go:665: PrevFilteredUntilNodes=20
 	bench_traversal_test.go:665: PrevFilteredUntilNodes=20
 	bench_traversal_test.go:665: PrevFilteredUntilNodes=20
-ok  	github.com/PuerkitoBio/goquery	188.326s
+ok  	github.com/fresh8/goquery	188.326s
