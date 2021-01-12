@@ -1,0 +1,20 @@
+image: fedora/latest
+packages:
+  - git
+  - go
+sources:
+  - https://github.com/PuerkitoBio/goquery
+tasks:
+  - go1_2: |
+    cd goquery
+    go get golang.org/dl/go1.2.2
+    go1.2.2 download
+    go1.2.2 version
+    go1.2.2 test -v
+
+  - go1_3: |
+    cd goquery
+    go get golang.org/dl/go1.3.3
+    go1.3.3 download
+    go1.3.3 version
+    go1.3.3 test -v
