@@ -1,6 +1,7 @@
 package goquery
 
 import (
+	"bytes"
 	"reflect"
 	"sort"
 	"strings"
@@ -120,6 +121,58 @@ func TestOuterHtml(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+
+		if got != c.want {
+			t.Errorf("%d: want %q, got %q", i, c.want, got)
+		}
+	}
+}
+
+func TestRender(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader(allNodes))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	n0 := doc.Nodes[0]
+	nDT := n0.FirstChild
+	sMeta := doc.Find("meta")
+	sP := doc.Find("p")
+	nP := sP.Get(0)
+	nComment := nP.FirstChild
+	nText := nComment.NextSibling
+	sHeaders := doc.Find(".header")
+	sEmpty := doc.Find(".empty")
+
+	cases := []struct {
+		node *html.Node
+		sel  *Selection
+		want string
+	}{
+		{nDT, nil, "<!DOCTYPE html>"}, // render makes DOCTYPE all caps
+		{nil, sMeta, `<meta a="b"/>`}, // and auto-closes the meta
+		{nil, sP, `<p><!-- this is a comment -->
+		This is some text.
+		</p>`},
+		{nComment, nil, "<!-- this is a comment -->"},
+		{nText, nil, `
+		This is some text.
+		`},
+		{nil, sHeaders, `<h1 class="header"></h1>`},
+		{nil, sEmpty, ""}, // empty selection
+	}
+	for i, c := range cases {
+		if c.sel == nil {
+			c.sel = newSingleSelection(c.node, doc)
+		}
+
+		buf := &bytes.Buffer{}
+
+		err := Render(buf, c.sel)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := buf.String()
 
 		if got != c.want {
 			t.Errorf("%d: want %q, got %q", i, c.want, got)
