@@ -10,10 +10,8 @@ import (
 	"golang.org/x/net/html"
 )
 
-var allNodes = `<!doctype html>
-<html>
-	<head>
-		<meta a="b">
+const allNodes = `<!DOCTYPE html><html><head>
+		<meta a="b"/>
 	</head>
 	<body>
 		<p><!-- this is a comment -->
@@ -22,8 +20,7 @@ var allNodes = `<!doctype html>
 		<div></div>
 		<h1 class="header"></h1>
 		<h2 class="header"></h2>
-	</body>
-</html>`
+</body></html>`
 
 func TestNodeName(t *testing.T) {
 	doc, err := NewDocumentFromReader(strings.NewReader(allNodes))
@@ -143,6 +140,7 @@ func TestRender(t *testing.T) {
 	nText := nComment.NextSibling
 	sHeaders := doc.Find(".header")
 	sEmpty := doc.Find(".empty")
+	sFull := doc.Selection
 
 	cases := []struct {
 		node *html.Node
@@ -159,7 +157,8 @@ func TestRender(t *testing.T) {
 		This is some text.
 		`},
 		{nil, sHeaders, `<h1 class="header"></h1>`},
-		{nil, sEmpty, ""}, // empty selection
+		{nil, sEmpty, ""},      // empty selection
+		{nil, sFull, allNodes}, // full document selection
 	}
 	for i, c := range cases {
 		if c.sel == nil {
