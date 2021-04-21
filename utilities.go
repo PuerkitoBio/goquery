@@ -80,9 +80,9 @@ func OuterHtml(s *Selection) (string, error) {
 
 // Render renders first item in the selection (like in OuterHtml - that is,
 // the HTML including the first element's tag and attributes) to the given writer
-// by calling `html.Render`. In case of empty `s`, empty byte slice will be written.
+// by calling html.Render. In case of empty s, empty byte slice will be written.
 //
-// In order to render entire document, pass a `doc.Selection` as `s`.
+// In order to render entire document, pass a doc.Selection as s.
 func Render(w io.Writer, s *Selection) error {
 	if s.Length() == 0 {
 		_, err := w.Write([]byte{})
