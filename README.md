@@ -161,8 +161,9 @@ There are a number of ways you can support the project:
 * Pull requests: please discuss new code in an issue first, unless the fix is really trivial.
   - Make sure new code is tested.
   - Be mindful of existing code - PRs that break existing code have a high probability of being declined, unless it fixes a serious issue.
-
-If you desperately want to send money my way, I have a BuyMeACoffee.com page:
+* Sponsor the developer
+  - See the Github Sponsor button at the top of the repo on github
+  - or via BuyMeACoffee.com, below
 
 <a href="https://www.buymeacoffee.com/mna" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
