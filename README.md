@@ -123,12 +123,11 @@ func ExampleScrape() {
   }
 
   // Find the review items
-  doc.Find(".sidebar-reviews article .content-block").Each(func(i int, s *goquery.Selection) {
-    // For each item found, get the band and title
-    band := s.Find("a").Text()
-    title := s.Find("i").Text()
-    fmt.Printf("Review %d: %s - %s\n", i, band, title)
-  })
+  doc.Find(".left-content article .post-title").Each(func(i int, s *goquery.Selection) {
+		// For each item found, get the title
+		title := s.Find("a").Text()
+		fmt.Printf("Review %d: %s\n", i, title)
+	})
 }
 
 func main() {
