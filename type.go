@@ -124,9 +124,17 @@ type Matcher interface {
 // Single compiles a selector string to a Matcher that stops after the first
 // match is found.
 //
-// By default, Selection.Find and other functions that accept a selector string
-// will use all matches corresponding to that selector. By using the Matcher
-// returned by Single, at most the first match will be used.
+// By default, Selection.Find and other functions that accept a selector
+// string to find nodes will use all matches corresponding to that selector.
+// By using the Matcher returned by Single, at most the first match will be
+// used.
+//
+// Note that the single-selection property of the Matcher only applies for
+// methods where the Matcher is used to select nodes, not to filter or check
+// if a node matches the Matcher - in those cases, the behaviour of the
+// Matcher is unchanged (e.g. FilterMatcher(Single("div")) will still result
+// in a Selection with multiple "div"s if there were many "div"s in the
+// Selection to begin with).
 func Single(selector string) Matcher {
 	return singleMatcher{compileMatcher(selector)}
 }
@@ -134,9 +142,7 @@ func Single(selector string) Matcher {
 // SingleMatcher returns a Matcher matches the same nodes as m, but that stops
 // after the first match is found.
 //
-// By default, Selection.FindMatcher and other functions that accept a Matcher
-// will use all corresponding matches. By using the Matcher returned by
-// SingleMatcher, at most the first match will be used.
+// See the documentation of function Single for more details.
 func SingleMatcher(m Matcher) Matcher {
 	if _, ok := m.(singleMatcher); ok {
 		// m is already a singleMatcher

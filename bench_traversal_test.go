@@ -2,6 +2,8 @@ package goquery
 
 import (
 	"testing"
+
+	"github.com/andybalholm/cascadia"
 )
 
 func BenchmarkFind(b *testing.B) {
@@ -799,4 +801,22 @@ func BenchmarkClosestNodes(b *testing.B) {
 	if n != 2 {
 		b.Fatalf("want 2, got %d", n)
 	}
+}
+
+func BenchmarkSingleMatcher(b *testing.B) {
+	doc := Doc()
+	multi := cascadia.MustCompile(`div`)
+	single := SingleMatcher(multi)
+	b.ResetTimer()
+
+	b.Run("multi", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = doc.FindMatcher(multi)
+		}
+	})
+	b.Run("single", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = doc.FindMatcher(single)
+		}
+	})
 }
