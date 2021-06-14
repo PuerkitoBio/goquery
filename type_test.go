@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/andybalholm/cascadia"
 	"golang.org/x/net/html"
 )
 
@@ -207,4 +208,48 @@ func TestIssue103(t *testing.T) {
 		t.Logf("%d: %d - %q\n", i, r, string(r))
 	}
 	t.Log(text)
+}
+
+func TestSingle(t *testing.T) {
+	data := `
+<html>
+  <body>
+    <div class="b">1</div>
+    <div class="a">2</div>
+    <div class="a">3</div>
+    <p class="b">4</p>
+  </body>
+</html>
+`
+	doc, err := NewDocumentFromReader(strings.NewReader(data))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	text := doc.FindMatcher(Single("div")).Text()
+	if text != "1" {
+		t.Fatalf("want %q, got %q", "1", text)
+	}
+
+	// Verify semantic equivalence
+	sel1 := doc.Find("div").First()
+	sel2 := doc.FindMatcher(Single("div"))
+	if sel1.Text() != sel2.Text() {
+		t.Fatalf("want sel1 to equal sel2")
+	}
+
+	// Here, the Single has no effect as the selector is used to filter
+	// from the existing selection, not to find nodes in the document.
+	divs := doc.Find("div")
+	text = divs.FilterMatcher(Single(".a")).Text()
+	if text != "23" {
+		t.Fatalf("want %q, got %q", "23", text)
+	}
+
+	classA := cascadia.MustCompile(".a")
+	classB := cascadia.MustCompile(".b")
+	text = doc.FindMatcher(classB).AddMatcher(SingleMatcher(classA)).Text()
+	if text != "142" {
+		t.Fatalf("want %q, got %q", "142", text)
+	}
 }

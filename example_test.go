@@ -80,3 +80,31 @@ func ExampleNewDocumentFromReader_string() {
 
 	// Output: Header
 }
+
+func ExampleSingle() {
+	html := `
+<html>
+  <body>
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+  </body>
+</html>
+`
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// By default, the selector string selects all matching nodes
+	multiSel := doc.Find("div")
+	fmt.Println(multiSel.Text())
+
+	// Using goquery.Single, only the first match is selected
+	singleSel := doc.FindMatcher(goquery.Single("div"))
+	fmt.Println(singleSel.Text())
+
+	// Output:
+	// 123
+	// 1
+}
