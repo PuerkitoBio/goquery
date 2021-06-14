@@ -231,6 +231,13 @@ func TestSingle(t *testing.T) {
 		t.Fatalf("want %q, got %q", "1", text)
 	}
 
+	// Verify semantic equivalence
+	sel1 := doc.Find("div").First()
+	sel2 := doc.FindMatcher(Single("div"))
+	if sel1.Text() != sel2.Text() {
+		t.Fatalf("want sel1 to equal sel2")
+	}
+
 	// Here, the Single has no effect as the selector is used to filter
 	// from the existing selection, not to find nodes in the document.
 	divs := doc.Find("div")

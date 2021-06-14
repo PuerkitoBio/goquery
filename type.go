@@ -124,17 +124,26 @@ type Matcher interface {
 // Single compiles a selector string to a Matcher that stops after the first
 // match is found.
 //
-// By default, Selection.Find and other functions that accept a selector
-// string to find nodes will use all matches corresponding to that selector.
-// By using the Matcher returned by Single, at most the first match will be
-// used.
+// By default, Selection.Find and other functions that accept a selector string
+// to select nodes will use all matches corresponding to that selector. By
+// using the Matcher returned by Single, at most the first match will be
+// selected.
 //
-// Note that the single-selection property of the Matcher only applies for
-// methods where the Matcher is used to select nodes, not to filter or check
-// if a node matches the Matcher - in those cases, the behaviour of the
-// Matcher is unchanged (e.g. FilterMatcher(Single("div")) will still result
-// in a Selection with multiple "div"s if there were many "div"s in the
-// Selection to begin with).
+// For example, those two statements are semantically equivalent:
+//
+//     sel1 := doc.Find("a").First()
+//     sel2 := doc.FindMatcher(goquery.Single("a"))
+//
+// The one using Single is optimized to be potentially much faster on large
+// documents.
+//
+// Only the behaviour of the MatchAll method of the Matcher interface is
+// altered compared to standard Matchers. This means that the single-selection
+// property of the Matcher only applies for Selection methods where the Matcher
+// is used to select nodes, not to filter or check if a node matches the
+// Matcher - in those cases, the behaviour of the Matcher is unchanged (e.g.
+// FilterMatcher(Single("div")) will still result in a Selection with multiple
+// "div"s if there were many "div"s in the Selection to begin with).
 func Single(selector string) Matcher {
 	return singleMatcher{compileMatcher(selector)}
 }
