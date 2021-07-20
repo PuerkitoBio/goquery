@@ -37,3 +37,13 @@ func (s *Selection) Map(f func(int, *Selection) string) (result []string) {
 
 	return result
 }
+
+// GetSingleSelectionList iterates over a Selection object and returns all
+// matched elements as a slice of single-element Selection.
+func (s *Selection) GetSingleSelectionList() []*Selection {
+	list := make([]*Selection, len(s.Nodes))
+	for i, n := range s.Nodes {
+		list[i] = newSingleSelection(n, s.document)
+	}
+	return list
+}

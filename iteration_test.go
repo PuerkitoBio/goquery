@@ -86,3 +86,29 @@ func TestForRange(t *testing.T) {
 		t.Errorf("expected initial selection to still have length %d, got %d", initLen, sel.Length())
 	}
 }
+
+func TestGetSingleSelectionList(t *testing.T) {
+	expectedValues := []string{"n1", "n2", "n3", "n4", "n5", "n6"}
+
+	sel := Doc2().Find("#main div")
+	result := sel.GetSingleSelectionList()
+
+	if len(result) != 6 {
+		t.Errorf("Expected GetSingleSelectionList result to have a length of 6, found %v.", len(result))
+	} else {
+		for i, s := range result {
+			if s.Length() != 1 {
+				t.Errorf("Expected result[%d] to contain only one selected element, got %d", i, s.Length())
+			}
+
+			value, exists := s.Attr("id")
+			if exists == false {
+				t.Fatalf("Expected result[%d]'s node to have \"id\" attribute", i)
+			}
+
+			if value != expectedValues[i] {
+				t.Errorf("Expected result[%d]'s node \"id\" attribute to be %q", i, expectedValues[i])
+			}
+		}
+	}
+}
