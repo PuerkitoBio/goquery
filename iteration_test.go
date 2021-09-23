@@ -6,6 +6,14 @@ import (
 	"golang.org/x/net/html"
 )
 
+func TestSelections(t *testing.T) {
+	sels := Doc().Find(".hero-unit .row-fluid").Selections()
+
+	if len(sels) != 4 {
+		t.Errorf("Expected Selections() to return 4 selections, got %v selections.", len(sels))
+	}
+}
+
 func TestEach(t *testing.T) {
 	var cnt int
 

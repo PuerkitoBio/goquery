@@ -1,5 +1,14 @@
 package goquery
 
+// Selections returns each element in the selection as Selection list
+func (s *Selection) Selections() []*Selection {
+	res := make([]*Selection, len(s.Nodes))
+	for i, n := range s.Nodes {
+		res[i] = newSingleSelection(n, s.document)
+	}
+	return res
+}
+
 // Each iterates over a Selection object, executing a function for each
 // matched element. It returns the current Selection object. The function
 // f is called for each element in the selection with the index of the
