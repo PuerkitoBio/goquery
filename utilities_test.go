@@ -24,6 +24,49 @@ var allNodes = `<!doctype html>
 	</body>
 </html>`
 
+func assertMatchNodes(t testing.TB, doc *Document) {
+	t.Helper()
+
+	n0 := doc.Nodes[0]
+	nDT := n0.FirstChild
+	sMeta := doc.Find("meta")
+	sP := doc.Find("p")
+	nP := sP.Get(0)
+	nComment := nP.FirstChild
+	nText := nComment.NextSibling
+	sHeaders := doc.Find(".header")
+
+	cases := []struct {
+		node *html.Node
+		sel  *Selection
+		want string
+	}{
+		{nDT, nil, "<!DOCTYPE html>"}, // render makes DOCTYPE all caps
+		{nil, sMeta, `<meta a="b"/>`}, // and auto-closes the meta
+		{nil, sP, `<p><!-- this is a comment -->
+		This is some text.
+		</p>`},
+		{nComment, nil, "<!-- this is a comment -->"},
+		{nText, nil, `
+		This is some text.
+		`},
+		{nil, sHeaders, `<h1 class="header"></h1>`},
+	}
+	for i, c := range cases {
+		if c.sel == nil {
+			c.sel = newSingleSelection(c.node, doc)
+		}
+		got, err := OuterHtml(c.sel)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if got != c.want {
+			t.Errorf("%d: want %q, got %q", i, c.want, got)
+		}
+	}
+}
+
 func TestNodeName(t *testing.T) {
 	doc, err := NewDocumentFromReader(strings.NewReader(allNodes))
 	if err != nil {
@@ -81,48 +124,18 @@ func TestNodeNameMultiSel(t *testing.T) {
 	}
 }
 
+func TestRender(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader(allNodes))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertMatchNodes(t, doc)
+}
+
 func TestOuterHtml(t *testing.T) {
 	doc, err := NewDocumentFromReader(strings.NewReader(allNodes))
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	n0 := doc.Nodes[0]
-	nDT := n0.FirstChild
-	sMeta := doc.Find("meta")
-	sP := doc.Find("p")
-	nP := sP.Get(0)
-	nComment := nP.FirstChild
-	nText := nComment.NextSibling
-	sHeaders := doc.Find(".header")
-
-	cases := []struct {
-		node *html.Node
-		sel  *Selection
-		want string
-	}{
-		{nDT, nil, "<!DOCTYPE html>"}, // render makes DOCTYPE all caps
-		{nil, sMeta, `<meta a="b"/>`}, // and auto-closes the meta
-		{nil, sP, `<p><!-- this is a comment -->
-		This is some text.
-		</p>`},
-		{nComment, nil, "<!-- this is a comment -->"},
-		{nText, nil, `
-		This is some text.
-		`},
-		{nil, sHeaders, `<h1 class="header"></h1>`},
-	}
-	for i, c := range cases {
-		if c.sel == nil {
-			c.sel = newSingleSelection(c.node, doc)
-		}
-		got, err := OuterHtml(c.sel)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if got != c.want {
-			t.Errorf("%d: want %q, got %q", i, c.want, got)
-		}
-	}
+	assertMatchNodes(t, doc)
 }
