@@ -59,16 +59,13 @@ func nodeName(node *html.Node) string {
 }
 
 // Render renders the html of the first element from selector and writes it to the writer.
-// It behaves similar to OuterHtml but takes io.Writer as input.
+// // It behaves the same as OuterHtml but writes to w instead of returning the string.
 func Render(w io.Writer, s *Selection) error {
 	if s.Length() == 0 {
 		return nil
 	}
 	n := s.Get(0)
-	if err := html.Render(w, n); err != nil {
-		return err
-	}
-	return nil
+	return html.Render(w, n)
 }
 
 // OuterHtml returns the outer HTML rendering of the first item in
