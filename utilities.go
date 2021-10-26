@@ -58,8 +58,8 @@ func nodeName(node *html.Node) string {
 	}
 }
 
-// Render renders the html of the first element from selector and writes it to
-// the writer.  It behaves the same as OuterHtml but writes to w instead of
+// Render renders the HTML of the first item in the selection and writes it to
+// the writer. It behaves the same as OuterHtml but writes to w instead of
 // returning the string.
 func Render(w io.Writer, s *Selection) error {
 	if s.Length() == 0 {
