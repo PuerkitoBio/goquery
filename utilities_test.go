@@ -80,6 +80,7 @@ func TestNodeNameMultiSel(t *testing.T) {
 		t.Errorf("want %v, got %v", in, out)
 	}
 }
+
 func TestOuterHtml(t *testing.T) {
 	doc, err := NewDocumentFromReader(strings.NewReader(allNodes))
 	if err != nil {

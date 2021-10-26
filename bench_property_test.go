@@ -46,6 +46,6 @@ func BenchmarkHtml(b *testing.B) {
 	sel := DocW().Find("h2")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		sel.Html()
+		_, _ = sel.Html()
 	}
 }

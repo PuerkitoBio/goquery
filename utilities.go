@@ -51,15 +51,16 @@ func nodeName(node *html.Node) string {
 	case html.ElementNode, html.DoctypeNode:
 		return node.Data
 	default:
-		if node.Type >= 0 && int(node.Type) < len(nodeNames) {
+		if int(node.Type) < len(nodeNames) {
 			return nodeNames[node.Type]
 		}
 		return ""
 	}
 }
 
-// Render renders the html of the first element from selector and writes it to the writer.
-// // It behaves the same as OuterHtml but writes to w instead of returning the string.
+// Render renders the html of the first element from selector and writes it to
+// the writer.  It behaves the same as OuterHtml but writes to w instead of
+// returning the string.
 func Render(w io.Writer, s *Selection) error {
 	if s.Length() == 0 {
 		return nil
