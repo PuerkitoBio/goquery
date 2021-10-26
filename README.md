@@ -1,7 +1,6 @@
 # goquery - a little like that j-thing, only in Go
 
-[![builds.sr.ht status](https://builds.sr.ht/~mna/goquery/commits/fedora.yml.svg)](https://builds.sr.ht/~mna/goquery/commits/fedora.yml?)
-[![build status](https://secure.travis-ci.org/PuerkitoBio/goquery.svg?branch=master)](http://travis-ci.org/PuerkitoBio/goquery)
+[![Build Status](https://github.com/PuerkitoBio/goquery/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/PuerkitoBio/goquery/actions)
 [![Go Reference](https://pkg.go.dev/badge/github.com/PuerkitoBio/goquery.svg)](https://pkg.go.dev/github.com/PuerkitoBio/goquery)
 [![Sourcegraph Badge](https://sourcegraph.com/github.com/PuerkitoBio/goquery/-/badge.svg)](https://sourcegraph.com/github.com/PuerkitoBio/goquery?badge)
 
