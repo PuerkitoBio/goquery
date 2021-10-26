@@ -40,6 +40,7 @@ Please note that because of the net/html dependency, goquery requires Go1.1+ and
 
 **Note that goquery's API is now stable, and will not break.**
 
+*    **2021-10-25 (v1.8.0)** : Add `Render` function to render a `Selection` to an `io.Writer` (thanks [@anthonygedeon](https://github.com/anthonygedeon)).
 *    **2021-07-11 (v1.7.1)** : Update go.mod dependencies and add dependabot config (thanks [@jauderho](https://github.com/jauderho)).
 *    **2021-06-14 (v1.7.0)** : Add `Single` and `SingleMatcher` functions to optimize first-match selection (thanks [@gdollardollar](https://github.com/gdollardollar)).
 *    **2021-01-11 (v1.6.1)** : Fix panic when calling `{Prepend,Append,Set}Html` on a `Selection` that contains non-Element nodes.
