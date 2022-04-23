@@ -73,7 +73,7 @@ func Render(w io.Writer, s *Selection) error {
 // the selection - that is, the HTML including the first element's
 // tag and attributes.
 //
-// Unlike InnerHtml, this is a function and not a method on the Selection,
+// Unlike Html, this is a function and not a method on the Selection,
 // because this is not a jQuery method (in javascript-land, this is
 // a property provided by the DOM).
 func OuterHtml(s *Selection) (string, error) {
