@@ -155,6 +155,7 @@ func main() {
 - [Pagser](https://github.com/foolin/pagser), a simple, easy, extensible, configurable HTML parser to struct based on goquery and struct tags.
 - [stitcherd](https://github.com/vhodges/stitcherd), A server for doing server side includes using css selectors and DOM updates.
 - [goskyr](https://github.com/jakopako/goskyr), an easily configurable command-line scraper written in Go.
+- [goGetJS](https://github.com/davemolk/goGetJS), a tool for extracting, searching, and saving JavaScript files (with optional headless browser).
 
 ## Support
 
