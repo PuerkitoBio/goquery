@@ -108,3 +108,31 @@ func ExampleSingle() {
 	// 123
 	// 1
 }
+
+func ExampleSeparatorText() {
+	html := `
+<html>
+  <body>
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+  </body>
+</html>
+`
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+	if err != nil {
+		log.Fatal(err)
+	}
+	separator := ","
+	// By default, the selector string selects all matching nodes
+	multiSel := doc.Find("div")
+	fmt.Println(multiSel.SeparatorText(separator))
+
+	// Using goquery.Single, only the first match is selected
+	singleSel := doc.FindMatcher(goquery.Single("div"))
+	fmt.Println(singleSel.SeparatorText(separator))
+
+	// Output:
+	// 1,2,3
+	// 1
+}
