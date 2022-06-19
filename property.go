@@ -82,34 +82,29 @@ func (s *Selection) Text() string {
 	return buf.String()
 }
 
-// SeparatorText gets the combined text contents of each element in the set of matched
+// SliceText gets the combined text contents of each element in the set of matched
 // elements, including their descendants.
-func (s *Selection) SeparatorText(separator string) string {
-	var buf bytes.Buffer
+func (s *Selection) SliceText() []string {
+	var result []string
 
 	// Slightly optimized vs calling Each: no single selection object created
-	var f func(*html.Node, string)
-	f = func(n *html.Node, separator string) {
+	var f func(*html.Node)
+	f = func(n *html.Node) {
 		if n.Type == html.TextNode {
 			// Keep newlines and spaces, like jQuery
-			buf.WriteString(n.Data + separator)
+			result = append(result, n.Data)
 		}
 		if n.FirstChild != nil {
 			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				f(c, separator)
+				f(c)
 			}
 		}
 	}
-	nodeLen := len(s.Nodes)
-	for k, n := range s.Nodes {
-		if k < nodeLen-1 {
-			f(n, separator)
-		} else {
-			f(n, "")
-		}
+	for _, n := range s.Nodes {
+		f(n)
 	}
 
-	return buf.String()
+	return result
 }
 
 // Size is an alias for Length.

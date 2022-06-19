@@ -109,7 +109,7 @@ func ExampleSingle() {
 	// 1
 }
 
-func ExampleSeparatorText() {
+func ExampleSliceText() {
 	html := `
 <html>
   <body>
@@ -123,16 +123,16 @@ func ExampleSeparatorText() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	separator := ","
+
 	// By default, the selector string selects all matching nodes
 	multiSel := doc.Find("div")
-	fmt.Println(multiSel.SeparatorText(separator))
+	fmt.Println(multiSel.SliceText())
 
 	// Using goquery.Single, only the first match is selected
 	singleSel := doc.FindMatcher(goquery.Single("div"))
-	fmt.Println(singleSel.SeparatorText(separator))
+	fmt.Println(singleSel.SliceText())
 
 	// Output:
-	// 1,2,3
-	// 1
+	// [1 2 3]
+	// [1]
 }
