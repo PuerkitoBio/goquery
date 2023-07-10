@@ -165,7 +165,7 @@ There are a number of ways you can support the project:
 * Use it, star it, build something with it, spread the word!
   - If you do build something open-source or otherwise publicly-visible, let me know so I can add it to the [Related Projects](#related-projects) section!
 * Raise issues to improve the project (note: doc typos and clarifications are issues too!)
-  - Please search existing issues before opening a new one - it may have already been adressed.
+  - Please search existing issues before opening a new one - it may have already been addressed.
 * Pull requests: please discuss new code in an issue first, unless the fix is really trivial.
   - Make sure new code is tested.
   - Be mindful of existing code - PRs that break existing code have a high probability of being declined, unless it fixes a serious issue.
