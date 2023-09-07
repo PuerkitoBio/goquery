@@ -22,7 +22,7 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 ## Installation
 
-Please note that because of the net/html dependency, goquery requires Go1.1+ and is tested on Go1.7+.
+Please note that because of the net/html dependency, goquery requires Go1.1+ and is tested on the latest 2 versions of Go.
 
     $ go get github.com/PuerkitoBio/goquery
 
