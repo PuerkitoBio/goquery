@@ -157,6 +157,7 @@ func main() {
 - [stitcherd](https://github.com/vhodges/stitcherd), A server for doing server side includes using css selectors and DOM updates.
 - [goskyr](https://github.com/jakopako/goskyr), an easily configurable command-line scraper written in Go.
 - [goGetJS](https://github.com/davemolk/goGetJS), a tool for extracting, searching, and saving JavaScript files (with optional headless browser).
+- [fitter](https://github.com/PxyUp/fitter), a tool for selecting values from JSON, XML, HTML and XPath formatted pages.
 
 ## Support
 
