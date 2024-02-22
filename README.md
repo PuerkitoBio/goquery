@@ -22,7 +22,7 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 ## Installation
 
-Please note that because of the net/html dependency, goquery requires Go1.1+ and is tested on the latest 2 versions of Go.
+Please note that starting with version `v1.9.0` of goquery, Go 1.18+ is required due to the use of generics. For previous goquery versions, a Go version of 1.1+ was required because of the `net/html` dependency. Ongoing goquery development is tested on the latest 2 versions of Go.
 
     $ go get github.com/PuerkitoBio/goquery
 
@@ -40,6 +40,7 @@ Please note that because of the net/html dependency, goquery requires Go1.1+ and
 
 **Note that goquery's API is now stable, and will not break.**
 
+*    **2024-02-22 (v1.9.0)** : Add a generic `Map` function, **goquery now requires Go version 1.18+** (thanks [@Fesaa](https://github.com/Fesaa)).
 *    **2023-02-18 (v1.8.1)** : Update `go.mod` dependencies, update CI workflow.
 *    **2021-10-25 (v1.8.0)** : Add `Render` function to render a `Selection` to an `io.Writer` (thanks [@anthonygedeon](https://github.com/anthonygedeon)).
 *    **2021-07-11 (v1.7.1)** : Update go.mod dependencies and add dependabot config (thanks [@jauderho](https://github.com/jauderho)).
