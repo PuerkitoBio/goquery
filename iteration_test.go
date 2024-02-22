@@ -86,3 +86,22 @@ func TestForRange(t *testing.T) {
 		t.Errorf("expected initial selection to still have length %d, got %d", initLen, sel.Length())
 	}
 }
+
+func TestGenericMap(t *testing.T) {
+	sel := Doc().Find(".pvk-content")
+	vals := Map(sel, func(i int, s *Selection) *html.NodeType {
+		n := s.Get(0)
+		if n.Type == html.ElementNode {
+			return &n.Type
+		}
+		return nil
+	})
+	for _, v := range vals {
+		if v == nil || *v != html.ElementNode {
+			t.Error("Expected Map array result to be all 'div's.")
+		}
+	}
+	if len(vals) != 3 {
+		t.Errorf("Expected Map array result to have a length of 3, found %v.", len(vals))
+	}
+}
