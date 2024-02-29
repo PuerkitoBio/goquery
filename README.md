@@ -89,7 +89,7 @@ Utility functions that are not in jQuery but are useful in Go are implemented as
 
 The complete [package reference documentation can be found here][doc].
 
-Please note that Cascadia's selectors do not necessarily match all supported selectors of jQuery (Sizzle). See the [cascadia project][cascadia] for details. Invalid selector strings compile to a `Matcher` that fails to match any node. Behaviour of the various functions that take a selector string as argument follows from that fact, e.g. (where `~` is an invalid selector string):
+Please note that Cascadia's selectors do not necessarily match all supported selectors of jQuery (Sizzle). See the [cascadia project][cascadia] for details. Also, the selectors work more like the DOM's `querySelectorAll`, than jQuery's matchers - they have no concept of contextual matching (for some concrete examples of what that means, see [this ticket](https://github.com/andybalholm/cascadia/issues/61)). In practice, it doesn't matter very often but it's something worth mentioning. Invalid selector strings compile to a `Matcher` that fails to match any node. Behaviour of the various functions that take a selector string as argument follows from that fact, e.g. (where `~` is an invalid selector string):
 
 * `Find("~")` returns an empty selection because the selector string doesn't match anything.
 * `Add("~")` returns a new selection that holds the same nodes as the original selection, because it didn't add any node (selector string didn't match anything).
