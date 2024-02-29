@@ -37,8 +37,10 @@ func (s *Selection) Map(f func(int, *Selection) string) (result []string) {
 // Map is the generic version of Selection.Map, allowing any type to be
 // returned.
 func Map[E any](s *Selection, f func(int, *Selection) E) (result []E) {
+	result = make([]E, len(s.Nodes))
+
 	for i, n := range s.Nodes {
-		result = append(result, f(i, newSingleSelection(n, s.document)))
+		result[i] = f(i, newSingleSelection(n, s.document))
 	}
 
 	return result
