@@ -161,6 +161,7 @@ func main() {
 - [goskyr](https://github.com/jakopako/goskyr), an easily configurable command-line scraper written in Go.
 - [goGetJS](https://github.com/davemolk/goGetJS), a tool for extracting, searching, and saving JavaScript files (with optional headless browser).
 - [fitter](https://github.com/PxyUp/fitter), a tool for selecting values from JSON, XML, HTML and XPath formatted pages.
+- [seltabl](github.com/conneroisu/seltabl), an orm-like tool for extracting values from HTML
 
 ## Support
 
