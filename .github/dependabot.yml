@@ -5,3 +5,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+  # Enable version updates for GitHub action workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
