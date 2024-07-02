@@ -184,15 +184,15 @@ There are a number of ways you can support the project:
 
 The [BSD 3-Clause license][bsd], the same as the [Go language][golic]. Cascadia's license is [here][caslic].
 
-[jquery]: http://jquery.com/
-[go]: http://golang.org/
+[jquery]: https://jquery.com/
+[go]: https://go.dev/
 [cascadia]: https://github.com/andybalholm/cascadia
 [cascadiacli]: https://github.com/suntong/cascadia
-[bsd]: http://opensource.org/licenses/BSD-3-Clause
-[golic]: http://golang.org/LICENSE
+[bsd]: https://opensource.org/licenses/BSD-3-Clause
+[golic]: https://go.dev/LICENSE
 [caslic]: https://github.com/andybalholm/cascadia/blob/master/LICENSE
 [doc]: https://pkg.go.dev/github.com/PuerkitoBio/goquery
-[index]: http://api.jquery.com/index/
+[index]: https://api.jquery.com/index/
 [gonet]: https://github.com/golang/net/
 [html]: https://pkg.go.dev/golang.org/x/net/html
 [wiki]: https://github.com/PuerkitoBio/goquery/wiki/Tips-and-tricks
