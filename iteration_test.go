@@ -110,16 +110,15 @@ func TestEachIter(t *testing.T) {
 	var cnt int
 
 	sel := Doc().Find(".hero-unit .row-fluid")
-
-	for i, s := range sel.EachIter() {
+	sel.EachIter()(func(i int, n *Selection) bool {
 		cnt++
-		t.Logf("At index %v, node %v", i, s.Nodes[0].Data)
-	}
-
+		t.Logf("At index %v, node %v", i, n.Nodes[0].Data)
+		return true
+	})
 	sel = sel.Find("a")
 
 	if cnt != 4 {
-		t.Errorf("Expected Each() to call function 4 times, got %v times.", cnt)
+		t.Errorf("Expected EachIter() to call function 4 time, got %v times.", cnt)
 	}
 	assertLength(t, sel.Nodes, 6)
 }
@@ -128,16 +127,15 @@ func TestEachIterWithBreak(t *testing.T) {
 	var cnt int
 
 	sel := Doc().Find(".hero-unit .row-fluid")
-	for i, s := range sel.EachIter() {
+	sel.EachIter()(func(i int, n *Selection) bool {
 		cnt++
-		t.Logf("At index %v, node %v", i, s.Nodes[0].Data)
-		break
-	}
-
+		t.Logf("At index %v, node %v", i, n.Nodes[0].Data)
+		return false
+	})
 	sel = sel.Find("a")
 
 	if cnt != 1 {
-		t.Errorf("Expected Each() to call function 1 time, got %v times.", cnt)
+		t.Errorf("Expected EachIter() to call function 1 time, got %v times.", cnt)
 	}
 	assertLength(t, sel.Nodes, 6)
 }

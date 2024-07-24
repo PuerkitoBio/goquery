@@ -1,7 +1,5 @@
 package goquery
 
-import "iter"
-
 // Each iterates over a Selection object, executing a function for each
 // matched element. It returns the current Selection object. The function
 // f is called for each element in the selection with the index of the
@@ -16,7 +14,7 @@ func (s *Selection) Each(f func(int, *Selection)) *Selection {
 
 // EachIter returns an iterator that yields the Selection object in order.
 // The implementation is similar to Each, but it returns an iterator instead.
-func (s *Selection) EachIter() iter.Seq2[int, *Selection] {
+func (s *Selection) EachIter() func(yield func(int, *Selection) bool) {
 	return func(yield func(int, *Selection) bool) {
 		for i, n := range s.Nodes {
 			if !yield(i, newSingleSelection(n, s.document)) {
