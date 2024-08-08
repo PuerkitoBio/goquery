@@ -12,6 +12,18 @@ func (s *Selection) Each(f func(int, *Selection)) *Selection {
 	return s
 }
 
+// EachIter returns an iterator that yields the Selection object in order.
+// The implementation is similar to Each, but it returns an iterator instead.
+func (s *Selection) EachIter() func(yield func(int, *Selection) bool) {
+	return func(yield func(int, *Selection) bool) {
+		for i, n := range s.Nodes {
+			if !yield(i, newSingleSelection(n, s.document)) {
+				return
+			}
+		}
+	}
+}
+
 // EachWithBreak iterates over a Selection object, executing a function for each
 // matched element. It is identical to Each except that it is possible to break
 // out of the loop by returning false in the callback function. It returns the
