@@ -32,10 +32,9 @@ func BenchmarkEachIter(b *testing.B) {
 	sel := DocW().Find("td")
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		sel.EachIter()(func(i int, s *Selection) bool {
+		for range sel.EachIter() {
 			tmp++
-			return true
-		})
+		}
 		if n == 0 {
 			n = tmp
 		}
@@ -53,11 +52,12 @@ func BenchmarkEachIterWithBreak(b *testing.B) {
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		tmp = 0
-		sel.EachIter()(func(i int, s *Selection) bool {
+		for range sel.EachIter() {
 			tmp++
-			return tmp < 10
-		})
-
+			if tmp >= 10 {
+				break
+			}
+		}
 		if n == 0 {
 			n = tmp
 		}
