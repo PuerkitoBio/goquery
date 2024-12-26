@@ -46,6 +46,7 @@ Ongoing goquery development is tested on the latest 2 versions of Go.
 
 **Note that goquery's API is now stable, and will not break.**
 
+*    **2024-12-26 (v1.10.1)** : Update `go.mod` dependencies.
 *    **2024-09-06 (v1.10.0)** : Add `EachIter` which provides an iterator that can be used in `for..range` loops on the `*Selection` object. **goquery now requires Go version 1.23+** (thanks [@amikai](https://github.com/amikai)).
 *    **2024-09-06 (v1.9.3)** : Update `go.mod` dependencies.
 *    **2024-04-29 (v1.9.2)** : Update `go.mod` dependencies.
