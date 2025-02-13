@@ -24,9 +24,9 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 Required Go version:
 
-* Starting with version `v1.10.0` of goquery, Go 1.23+ is required due to the use of function-based iterators. 
-* For `v1.9.0` of goquery, Go 1.18+ is required due to the use of generics. 
-* For previous goquery versions, a Go version of 1.1+ was required because of the `net/html` dependency. 
+* Starting with version `v1.10.0` of goquery, Go 1.23+ is required due to the use of function-based iterators.
+* For `v1.9.0` of goquery, Go 1.18+ is required due to the use of generics.
+* For previous goquery versions, a Go version of 1.1+ was required because of the `net/html` dependency.
 
 Ongoing goquery development is tested on the latest 2 versions of Go.
 
@@ -46,6 +46,7 @@ Ongoing goquery development is tested on the latest 2 versions of Go.
 
 **Note that goquery's API is now stable, and will not break.**
 
+*    **2025-02-13 (v1.10.2)** : Update `go.mod` dependencies, add go1.24 to the test matrix.
 *    **2024-12-26 (v1.10.1)** : Update `go.mod` dependencies.
 *    **2024-09-06 (v1.10.0)** : Add `EachIter` which provides an iterator that can be used in `for..range` loops on the `*Selection` object. **goquery now requires Go version 1.23+** (thanks [@amikai](https://github.com/amikai)).
 *    **2024-09-06 (v1.9.3)** : Update `go.mod` dependencies.
