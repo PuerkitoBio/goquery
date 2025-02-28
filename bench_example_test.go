@@ -1,15 +1,15 @@
 package goquery
 
 import (
-	"bytes"
 	"fmt"
 	"strconv"
+	"strings"
 	"testing"
 )
 
 func BenchmarkMetalReviewExample(b *testing.B) {
 	var n int
-	var buf bytes.Buffer
+	var builder strings.Builder
 
 	b.StopTimer()
 	doc := loadDoc("metalreview.html")
@@ -27,12 +27,12 @@ func BenchmarkMetalReviewExample(b *testing.B) {
 			if score, e = strconv.ParseFloat(s.Find(".score").Text(), 64); e != nil {
 				// Not a valid float, ignore score
 				if n <= 4 {
-					buf.WriteString(fmt.Sprintf("Review %d: %s - %s.\n", i, band, title))
+					builder.WriteString(fmt.Sprintf("Review %d: %s - %s.\n", i, band, title))
 				}
 			} else {
 				// Print all, including score
 				if n <= 4 {
-					buf.WriteString(fmt.Sprintf("Review %d: %s - %s (%2.1f).\n", i, band, title, score))
+					builder.WriteString(fmt.Sprintf("Review %d: %s - %s (%2.1f).\n", i, band, title, score))
 				}
 			}
 		})
