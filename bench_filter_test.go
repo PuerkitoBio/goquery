@@ -2,6 +2,8 @@ package goquery
 
 import (
 	"testing"
+
+	"github.com/andybalholm/cascadia"
 )
 
 func BenchmarkFilter(b *testing.B) {
@@ -33,6 +35,25 @@ func BenchmarkNot(b *testing.B) {
 			n = sel.Not(".toclevel-2").Length()
 		} else {
 			sel.Filter(".toclevel-2")
+		}
+	}
+	if n != 371 {
+		b.Fatalf("want 371, got %d", n)
+	}
+}
+
+func BenchmarkNotMatcher(b *testing.B) {
+	var n int
+
+	b.StopTimer()
+	sel := DocW().Find("li")
+	m := cascadia.MustCompile(".toclevel-2")
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		if n == 0 {
+			n = sel.NotMatcher(m).Length()
+		} else {
+			sel.NotMatcher(m)
 		}
 	}
 	if n != 371 {

@@ -130,10 +130,14 @@ func winnow(sel *Selection, m Matcher, keep bool) []*html.Node {
 	if keep {
 		return m.Filter(sel.Nodes)
 	}
-	// Use grep
-	return grep(sel, func(i int, s *Selection) bool {
-		return !m.Match(s.Get(0))
-	})
+	// Not path: call Match directly on each node, no Selection wrapper needed
+	result := make([]*html.Node, 0, len(sel.Nodes))
+	for _, n := range sel.Nodes {
+		if !m.Match(n) {
+			result = append(result, n)
+		}
+	}
+	return result
 }
 
 // Filter based on an array of nodes, and the indicator to keep (Filter) or
