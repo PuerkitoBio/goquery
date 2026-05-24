@@ -1,13 +1,12 @@
 package goquery
 
 import (
-	"regexp"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
-var rxClassTrim = regexp.MustCompile("[\t\r\n]")
+var classTrimReplacer = strings.NewReplacer("\t", " ", "\r", " ", "\n", " ")
 
 // Attr gets the specified attribute's value for the first element in the
 // Selection. To get the value for each element individually, use a looping
@@ -140,9 +139,14 @@ func (s *Selection) AddClass(class ...string) *Selection {
 func (s *Selection) HasClass(class string) bool {
 	class = " " + class + " "
 	for _, n := range s.Nodes {
-		classes, _ := getClassesAndAttr(n, false)
-		if strings.Contains(classes, class) {
-			return true
+		if n.Type != html.ElementNode {
+			continue
+		}
+		if attr := getAttributePtr("class", n); attr != nil {
+			val := classTrimReplacer.Replace(attr.Val)
+			if strings.Contains(" "+val+" ", class) {
+				return true
+			}
 		}
 	}
 	return false
@@ -243,17 +247,15 @@ func getClassesAndAttr(n *html.Node, create bool) (classes string, attr *html.At
 
 	if attr == nil {
 		classes = " "
-	} else if strings.ContainsAny(attr.Val, "\t\r\n") {
-		classes = rxClassTrim.ReplaceAllString(" "+attr.Val+" ", " ")
 	} else {
-		classes = " " + attr.Val + " "
+		classes = classTrimReplacer.Replace(" " + attr.Val + " ")
 	}
 
 	return
 }
 
 func getClassesSlice(classes string) []string {
-	return strings.Split(rxClassTrim.ReplaceAllString(" "+classes+" ", " "), " ")
+	return strings.Split(classTrimReplacer.Replace(" "+classes+" "), " ")
 }
 
 func removeAttr(n *html.Node, attrName string) {
