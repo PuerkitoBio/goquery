@@ -243,8 +243,10 @@ func getClassesAndAttr(n *html.Node, create bool) (classes string, attr *html.At
 
 	if attr == nil {
 		classes = " "
-	} else {
+	} else if strings.ContainsAny(attr.Val, "\t\r\n") {
 		classes = rxClassTrim.ReplaceAllString(" "+attr.Val+" ", " ")
+	} else {
+		classes = " " + attr.Val + " "
 	}
 
 	return
