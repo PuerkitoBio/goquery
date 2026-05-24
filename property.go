@@ -253,7 +253,7 @@ func getClassesAndAttr(n *html.Node, create bool) (classes string, attr *html.At
 }
 
 func getClassesSlice(classes string) []string {
-	return strings.Split(rxClassTrim.ReplaceAllString(" "+classes+" ", " "), " ")
+	return strings.Fields(classes)
 }
 
 func removeAttr(n *html.Node, attrName string) {
