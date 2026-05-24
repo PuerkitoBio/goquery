@@ -562,13 +562,12 @@ func findWithMatcher(nodes []*html.Node, m Matcher) []*html.Node {
 func getParentsNodes(nodes []*html.Node, stopm Matcher, stopNodes []*html.Node) []*html.Node {
 	return mapNodes(nodes, func(i int, n *html.Node) (result []*html.Node) {
 		for p := n.Parent; p != nil; p = p.Parent {
-			sel := newSingleSelection(p, nil)
 			if stopm != nil {
-				if sel.IsMatcher(stopm) {
+				if stopm.Match(p) {
 					break
 				}
 			} else if len(stopNodes) > 0 {
-				if sel.IsNodes(stopNodes...) {
+				if isInSlice(stopNodes, p) {
 					break
 				}
 			}
@@ -589,13 +588,9 @@ func getSiblingNodes(nodes []*html.Node, st siblingType, untilm Matcher, untilNo
 	if st == siblingNextUntil || st == siblingPrevUntil {
 		f = func(n *html.Node) bool {
 			if untilm != nil {
-				// Matcher-based condition
-				sel := newSingleSelection(n, nil)
-				return sel.IsMatcher(untilm)
+				return untilm.Match(n)
 			} else if len(untilNodes) > 0 {
-				// Nodes-based condition
-				sel := newSingleSelection(n, nil)
-				return sel.IsNodes(untilNodes...)
+				return isInSlice(untilNodes, n)
 			}
 			return false
 		}
