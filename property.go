@@ -210,8 +210,8 @@ func getAttributePtr(attrName string, n *html.Node) *html.Attribute {
 		return nil
 	}
 
-	for i, a := range n.Attr {
-		if a.Key == attrName {
+	for i := range n.Attr {
+		if n.Attr[i].Key == attrName {
 			return &n.Attr[i]
 		}
 	}
@@ -257,8 +257,8 @@ func getClassesSlice(classes string) []string {
 }
 
 func removeAttr(n *html.Node, attrName string) {
-	for i, a := range n.Attr {
-		if a.Key == attrName {
+	for i := range n.Attr {
+		if n.Attr[i].Key == attrName {
 			n.Attr[i], n.Attr[len(n.Attr)-1], n.Attr =
 				n.Attr[len(n.Attr)-1], html.Attribute{}, n.Attr[:len(n.Attr)-1]
 			return
