@@ -562,13 +562,12 @@ func findWithMatcher(nodes []*html.Node, m Matcher) []*html.Node {
 func getParentsNodes(nodes []*html.Node, stopm Matcher, stopNodes []*html.Node) []*html.Node {
 	return mapNodes(nodes, func(i int, n *html.Node) (result []*html.Node) {
 		for p := n.Parent; p != nil; p = p.Parent {
-			sel := newSingleSelection(p, nil)
 			if stopm != nil {
-				if sel.IsMatcher(stopm) {
+				if stopm.Match(p) {
 					break
 				}
 			} else if len(stopNodes) > 0 {
-				if sel.IsNodes(stopNodes...) {
+				if isInSlice(stopNodes, p) {
 					break
 				}
 			}
