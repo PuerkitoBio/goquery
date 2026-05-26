@@ -60,21 +60,33 @@ func (s *Selection) SetAttr(attrName, val string) *Selection {
 func (s *Selection) Text() string {
 	var builder strings.Builder
 
-	// Slightly optimized vs calling Each: no single selection object created
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.TextNode {
+	// Iterative depth-first walk: Walks each root's subtree using FirstChild,
+	// NextSibling and Parent pointers, stopping when it ascends back to the
+	// root so it never escapes the original subtree.
+	for _, root := range s.Nodes {
+		if root.Type == html.TextNode {
 			// Keep newlines and spaces, like jQuery
-			builder.WriteString(n.Data)
+			builder.WriteString(root.Data)
 		}
-		if n.FirstChild != nil {
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				f(c)
+		for n := root.FirstChild; n != nil; {
+			if n.Type == html.TextNode {
+				builder.WriteString(n.Data)
 			}
+			// Descend into children first.
+			if n.FirstChild != nil {
+				n = n.FirstChild
+				continue
+			}
+			// Otherwise advance to the next sibling, ascending until we
+			// find one or hit the root.
+			for n != root && n.NextSibling == nil {
+				n = n.Parent
+			}
+			if n == root {
+				break
+			}
+			n = n.NextSibling
 		}
-	}
-	for _, n := range s.Nodes {
-		f(n)
 	}
 
 	return builder.String()
