@@ -588,13 +588,9 @@ func getSiblingNodes(nodes []*html.Node, st siblingType, untilm Matcher, untilNo
 	if st == siblingNextUntil || st == siblingPrevUntil {
 		f = func(n *html.Node) bool {
 			if untilm != nil {
-				// Matcher-based condition
-				sel := newSingleSelection(n, nil)
-				return sel.IsMatcher(untilm)
+				return untilm.Match(n)
 			} else if len(untilNodes) > 0 {
-				// Nodes-based condition
-				sel := newSingleSelection(n, nil)
-				return sel.IsNodes(untilNodes...)
+				return isInSlice(untilNodes, n)
 			}
 			return false
 		}
