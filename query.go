@@ -11,13 +11,11 @@ func (s *Selection) Is(selector string) bool {
 // IsMatcher checks the current matched set of elements against a matcher and
 // returns true if at least one of these elements matches.
 func (s *Selection) IsMatcher(m Matcher) bool {
-	if len(s.Nodes) > 0 {
-		if len(s.Nodes) == 1 {
-			return m.Match(s.Nodes[0])
+	for _, n := range s.Nodes {
+		if m.Match(n) {
+			return true
 		}
-		return len(m.Filter(s.Nodes)) > 0
 	}
-
 	return false
 }
 
