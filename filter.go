@@ -144,18 +144,26 @@ func winnow(sel *Selection, m Matcher, keep bool) []*html.Node {
 // to get rid of (Not) the matching elements.
 func winnowNodes(sel *Selection, nodes []*html.Node, keep bool) []*html.Node {
 	if len(nodes)+len(sel.Nodes) < minNodesForSet {
-		return grep(sel, func(i int, s *Selection) bool {
-			return isInSlice(nodes, s.Get(0)) == keep
-		})
+		var result []*html.Node
+		for _, n := range sel.Nodes {
+			if isInSlice(nodes, n) == keep {
+				result = append(result, n)
+			}
+		}
+		return result
 	}
 
 	set := make(map[*html.Node]bool)
 	for _, n := range nodes {
 		set[n] = true
 	}
-	return grep(sel, func(i int, s *Selection) bool {
-		return set[s.Get(0)] == keep
-	})
+	var result []*html.Node
+	for _, n := range sel.Nodes {
+		if set[n] == keep {
+			result = append(result, n)
+		}
+	}
+	return result
 }
 
 // Filter based on a function test, and the indicator to keep (Filter) or
