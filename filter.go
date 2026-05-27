@@ -149,7 +149,7 @@ func winnowNodes(sel *Selection, nodes []*html.Node, keep bool) []*html.Node {
 		})
 	}
 
-	set := make(map[*html.Node]bool)
+	set := make(map[*html.Node]bool, len(nodes))
 	for _, n := range nodes {
 		set[n] = true
 	}
