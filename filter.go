@@ -93,15 +93,16 @@ func (s *Selection) HasMatcher(m Matcher) *Selection {
 // descendant that matches one of the nodes.
 // It returns a new Selection object with the matching elements.
 func (s *Selection) HasNodes(nodes ...*html.Node) *Selection {
-	return s.FilterFunction(func(_ int, sel *Selection) bool {
-		// Add all nodes that contain one of the specified nodes
-		for _, n := range nodes {
-			if sel.Contains(n) {
-				return true
+	var result []*html.Node
+	for _, n := range s.Nodes {
+		for _, candidate := range nodes {
+			if nodeContains(n, candidate) {
+				result = append(result, n)
+				break
 			}
 		}
-		return false
-	})
+	}
+	return pushStack(s, result)
 }
 
 // HasSelection reduces the set of matched elements to those that have a
