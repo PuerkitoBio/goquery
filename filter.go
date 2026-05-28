@@ -93,15 +93,16 @@ func (s *Selection) HasMatcher(m Matcher) *Selection {
 // descendant that matches one of the nodes.
 // It returns a new Selection object with the matching elements.
 func (s *Selection) HasNodes(nodes ...*html.Node) *Selection {
-	return s.FilterFunction(func(_ int, sel *Selection) bool {
-		// Add all nodes that contain one of the specified nodes
-		for _, n := range nodes {
-			if sel.Contains(n) {
-				return true
+	var result []*html.Node
+	for _, n := range s.Nodes {
+		for _, candidate := range nodes {
+			if nodeContains(n, candidate) {
+				result = append(result, n)
+				break
 			}
 		}
-		return false
-	})
+	}
+	return pushStack(s, result)
 }
 
 // HasSelection reduces the set of matched elements to those that have a
@@ -144,18 +145,26 @@ func winnow(sel *Selection, m Matcher, keep bool) []*html.Node {
 // to get rid of (Not) the matching elements.
 func winnowNodes(sel *Selection, nodes []*html.Node, keep bool) []*html.Node {
 	if len(nodes)+len(sel.Nodes) < minNodesForSet {
-		return grep(sel, func(i int, s *Selection) bool {
-			return isInSlice(nodes, s.Get(0)) == keep
-		})
+		var result []*html.Node
+		for _, n := range sel.Nodes {
+			if isInSlice(nodes, n) == keep {
+				result = append(result, n)
+			}
+		}
+		return result
 	}
 
 	set := make(map[*html.Node]bool, len(nodes))
 	for _, n := range nodes {
 		set[n] = true
 	}
-	return grep(sel, func(i int, s *Selection) bool {
-		return set[s.Get(0)] == keep
-	})
+	var result []*html.Node
+	for _, n := range sel.Nodes {
+		if set[n] == keep {
+			result = append(result, n)
+		}
+	}
+	return result
 }
 
 // Filter based on a function test, and the indicator to keep (Filter) or

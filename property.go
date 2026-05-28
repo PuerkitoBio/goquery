@@ -59,25 +59,23 @@ func (s *Selection) SetAttr(attrName, val string) *Selection {
 // elements, including their descendants.
 func (s *Selection) Text() string {
 	var builder strings.Builder
-
-	// Slightly optimized vs calling Each: no single selection object created
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.TextNode {
-			// Keep newlines and spaces, like jQuery
-			builder.WriteString(n.Data)
-		}
-		if n.FirstChild != nil {
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				f(c)
-			}
-		}
-	}
 	for _, n := range s.Nodes {
-		f(n)
+		s.textHelper(n, &builder)
 	}
 
 	return builder.String()
+}
+
+func (s *Selection) textHelper(n *html.Node, builder *strings.Builder) {
+	if n.Type == html.TextNode {
+		// Keep newlines and spaces, like jQuery
+		builder.WriteString(n.Data)
+	}
+	if n.FirstChild != nil {
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			s.textHelper(c, builder)
+		}
+	}
 }
 
 // Size is an alias for Length.
@@ -137,12 +135,16 @@ func (s *Selection) AddClass(class ...string) *Selection {
 // HasClass determines whether any of the matched elements are assigned the
 // given class.
 func (s *Selection) HasClass(class string) bool {
+	rawClass := class
 	class = " " + class + " "
 	for _, n := range s.Nodes {
 		if n.Type != html.ElementNode {
 			continue
 		}
 		if attr := getAttributePtr("class", n); attr != nil {
+			if !strings.Contains(attr.Val, rawClass) {
+				continue
+			}
 			val := classTrimReplacer.Replace(attr.Val)
 			if strings.Contains(" "+val+" ", class) {
 				return true

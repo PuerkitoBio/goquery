@@ -689,6 +689,13 @@ func getParentNodes(nodes []*html.Node) []*html.Node {
 // Returns an array of nodes mapped by calling the callback function once for
 // each node in the source nodes.
 func mapNodes(nodes []*html.Node, f func(int, *html.Node) []*html.Node) (result []*html.Node) {
+	switch len(nodes) {
+	case 0:
+		return nil
+	case 1:
+		return f(0, nodes[0])
+	}
+
 	set := make(map[*html.Node]bool, len(nodes))
 	for i, n := range nodes {
 		if vals := f(i, n); len(vals) > 0 {
