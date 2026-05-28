@@ -59,25 +59,23 @@ func (s *Selection) SetAttr(attrName, val string) *Selection {
 // elements, including their descendants.
 func (s *Selection) Text() string {
 	var builder strings.Builder
-
-	// Slightly optimized vs calling Each: no single selection object created
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.TextNode {
-			// Keep newlines and spaces, like jQuery
-			builder.WriteString(n.Data)
-		}
-		if n.FirstChild != nil {
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				f(c)
-			}
-		}
-	}
 	for _, n := range s.Nodes {
-		f(n)
+		s.textHelper(n, &builder)
 	}
 
 	return builder.String()
+}
+
+func (s *Selection) textHelper(n *html.Node, builder *strings.Builder) {
+	if n.Type == html.TextNode {
+		// Keep newlines and spaces, like jQuery
+		builder.WriteString(n.Data)
+	}
+	if n.FirstChild != nil {
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			s.textHelper(c, builder)
+		}
+	}
 }
 
 // Size is an alias for Length.
