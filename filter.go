@@ -79,14 +79,24 @@ func (s *Selection) Intersection(sel *Selection) *Selection {
 // that matches the selector.
 // It returns a new Selection object with the matching elements.
 func (s *Selection) Has(selector string) *Selection {
-	return s.HasSelection(s.document.Find(selector))
+	return s.HasMatcher(compileMatcher(selector))
 }
 
 // HasMatcher reduces the set of matched elements to those that have a descendant
 // that matches the matcher.
 // It returns a new Selection object with the matching elements.
 func (s *Selection) HasMatcher(m Matcher) *Selection {
-	return s.HasSelection(s.document.FindMatcher(m))
+	result := make([]*html.Node, 0, len(s.Nodes))
+	m = SingleMatcher(m)
+	for _, n := range s.Nodes {
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			if c.Type == html.ElementNode && len(m.MatchAll(c)) > 0 {
+				result = append(result, n)
+				break
+			}
+		}
+	}
+	return pushStack(s, result)
 }
 
 // HasNodes reduces the set of matched elements to those that have a
