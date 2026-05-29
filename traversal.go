@@ -546,14 +546,15 @@ func filterAndPush(srcSel *Selection, nodes []*html.Node, m Matcher) *Selection 
 // Internal implementation of Find that return raw nodes.
 func findWithMatcher(nodes []*html.Node, m Matcher) []*html.Node {
 	// Map nodes to find the matches within the children of each node
-	return mapNodes(nodes, func(i int, n *html.Node) (result []*html.Node) {
-		// Go down one level, becausejQuery's Find selects only within descendants
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			if c.Type == html.ElementNode {
-				result = append(result, m.MatchAll(c)...)
-			}
+	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
+		// jQuery's Find selects only descendants, not n itself. cascadia's
+		// MatchAll walks n + all descendants in document order, so if n
+		// matches it's always the first element and we can drop it.
+		all := m.MatchAll(n)
+		if len(all) > 0 && all[0] == n {
+			return all[1:]
 		}
-		return
+		return all
 	})
 }
 
