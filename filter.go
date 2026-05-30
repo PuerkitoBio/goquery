@@ -87,6 +87,24 @@ func (s *Selection) Has(selector string) *Selection {
 // It returns a new Selection object with the matching elements.
 func (s *Selection) HasMatcher(m Matcher) *Selection {
 	result := make([]*html.Node, 0, len(s.Nodes))
+
+	// If the matcher can probe for the first match in a subtree without
+	// building a result slice, use that: it avoids a throwaway one-element
+	// slice allocation for every matching child subtree.
+	if mf, ok := m.(interface {
+		MatchFirst(*html.Node) *html.Node
+	}); ok {
+		for _, n := range s.Nodes {
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				if c.Type == html.ElementNode && mf.MatchFirst(c) != nil {
+					result = append(result, n)
+					break
+				}
+			}
+		}
+		return pushStack(s, result)
+	}
+
 	m = SingleMatcher(m)
 	for _, n := range s.Nodes {
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
