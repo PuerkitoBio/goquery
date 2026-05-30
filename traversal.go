@@ -676,12 +676,21 @@ func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *htm
 
 // Internal implementation of parent nodes that return a raw slice of Nodes.
 func getParentNodes(nodes []*html.Node) []*html.Node {
-	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
-		if n.Parent != nil && n.Parent.Type == html.ElementNode {
-			return []*html.Node{n.Parent}
+	// Collect parents inline rather than going through mapNodes, which would
+	// allocate a throwaway one-element slice per source node. Many source
+	// nodes (e.g. siblings) share the same parent, so deduplicate as we go.
+	var result []*html.Node
+	set := make(map[*html.Node]bool, len(nodes))
+
+	for _, n := range nodes {
+		p := n.Parent
+		if p == nil || p.Type != html.ElementNode || set[p] {
+			continue
 		}
-		return nil
-	})
+		set[p] = true
+		result = append(result, p)
+	}
+	return result
 }
 
 // Internal map function used by many traversing methods. Takes the source nodes
