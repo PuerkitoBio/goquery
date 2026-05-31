@@ -581,6 +581,28 @@ func getParentsNodes(nodes []*html.Node, stopm Matcher, stopNodes []*html.Node) 
 
 // Internal implementation of sibling nodes that return a raw slice of matches.
 func getSiblingNodes(nodes []*html.Node, st siblingType, untilm Matcher, untilNodes []*html.Node) []*html.Node {
+	// Next and Prev request a single sibling per node, and distinct source
+	// nodes have distinct immediate siblings, so there is nothing to dedup:
+	// scan directly to the adjacent element instead of going through mapNodes
+	// and the general getChildrenWithSiblingType iterator.
+	if st == siblingNext || st == siblingPrev {
+		adjacent := func(n *html.Node) *html.Node { return n.NextSibling }
+		if st == siblingPrev {
+			adjacent = func(n *html.Node) *html.Node { return n.PrevSibling }
+		}
+
+		result := make([]*html.Node, 0, len(nodes))
+		for _, n := range nodes {
+			for c := adjacent(n); c != nil; c = adjacent(c) {
+				if c.Type == html.ElementNode {
+					result = append(result, c)
+					break
+				}
+			}
+		}
+		return result
+	}
+
 	var f func(*html.Node) bool
 
 	// If the requested siblings are ...Until, create the test function to
