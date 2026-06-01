@@ -657,6 +657,20 @@ func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *htm
 		}
 	}
 
+	// For the cases that collect every matching sibling, count them in a
+	// cheap pointer walk first so the result slice can be sized exactly,
+	// avoiding repeated slice growth. The Until cases are skipped (counting
+	// would require running the predicate twice) and so are the single-result
+	// Next/Prev cases.
+	switch st {
+	case siblingAll, siblingAllIncludingNonElements, siblingPrevAll, siblingNextAll:
+		n := 0
+		for c := iter(nil); c != nil; c = iter(c) {
+			n++
+		}
+		result = make([]*html.Node, 0, n)
+	}
+
 	for c := iter(nil); c != nil; c = iter(c) {
 		// If this is an ...Until case, test before append (returns true
 		// if the until condition is reached)
