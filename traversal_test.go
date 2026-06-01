@@ -36,6 +36,16 @@ func TestFindBig(t *testing.T) {
 	assertLength(t, sel3.Nodes, 248)
 }
 
+func TestFindNodesDuplicateInput(t *testing.T) {
+	doc := DocW()
+	sel := doc.Find("body")
+	span := doc.Find("span").Nodes[0]
+	// Duplicate input nodes must be discarded so the resulting Selection
+	// stays a proper set.
+	sel2 := sel.FindNodes(span, span)
+	assertLength(t, sel2.Nodes, 1)
+}
+
 func TestChainedFind(t *testing.T) {
 	sel := Doc().Find("div.hero-unit").Find(".row-fluid")
 	assertLength(t, sel.Nodes, 4)
