@@ -608,10 +608,14 @@ func cloneNode(n *html.Node) *html.Node {
 		Type:     n.Type,
 		DataAtom: n.DataAtom,
 		Data:     n.Data,
-		Attr:     make([]html.Attribute, len(n.Attr)),
 	}
 
-	copy(nn.Attr, n.Attr)
+	// Skip the make+copy call pair when the source has no attributes.
+	if len(n.Attr) > 0 {
+		nn.Attr = make([]html.Attribute, len(n.Attr))
+		copy(nn.Attr, n.Attr)
+	}
+
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		nn.AppendChild(cloneNode(c))
 	}
