@@ -118,11 +118,18 @@ func (s *Selection) AddClass(class ...string) *Selection {
 	}
 
 	tcls := getClassesSlice(classStr)
+	// Pre-compute the " class " form once per input class, used to test
+	// for existence in the (already space-padded) current class string.
+	// The append form (c + " ") is `spaced[i][1:]`, which is a free slice.
+	spaced := make([]string, len(tcls))
+	for i, c := range tcls {
+		spaced[i] = " " + c + " "
+	}
 	for _, n := range s.Nodes {
 		curClasses, attr := getClassesAndAttr(n, true)
-		for _, newClass := range tcls {
-			if !strings.Contains(curClasses, " "+newClass+" ") {
-				curClasses += newClass + " "
+		for i := range tcls {
+			if !strings.Contains(curClasses, spaced[i]) {
+				curClasses += spaced[i][1:]
 			}
 		}
 
@@ -158,13 +165,17 @@ func (s *Selection) HasClass(class string) bool {
 // Multiple class names can be specified, separated by a space or via multiple arguments.
 // If no class name is provided, all classes are removed.
 func (s *Selection) RemoveClass(class ...string) *Selection {
-	var rclasses []string
-
 	classStr := strings.TrimSpace(strings.Join(class, " "))
 	remove := classStr == ""
 
+	var spaced []string
 	if !remove {
-		rclasses = getClassesSlice(classStr)
+		// Pre-compute " class " once per input class instead of per node.
+		rclasses := getClassesSlice(classStr)
+		spaced = make([]string, len(rclasses))
+		for i, c := range rclasses {
+			spaced[i] = " " + c + " "
+		}
 	}
 
 	for _, n := range s.Nodes {
@@ -172,8 +183,8 @@ func (s *Selection) RemoveClass(class ...string) *Selection {
 			removeAttr(n, "class")
 		} else {
 			classes, attr := getClassesAndAttr(n, true)
-			for _, rcl := range rclasses {
-				classes = strings.ReplaceAll(classes, " "+rcl+" ", " ")
+			for _, sp := range spaced {
+				classes = strings.ReplaceAll(classes, sp, " ")
 			}
 
 			setClasses(n, attr, classes)
