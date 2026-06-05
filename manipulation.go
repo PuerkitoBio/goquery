@@ -570,13 +570,7 @@ func (s *Selection) wrapInnerNodes(ns ...*html.Node) *Selection {
 }
 
 func parseHtml(h string) []*html.Node {
-	// Errors are only returned when the io.Reader returns any error besides
-	// EOF, but strings.Reader never will
-	nodes, err := html.ParseFragment(strings.NewReader(h), &html.Node{Type: html.ElementNode})
-	if err != nil {
-		panic("goquery: failed to parse HTML: " + err.Error())
-	}
-	return nodes
+	return parseHtmlWithContext(h, &html.Node{Type: html.ElementNode})
 }
 
 func parseHtmlWithContext(h string, context *html.Node) []*html.Node {
