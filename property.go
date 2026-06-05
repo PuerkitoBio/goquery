@@ -71,10 +71,8 @@ func (s *Selection) textHelper(n *html.Node, builder *strings.Builder) {
 		// Keep newlines and spaces, like jQuery
 		builder.WriteString(n.Data)
 	}
-	if n.FirstChild != nil {
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			s.textHelper(c, builder)
-		}
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		s.textHelper(c, builder)
 	}
 }
 
