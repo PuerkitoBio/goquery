@@ -537,10 +537,7 @@ func (s *Selection) PrevMatcherUntilNodes(filter Matcher, nodes ...*html.Node) *
 // Filter and push filters the nodes based on a matcher, and pushes the results
 // on the stack, with the srcSel as previous selection.
 func filterAndPush(srcSel *Selection, nodes []*html.Node, m Matcher) *Selection {
-	// Create a temporary Selection with the specified nodes to filter using winnow
-	sel := &Selection{nodes, srcSel.document, nil}
-	// Filter based on matcher and push on stack
-	return pushStack(srcSel, winnow(sel, m, true))
+	return pushStack(srcSel, winnow(nodes, m, true))
 }
 
 // Internal implementation of Find that return raw nodes.
