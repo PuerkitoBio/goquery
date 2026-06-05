@@ -11,25 +11,21 @@ var classTrimReplacer = strings.NewReplacer("\t", " ", "\r", " ", "\n", " ")
 // Attr gets the specified attribute's value for the first element in the
 // Selection. To get the value for each element individually, use a looping
 // construct such as Each or Map method.
-func (s *Selection) Attr(attrName string) (val string, exists bool) {
-	if len(s.Nodes) == 0 {
-		return
+func (s *Selection) Attr(attrName string) (string, bool) {
+	if len(s.Nodes) != 0 {
+		if attr := getAttributePtr(attrName, s.Nodes[0]); attr != nil {
+			return attr.Val, true
+		}
 	}
-	return getAttributeValue(attrName, s.Nodes[0])
+	return "", false
 }
 
 // AttrOr works like Attr but returns default value if attribute is not present.
 func (s *Selection) AttrOr(attrName, defaultValue string) string {
-	if len(s.Nodes) == 0 {
-		return defaultValue
+	if val, exists := s.Attr(attrName); exists {
+		return val
 	}
-
-	val, exists := getAttributeValue(attrName, s.Nodes[0])
-	if !exists {
-		return defaultValue
-	}
-
-	return val
+	return defaultValue
 }
 
 // RemoveAttr removes the named attribute from each element in the set of matched elements.
@@ -222,15 +218,6 @@ func getAttributePtr(attrName string, n *html.Node) *html.Attribute {
 		}
 	}
 	return nil
-}
-
-// Private function to get the specified attribute's value from a node.
-func getAttributeValue(attrName string, n *html.Node) (val string, exists bool) {
-	if a := getAttributePtr(attrName, n); a != nil {
-		val = a.Val
-		exists = true
-	}
-	return
 }
 
 // Get and normalize the "class" attribute from the node.
