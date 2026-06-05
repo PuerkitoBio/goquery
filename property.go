@@ -119,7 +119,7 @@ func (s *Selection) AddClass(class ...string) *Selection {
 
 	tcls := getClassesSlice(classStr)
 	for _, n := range s.Nodes {
-		curClasses, attr := getClassesAndAttr(n, true)
+		curClasses, attr := getClassesAndAttr(n)
 		for _, newClass := range tcls {
 			if !strings.Contains(curClasses, " "+newClass+" ") {
 				curClasses += newClass + " "
@@ -171,7 +171,7 @@ func (s *Selection) RemoveClass(class ...string) *Selection {
 		if remove {
 			removeAttr(n, "class")
 		} else {
-			classes, attr := getClassesAndAttr(n, true)
+			classes, attr := getClassesAndAttr(n)
 			for _, rcl := range rclasses {
 				classes = strings.ReplaceAll(classes, " "+rcl+" ", " ")
 			}
@@ -195,7 +195,7 @@ func (s *Selection) ToggleClass(class ...string) *Selection {
 	tcls := getClassesSlice(classStr)
 
 	for _, n := range s.Nodes {
-		classes, attr := getClassesAndAttr(n, true)
+		classes, attr := getClassesAndAttr(n)
 		for _, tcl := range tcls {
 			spaceAroundTcl := " " + tcl + " "
 			if strings.Contains(classes, spaceAroundTcl) {
@@ -234,11 +234,11 @@ func getAttributeValue(attrName string, n *html.Node) (val string, exists bool) 
 }
 
 // Get and normalize the "class" attribute from the node.
-func getClassesAndAttr(n *html.Node, create bool) (classes string, attr *html.Attribute) {
+func getClassesAndAttr(n *html.Node) (classes string, attr *html.Attribute) {
 	// Applies only to element nodes
 	if n.Type == html.ElementNode {
 		attr = getAttributePtr("class", n)
-		if attr == nil && create {
+		if attr == nil {
 			n.Attr = append(n.Attr, html.Attribute{
 				Key: "class",
 				Val: "",
