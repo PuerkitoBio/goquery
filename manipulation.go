@@ -177,10 +177,20 @@ func (s *Selection) Empty() *Selection {
 
 	nodes := make([]*html.Node, 0, count)
 	for _, n := range s.Nodes {
-		for c := n.FirstChild; c != nil; c = n.FirstChild {
-			n.RemoveChild(c)
+		// Detach all children in one pass. Since each child is being
+		// removed from its only parent and ends up with no siblings,
+		// we can inline what RemoveChild does for the FirstChild case
+		// and skip the per-iter FirstChild/LastChild bookkeeping.
+		for c := n.FirstChild; c != nil; {
+			next := c.NextSibling
+			c.Parent = nil
+			c.PrevSibling = nil
+			c.NextSibling = nil
 			nodes = append(nodes, c)
+			c = next
 		}
+		n.FirstChild = nil
+		n.LastChild = nil
 	}
 
 	return pushStack(s, nodes)
