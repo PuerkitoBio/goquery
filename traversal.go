@@ -271,108 +271,108 @@ func (s *Selection) ParentsMatcherUntilNodes(filter Matcher, nodes ...*html.Node
 // Siblings gets the siblings of each element in the Selection. It returns
 // a new Selection object containing the matched elements.
 func (s *Selection) Siblings() *Selection {
-	return pushStack(s, getSiblingNodes(s.Nodes, siblingAll, nil, nil))
+	return pushStack(s, getSiblingNodes(s.Nodes, siblingAll))
 }
 
 // SiblingsFiltered gets the siblings of each element in the Selection
 // filtered by a selector. It returns a new Selection object containing the
 // matched elements.
 func (s *Selection) SiblingsFiltered(selector string) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingAll, nil, nil), compileMatcher(selector))
+	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingAll), compileMatcher(selector))
 }
 
 // SiblingsMatcher gets the siblings of each element in the Selection
 // filtered by a matcher. It returns a new Selection object containing the
 // matched elements.
 func (s *Selection) SiblingsMatcher(m Matcher) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingAll, nil, nil), m)
+	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingAll), m)
 }
 
 // Next gets the immediately following sibling of each element in the
 // Selection. It returns a new Selection object containing the matched elements.
 func (s *Selection) Next() *Selection {
-	return pushStack(s, getSiblingNodes(s.Nodes, siblingNext, nil, nil))
+	return pushStack(s, getSiblingNodes(s.Nodes, siblingNext))
 }
 
 // NextFiltered gets the immediately following sibling of each element in the
 // Selection filtered by a selector. It returns a new Selection object
 // containing the matched elements.
 func (s *Selection) NextFiltered(selector string) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNext, nil, nil), compileMatcher(selector))
+	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNext), compileMatcher(selector))
 }
 
 // NextMatcher gets the immediately following sibling of each element in the
 // Selection filtered by a matcher. It returns a new Selection object
 // containing the matched elements.
 func (s *Selection) NextMatcher(m Matcher) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNext, nil, nil), m)
+	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNext), m)
 }
 
 // NextAll gets all the following siblings of each element in the
 // Selection. It returns a new Selection object containing the matched elements.
 func (s *Selection) NextAll() *Selection {
-	return pushStack(s, getSiblingNodes(s.Nodes, siblingNextAll, nil, nil))
+	return pushStack(s, getSiblingNodes(s.Nodes, siblingNextAll))
 }
 
 // NextAllFiltered gets all the following siblings of each element in the
 // Selection filtered by a selector. It returns a new Selection object
 // containing the matched elements.
 func (s *Selection) NextAllFiltered(selector string) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNextAll, nil, nil), compileMatcher(selector))
+	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNextAll), compileMatcher(selector))
 }
 
 // NextAllMatcher gets all the following siblings of each element in the
 // Selection filtered by a matcher. It returns a new Selection object
 // containing the matched elements.
 func (s *Selection) NextAllMatcher(m Matcher) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNextAll, nil, nil), m)
+	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNextAll), m)
 }
 
 // Prev gets the immediately preceding sibling of each element in the
 // Selection. It returns a new Selection object containing the matched elements.
 func (s *Selection) Prev() *Selection {
-	return pushStack(s, getSiblingNodes(s.Nodes, siblingPrev, nil, nil))
+	return pushStack(s, getSiblingNodes(s.Nodes, siblingPrev))
 }
 
 // PrevFiltered gets the immediately preceding sibling of each element in the
 // Selection filtered by a selector. It returns a new Selection object
 // containing the matched elements.
 func (s *Selection) PrevFiltered(selector string) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrev, nil, nil), compileMatcher(selector))
+	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrev), compileMatcher(selector))
 }
 
 // PrevMatcher gets the immediately preceding sibling of each element in the
 // Selection filtered by a matcher. It returns a new Selection object
 // containing the matched elements.
 func (s *Selection) PrevMatcher(m Matcher) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrev, nil, nil), m)
+	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrev), m)
 }
 
 // PrevAll gets all the preceding siblings of each element in the
 // Selection. It returns a new Selection object containing the matched elements.
 func (s *Selection) PrevAll() *Selection {
-	return pushStack(s, getSiblingNodes(s.Nodes, siblingPrevAll, nil, nil))
+	return pushStack(s, getSiblingNodes(s.Nodes, siblingPrevAll))
 }
 
 // PrevAllFiltered gets all the preceding siblings of each element in the
 // Selection filtered by a selector. It returns a new Selection object
 // containing the matched elements.
 func (s *Selection) PrevAllFiltered(selector string) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrevAll, nil, nil), compileMatcher(selector))
+	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrevAll), compileMatcher(selector))
 }
 
 // PrevAllMatcher gets all the preceding siblings of each element in the
 // Selection filtered by a matcher. It returns a new Selection object
 // containing the matched elements.
 func (s *Selection) PrevAllMatcher(m Matcher) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrevAll, nil, nil), m)
+	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrevAll), m)
 }
 
 // NextUntil gets all following siblings of each element up to but not
 // including the element matched by the selector. It returns a new Selection
 // object containing the matched elements.
 func (s *Selection) NextUntil(selector string) *Selection {
-	return pushStack(s, getSiblingNodes(s.Nodes, siblingNextUntil,
+	return pushStack(s, getSiblingNodesUntil(s.Nodes, siblingNextUntil,
 		compileMatcher(selector), nil))
 }
 
@@ -380,7 +380,7 @@ func (s *Selection) NextUntil(selector string) *Selection {
 // including the element matched by the matcher. It returns a new Selection
 // object containing the matched elements.
 func (s *Selection) NextUntilMatcher(m Matcher) *Selection {
-	return pushStack(s, getSiblingNodes(s.Nodes, siblingNextUntil,
+	return pushStack(s, getSiblingNodesUntil(s.Nodes, siblingNextUntil,
 		m, nil))
 }
 
@@ -398,7 +398,7 @@ func (s *Selection) NextUntilSelection(sel *Selection) *Selection {
 // including the element matched by the nodes. It returns a new Selection
 // object containing the matched elements.
 func (s *Selection) NextUntilNodes(nodes ...*html.Node) *Selection {
-	return pushStack(s, getSiblingNodes(s.Nodes, siblingNextUntil,
+	return pushStack(s, getSiblingNodesUntil(s.Nodes, siblingNextUntil,
 		nil, nodes))
 }
 
@@ -406,7 +406,7 @@ func (s *Selection) NextUntilNodes(nodes ...*html.Node) *Selection {
 // including the element matched by the selector. It returns a new Selection
 // object containing the matched elements.
 func (s *Selection) PrevUntil(selector string) *Selection {
-	return pushStack(s, getSiblingNodes(s.Nodes, siblingPrevUntil,
+	return pushStack(s, getSiblingNodesUntil(s.Nodes, siblingPrevUntil,
 		compileMatcher(selector), nil))
 }
 
@@ -414,7 +414,7 @@ func (s *Selection) PrevUntil(selector string) *Selection {
 // including the element matched by the matcher. It returns a new Selection
 // object containing the matched elements.
 func (s *Selection) PrevUntilMatcher(m Matcher) *Selection {
-	return pushStack(s, getSiblingNodes(s.Nodes, siblingPrevUntil,
+	return pushStack(s, getSiblingNodesUntil(s.Nodes, siblingPrevUntil,
 		m, nil))
 }
 
@@ -432,7 +432,7 @@ func (s *Selection) PrevUntilSelection(sel *Selection) *Selection {
 // including the element matched by the nodes. It returns a new Selection
 // object containing the matched elements.
 func (s *Selection) PrevUntilNodes(nodes ...*html.Node) *Selection {
-	return pushStack(s, getSiblingNodes(s.Nodes, siblingPrevUntil,
+	return pushStack(s, getSiblingNodesUntil(s.Nodes, siblingPrevUntil,
 		nil, nodes))
 }
 
@@ -440,7 +440,7 @@ func (s *Selection) PrevUntilNodes(nodes ...*html.Node) *Selection {
 // the results based on a selector string.
 // It returns a new Selection object containing the matched elements.
 func (s *Selection) NextFilteredUntil(filterSelector, untilSelector string) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNextUntil,
+	return filterAndPush(s, getSiblingNodesUntil(s.Nodes, siblingNextUntil,
 		compileMatcher(untilSelector), nil), compileMatcher(filterSelector))
 }
 
@@ -448,7 +448,7 @@ func (s *Selection) NextFilteredUntil(filterSelector, untilSelector string) *Sel
 // the results based on a matcher.
 // It returns a new Selection object containing the matched elements.
 func (s *Selection) NextFilteredUntilMatcher(filter, until Matcher) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNextUntil,
+	return filterAndPush(s, getSiblingNodesUntil(s.Nodes, siblingNextUntil,
 		until, nil), filter)
 }
 
@@ -473,7 +473,7 @@ func (s *Selection) NextMatcherUntilSelection(filter Matcher, sel *Selection) *S
 // option to filter the results based on a selector string. It returns a new
 // Selection object containing the matched elements.
 func (s *Selection) NextFilteredUntilNodes(filterSelector string, nodes ...*html.Node) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNextUntil,
+	return filterAndPush(s, getSiblingNodesUntil(s.Nodes, siblingNextUntil,
 		nil, nodes), compileMatcher(filterSelector))
 }
 
@@ -481,7 +481,7 @@ func (s *Selection) NextFilteredUntilNodes(filterSelector string, nodes ...*html
 // option to filter the results based on a matcher. It returns a new
 // Selection object containing the matched elements.
 func (s *Selection) NextMatcherUntilNodes(filter Matcher, nodes ...*html.Node) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingNextUntil,
+	return filterAndPush(s, getSiblingNodesUntil(s.Nodes, siblingNextUntil,
 		nil, nodes), filter)
 }
 
@@ -489,7 +489,7 @@ func (s *Selection) NextMatcherUntilNodes(filter Matcher, nodes ...*html.Node) *
 // the results based on a selector string.
 // It returns a new Selection object containing the matched elements.
 func (s *Selection) PrevFilteredUntil(filterSelector, untilSelector string) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrevUntil,
+	return filterAndPush(s, getSiblingNodesUntil(s.Nodes, siblingPrevUntil,
 		compileMatcher(untilSelector), nil), compileMatcher(filterSelector))
 }
 
@@ -497,7 +497,7 @@ func (s *Selection) PrevFilteredUntil(filterSelector, untilSelector string) *Sel
 // the results based on a matcher.
 // It returns a new Selection object containing the matched elements.
 func (s *Selection) PrevFilteredUntilMatcher(filter, until Matcher) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrevUntil,
+	return filterAndPush(s, getSiblingNodesUntil(s.Nodes, siblingPrevUntil,
 		until, nil), filter)
 }
 
@@ -522,7 +522,7 @@ func (s *Selection) PrevMatcherUntilSelection(filter Matcher, sel *Selection) *S
 // option to filter the results based on a selector string. It returns a new
 // Selection object containing the matched elements.
 func (s *Selection) PrevFilteredUntilNodes(filterSelector string, nodes ...*html.Node) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrevUntil,
+	return filterAndPush(s, getSiblingNodesUntil(s.Nodes, siblingPrevUntil,
 		nil, nodes), compileMatcher(filterSelector))
 }
 
@@ -530,7 +530,7 @@ func (s *Selection) PrevFilteredUntilNodes(filterSelector string, nodes ...*html
 // option to filter the results based on a matcher. It returns a new
 // Selection object containing the matched elements.
 func (s *Selection) PrevMatcherUntilNodes(filter Matcher, nodes ...*html.Node) *Selection {
-	return filterAndPush(s, getSiblingNodes(s.Nodes, siblingPrevUntil,
+	return filterAndPush(s, getSiblingNodesUntil(s.Nodes, siblingPrevUntil,
 		nil, nodes), filter)
 }
 
@@ -577,15 +577,15 @@ func getParentsNodes(nodes []*html.Node, stopm Matcher, stopNodes []*html.Node) 
 }
 
 // Internal implementation of sibling nodes that return a raw slice of matches.
-func getSiblingNodes(nodes []*html.Node, st siblingType, untilm Matcher, untilNodes []*html.Node) []*html.Node {
+func getSiblingNodesUntil(nodes []*html.Node, st siblingType, untilMatcher Matcher, untilNodes []*html.Node) []*html.Node {
 	var f func(*html.Node) bool
 
 	// If the requested siblings are ...Until, create the test function to
 	// determine if the until condition is reached (returns true if it is)
 	if st == siblingNextUntil || st == siblingPrevUntil {
 		f = func(n *html.Node) bool {
-			if untilm != nil {
-				return untilm.Match(n)
+			if untilMatcher != nil {
+				return untilMatcher.Match(n)
 			} else if len(untilNodes) > 0 {
 				return isInSlice(untilNodes, n)
 			}
@@ -596,6 +596,11 @@ func getSiblingNodes(nodes []*html.Node, st siblingType, untilm Matcher, untilNo
 	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
 		return getChildrenWithSiblingType(n.Parent, st, n, f)
 	})
+}
+
+// getSiblingNodes is the no-until-criteria variant of getSiblingNodesUntil.
+func getSiblingNodes(nodes []*html.Node, st siblingType) []*html.Node {
+	return getSiblingNodesUntil(nodes, st, nil, nil)
 }
 
 // Gets the children nodes of each node in the specified slice of nodes,
