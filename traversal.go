@@ -51,12 +51,19 @@ func (s *Selection) FindSelection(sel *Selection) *Selection {
 // Selection, filtered by some nodes. It returns a new Selection object
 // containing these matched elements.
 func (s *Selection) FindNodes(nodes ...*html.Node) *Selection {
-	return pushStack(s, mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
-		if sliceContains(s.Nodes, n) {
-			return []*html.Node{n}
+	// Each source node maps to at most itself (when it is a descendant of the
+	// current selection), so there is nothing to deduplicate across distinct
+	// sources. Skip mapNodes' callback indirection and append matches directly,
+	// while still discarding duplicate input nodes so the resulting Selection
+	// stays a proper set. The cheap isInSlice check runs first so duplicate
+	// inputs short-circuit before the more expensive sliceContains tree walk.
+	var result []*html.Node
+	for _, n := range nodes {
+		if !isInSlice(result, n) && sliceContains(s.Nodes, n) {
+			result = append(result, n)
 		}
-		return nil
-	}))
+	}
+	return pushStack(s, result)
 }
 
 // Contents gets the children of each element in the Selection,
