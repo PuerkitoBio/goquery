@@ -601,9 +601,22 @@ func getSiblingNodes(nodes []*html.Node, st siblingType, untilm Matcher, untilNo
 // Gets the children nodes of each node in the specified slice of nodes,
 // based on the sibling type request.
 func getChildrenNodes(nodes []*html.Node, st siblingType) []*html.Node {
-	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
-		return getChildrenWithSiblingType(n, st, nil, nil)
-	})
+	// Each child has exactly one parent, so the children of distinct source
+	// nodes form disjoint sets: there is nothing to deduplicate across them.
+	// Skip mapNodes' per-call dedup map and append directly, while keeping the
+	// single-node fast path that returns the slice without an extra copy.
+	switch len(nodes) {
+	case 0:
+		return nil
+	case 1:
+		return getChildrenWithSiblingType(nodes[0], st, nil, nil)
+	}
+
+	var result []*html.Node
+	for _, n := range nodes {
+		result = append(result, getChildrenWithSiblingType(n, st, nil, nil)...)
+	}
+	return result
 }
 
 // Gets the children of the specified parent, based on the requested sibling
