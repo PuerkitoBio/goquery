@@ -12,7 +12,7 @@ func (s *Selection) Filter(selector string) *Selection {
 // the given matcher. It returns a new Selection object for this subset
 // of matching elements.
 func (s *Selection) FilterMatcher(m Matcher) *Selection {
-	return pushStack(s, winnow(s, m, true))
+	return pushStack(s, winnow(s.Nodes, m, true))
 }
 
 // Not removes elements from the Selection that match the selector string.
@@ -24,7 +24,7 @@ func (s *Selection) Not(selector string) *Selection {
 // NotMatcher removes elements from the Selection that match the given matcher.
 // It returns a new Selection object with the matching elements removed.
 func (s *Selection) NotMatcher(m Matcher) *Selection {
-	return pushStack(s, winnow(s, m, false))
+	return pushStack(s, winnow(s.Nodes, m, false))
 }
 
 // FilterFunction reduces the set of matched elements to those that pass the function's test.
@@ -87,10 +87,16 @@ func (s *Selection) Has(selector string) *Selection {
 // It returns a new Selection object with the matching elements.
 func (s *Selection) HasMatcher(m Matcher) *Selection {
 	result := make([]*html.Node, 0, len(s.Nodes))
-	m = SingleMatcher(m)
+
+	// Manually create a singleMatcher (rather than using SingleMatcher, which
+	// returns a Matcher interface) so we can call its MatchFirst method
+	// directly. MatchFirst probes for the first match in a subtree without
+	// building a result slice, avoiding a throwaway one-element slice
+	// allocation for every matching child subtree.
+	sm := singleMatcher{m}
 	for _, n := range s.Nodes {
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			if c.Type == html.ElementNode && len(m.MatchAll(c)) > 0 {
+			if c.Type == html.ElementNode && sm.MatchFirst(c) != nil {
 				result = append(result, n)
 				break
 			}
@@ -136,14 +142,14 @@ func (s *Selection) End() *Selection {
 
 // Filter based on the matcher, and the indicator to keep (Filter) or
 // to get rid of (Not) the matching elements.
-func winnow(sel *Selection, m Matcher, keep bool) []*html.Node {
+func winnow(nodes []*html.Node, m Matcher, keep bool) []*html.Node {
 	// Optimize if keep is requested
 	if keep {
-		return m.Filter(sel.Nodes)
+		return m.Filter(nodes)
 	}
 	// Not path: call Match directly on each node, no Selection wrapper needed
-	result := make([]*html.Node, 0, len(sel.Nodes))
-	for _, n := range sel.Nodes {
+	result := make([]*html.Node, 0, len(nodes))
+	for _, n := range nodes {
 		if !m.Match(n) {
 			result = append(result, n)
 		}

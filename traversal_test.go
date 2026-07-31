@@ -3,6 +3,8 @@ package goquery
 import (
 	"strings"
 	"testing"
+
+	"golang.org/x/net/html"
 )
 
 func TestFind(t *testing.T) {
@@ -49,6 +51,21 @@ func TestChainedFindInvalid(t *testing.T) {
 func TestChildren(t *testing.T) {
 	sel := Doc().Find(".pvk-content").Children()
 	assertLength(t, sel.Nodes, 5)
+}
+
+func TestChildrenDuplicateSourceNodes(t *testing.T) {
+	// A Selection's Nodes field is exported, so callers can construct a
+	// selection that contains the same node more than once. Children (and the
+	// other children-based traversals) must still deduplicate so that the
+	// shared child set is not returned multiple times.
+	base := Doc().Find(".pvk-content")
+	node := base.Nodes[0]
+	expected := base.Eq(0).Children().Length()
+
+	dup := &Selection{Nodes: []*html.Node{node, node}, document: base.document}
+	assertLength(t, dup.Children().Nodes, expected)
+	assertLength(t, dup.ChildrenFiltered("*").Nodes, expected)
+	assertLength(t, dup.Contents().Nodes, base.Eq(0).Contents().Length())
 }
 
 func TestChildrenRollback(t *testing.T) {

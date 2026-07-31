@@ -166,8 +166,16 @@ func (s *Selection) Clone() *Selection {
 // Empty removes all children nodes from the set of matched elements.
 // It returns the children nodes in a new Selection.
 func (s *Selection) Empty() *Selection {
-	var nodes []*html.Node
+	// Count the children first so nodes can be presized, avoiding append's
+	// repeated reallocations.
+	count := 0
+	for _, n := range s.Nodes {
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			count++
+		}
+	}
 
+	nodes := make([]*html.Node, 0, count)
 	for _, n := range s.Nodes {
 		for c := n.FirstChild; c != nil; c = n.FirstChild {
 			n.RemoveChild(c)
@@ -562,13 +570,7 @@ func (s *Selection) wrapInnerNodes(ns ...*html.Node) *Selection {
 }
 
 func parseHtml(h string) []*html.Node {
-	// Errors are only returned when the io.Reader returns any error besides
-	// EOF, but strings.Reader never will
-	nodes, err := html.ParseFragment(strings.NewReader(h), &html.Node{Type: html.ElementNode})
-	if err != nil {
-		panic("goquery: failed to parse HTML: " + err.Error())
-	}
-	return nodes
+	return parseHtmlWithContext(h, &html.Node{Type: html.ElementNode})
 }
 
 func parseHtmlWithContext(h string, context *html.Node) []*html.Node {

@@ -537,10 +537,7 @@ func (s *Selection) PrevMatcherUntilNodes(filter Matcher, nodes ...*html.Node) *
 // Filter and push filters the nodes based on a matcher, and pushes the results
 // on the stack, with the srcSel as previous selection.
 func filterAndPush(srcSel *Selection, nodes []*html.Node, m Matcher) *Selection {
-	// Create a temporary Selection with the specified nodes to filter using winnow
-	sel := &Selection{nodes, srcSel.document, nil}
-	// Filter based on matcher and push on stack
-	return pushStack(srcSel, winnow(sel, m, true))
+	return pushStack(srcSel, winnow(nodes, m, true))
 }
 
 // Internal implementation of Find that return raw nodes.
@@ -657,8 +654,11 @@ func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *htm
 		}
 	}
 
-	// For the collect-all cases, count the results first so result can be
-	// presized, avoiding append's repeated reallocations.
+	// For the cases that collect every matching sibling, count them in a
+	// cheap pointer walk first so the result slice can be sized exactly,
+	// avoiding repeated slice growth. The Until cases are skipped (counting
+	// would require running the predicate twice) and so are the single-result
+	// Next/Prev cases.
 	switch st {
 	case siblingAll, siblingAllIncludingNonElements, siblingPrevAll, siblingNextAll:
 		n := 0
@@ -690,12 +690,21 @@ func getChildrenWithSiblingType(parent *html.Node, st siblingType, skipNode *htm
 
 // Internal implementation of parent nodes that return a raw slice of Nodes.
 func getParentNodes(nodes []*html.Node) []*html.Node {
-	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
-		if n.Parent != nil && n.Parent.Type == html.ElementNode {
-			return []*html.Node{n.Parent}
+	// Collect parents inline rather than going through mapNodes, which would
+	// allocate a throwaway one-element slice per source node. Many source
+	// nodes (e.g. siblings) share the same parent, so deduplicate as we go.
+	var result []*html.Node
+	set := make(map[*html.Node]bool, len(nodes))
+
+	for _, n := range nodes {
+		p := n.Parent
+		if p == nil || p.Type != html.ElementNode || set[p] {
+			continue
 		}
-		return nil
-	})
+		set[p] = true
+		result = append(result, p)
+	}
+	return result
 }
 
 // Internal map function used by many traversing methods. Takes the source nodes

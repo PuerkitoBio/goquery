@@ -143,7 +143,7 @@ func appendWithoutDuplicates(target []*html.Node, nodes []*html.Node, targetSet 
 	// if a targetSet is passed, then assume it is reliable, otherwise create one
 	// and initialize it with the current target contents.
 	if targetSet == nil {
-		targetSet = make(map[*html.Node]bool, len(target))
+		targetSet = make(map[*html.Node]bool, len(target)+len(nodes))
 		for _, n := range target {
 			targetSet[n] = true
 		}
