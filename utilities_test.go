@@ -81,6 +81,83 @@ func TestNodeNameMultiSel(t *testing.T) {
 	}
 }
 
+var textNodes = `<!doctype html>
+<html>
+	<body>
+		<div id="content">
+			<h1>  Hello  </h1>
+			<p>world</p>
+			<!-- a comment -->
+			<script>var ignored = 1;</script>
+		</div>
+	</body>
+</html>`
+
+func TestText_NilOptions(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader(textNodes))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sel := doc.Find("#content")
+	// A nil options value must behave exactly like the Text method.
+	if got, want := Text(sel, nil), sel.Text(); got != want {
+		t.Errorf("nil options: want %q, got %q", want, got)
+	}
+}
+
+func TestText_SeparatorAndTrim(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader(textNodes))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Trim drops the whitespace-only text nodes coming from indentation, and
+	// Separator joins the remaining fragments. The <script> text is included
+	// because no Keep filter is provided.
+	got := Text(doc.Find("#content"), &TextOptions{Separator: "|", Trim: true})
+	want := "Hello|world|var ignored = 1;"
+	if got != want {
+		t.Errorf("want %q, got %q", want, got)
+	}
+}
+
+func TestText_Keep(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader(textNodes))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Keep skips the text of <script> (and <style>) elements.
+	keep := func(n *html.Node) bool {
+		if n.Parent != nil && n.Parent.Type == html.ElementNode {
+			switch n.Parent.Data {
+			case "script", "style":
+				return false
+			}
+		}
+		return true
+	}
+	got := Text(doc.Find("#content"), &TextOptions{Separator: " ", Trim: true, Keep: keep})
+	want := "Hello world"
+	if got != want {
+		t.Errorf("want %q, got %q", want, got)
+	}
+}
+
+func TestText_MultiSelection(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader(textNodes))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := Text(doc.Find("h1, p"), &TextOptions{Separator: ",", Trim: true})
+	want := "Hello,world"
+	if got != want {
+		t.Errorf("want %q, got %q", want, got)
+	}
+}
+
 func TestOuterHtml(t *testing.T) {
 	doc, err := NewDocumentFromReader(strings.NewReader(allNodes))
 	if err != nil {
