@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
 )
 
 // This example scrapes the reviews shown on the home page of metalsucks.net.
@@ -107,4 +108,41 @@ func ExampleSingle() {
 	// Output:
 	// 123
 	// 1
+}
+
+// This example shows how to use the goquery.Text function to extract clean,
+// human-readable text from a selection, similar to BeautifulSoup's get_text.
+func ExampleText() {
+	page := `
+<html>
+  <body>
+    <div id="content">
+      <h1>  Hello  </h1>
+      <p>world</p>
+      <script>var ignored = 1;</script>
+    </div>
+  </body>
+</html>
+`
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(page))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Trim each text node, join the remaining ones with a space, and skip the
+	// text of <script> and <style> elements.
+	text := goquery.Text(doc.Find("#content"), &goquery.TextOptions{
+		Separator: " ",
+		Trim:      true,
+		Keep: func(n *html.Node) bool {
+			if p := n.Parent; p != nil && p.Type == html.ElementNode {
+				return p.Data != "script" && p.Data != "style"
+			}
+			return true
+		},
+	})
+	fmt.Println(text)
+
+	// Output:
+	// Hello world
 }
