@@ -56,6 +56,24 @@ func NewDocumentFromReader(r io.Reader) (*Document, error) {
 	return newDocument(root, nil), nil
 }
 
+// NewDocumentFromReaderWithOptions is like NewDocumentFromReader, with the
+// parse options of the html package.
+//
+// The option that usually matters is html.ParseOptionEnableScripting(false),
+// which makes <noscript> content reachable by selectors:
+//
+//	doc, err := goquery.NewDocumentFromReaderWithOptions(r,
+//		html.ParseOptionEnableScripting(false))
+//
+// The options apply to this parse only.
+func NewDocumentFromReaderWithOptions(r io.Reader, opts ...html.ParseOption) (*Document, error) {
+	root, e := html.ParseWithOptions(r, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return newDocument(root, nil), nil
+}
+
 // NewDocumentFromResponse is another Document constructor that takes an http response as argument.
 // It loads the specified response's document, parses it, and stores the root Document
 // node, ready to be manipulated. The response's body is closed on return.
