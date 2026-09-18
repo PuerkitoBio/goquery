@@ -464,7 +464,7 @@ func (s *Selection) NextFilteredUntilSelection(filterSelector string, sel *Selec
 // Selection object containing the matched elements.
 func (s *Selection) NextMatcherUntilSelection(filter Matcher, sel *Selection) *Selection {
 	if sel == nil {
-		return s.NextMatcher(filter)
+		return s.NextAllMatcher(filter)
 	}
 	return s.NextMatcherUntilNodes(filter, sel.Nodes...)
 }
@@ -513,7 +513,7 @@ func (s *Selection) PrevFilteredUntilSelection(filterSelector string, sel *Selec
 // Selection object containing the matched elements.
 func (s *Selection) PrevMatcherUntilSelection(filter Matcher, sel *Selection) *Selection {
 	if sel == nil {
-		return s.PrevMatcher(filter)
+		return s.PrevAllMatcher(filter)
 	}
 	return s.PrevMatcherUntilNodes(filter, sel.Nodes...)
 }

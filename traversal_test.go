@@ -623,6 +623,18 @@ func TestNextFilteredUntilSelectionRollback(t *testing.T) {
 	assertEqual(t, sel, sel3)
 }
 
+func TestNextFilteredUntilNilSelection(t *testing.T) {
+	sel := Doc2().Find("#n1")
+	for _, result := range []*Selection{
+		sel.NextFilteredUntilSelection(".even", nil),
+		sel.NextMatcherUntilSelection(compileMatcher(".even"), nil),
+	} {
+		assertLength(t, result.Nodes, 2)
+		assertSelectionIs(t, result, "#n3", "#n5")
+		assertEqual(t, result.End(), sel)
+	}
+}
+
 func TestNextFilteredUntilNodes(t *testing.T) {
 	sel := Doc2().Find(".even")
 	sel2 := Doc2().Find(".four")
@@ -668,6 +680,18 @@ func TestPrevFilteredUntilSelectionRollback(t *testing.T) {
 	sel2 := Doc2().Find(".five")
 	sel3 := sel.PrevFilteredUntilSelection(".even", sel2).End()
 	assertEqual(t, sel, sel3)
+}
+
+func TestPrevFilteredUntilNilSelection(t *testing.T) {
+	sel := Doc2().Find("#n6")
+	for _, result := range []*Selection{
+		sel.PrevFilteredUntilSelection(".even", nil),
+		sel.PrevMatcherUntilSelection(compileMatcher(".even"), nil),
+	} {
+		assertLength(t, result.Nodes, 3)
+		assertSelectionIs(t, result, "#n5", "#n3", "#n1")
+		assertEqual(t, result.End(), sel)
+	}
 }
 
 func TestPrevFilteredUntilNodes(t *testing.T) {
