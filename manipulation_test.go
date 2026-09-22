@@ -9,6 +9,28 @@ const (
 	wrapHtml = "<div id=\"ins\">test string<div><p><em><b></b></em></p></div></div>"
 )
 
+func TestClonePreservesNamespaces(t *testing.T) {
+	doc := loadString(t, `<div><svg><circle></circle></svg><math><mi>x</mi></math></div>`)
+	for name, cloned := range map[string]*Selection{
+		"selection": doc.Find("div").Clone(),
+		"document":  CloneDocument(doc).Selection,
+	} {
+		t.Run(name, func(t *testing.T) {
+			for selector, namespace := range map[string]string{
+				"svg": "svg", "circle": "svg", "math": "math", "mi": "math",
+			} {
+				node := cloned.Find(selector).Get(0)
+				if node == nil {
+					t.Fatalf("missing cloned %s", selector)
+				}
+				if node.Namespace != namespace {
+					t.Errorf("%s namespace = %q, want %q", selector, node.Namespace, namespace)
+				}
+			}
+		})
+	}
+}
+
 func TestAfter(t *testing.T) {
 	doc := Doc2Clone()
 	doc.Find("#main").After("#nf6")

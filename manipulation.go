@@ -598,10 +598,11 @@ func cloneNodes(ns []*html.Node) []*html.Node {
 // children but none of its parents or siblings.
 func cloneNode(n *html.Node) *html.Node {
 	nn := &html.Node{
-		Type:     n.Type,
-		DataAtom: n.DataAtom,
-		Data:     n.Data,
-		Attr:     make([]html.Attribute, len(n.Attr)),
+		Type:      n.Type,
+		DataAtom:  n.DataAtom,
+		Data:      n.Data,
+		Namespace: n.Namespace,
+		Attr:      make([]html.Attribute, len(n.Attr)),
 	}
 
 	copy(nn.Attr, n.Attr)
