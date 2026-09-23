@@ -253,3 +253,66 @@ func TestSingle(t *testing.T) {
 		t.Fatalf("want %q, got %q", "142", text)
 	}
 }
+
+func TestNewDocumentFromReaderWithOptions(t *testing.T) {
+	const doc = `<html><body><p>before</p><noscript><a href="http://example.org">click this link</a></noscript></body></html>`
+
+	// With scripting on, <noscript> content is raw text no selector can reach.
+	d, e := NewDocumentFromReader(strings.NewReader(doc))
+	if e != nil {
+		t.Fatal(e)
+	}
+	if _, ok := d.Find("noscript a").Attr("href"); ok {
+		t.Error("expected no match inside noscript with scripting enabled")
+	}
+
+	d, e = NewDocumentFromReaderWithOptions(strings.NewReader(doc), html.ParseOptionEnableScripting(false))
+	if e != nil {
+		t.Fatal(e)
+	}
+	href, ok := d.Find("noscript a").Attr("href")
+	if !ok {
+		t.Fatal("expected a match inside noscript with scripting disabled")
+	}
+	if href != "http://example.org" {
+		t.Errorf("got href %q, want %q", href, "http://example.org")
+	}
+}
+
+func TestNewDocumentFromReaderWithOptionsNoOptions(t *testing.T) {
+	const doc = `<html><body><p class="x">hi</p></body></html>`
+
+	d, e := NewDocumentFromReaderWithOptions(strings.NewReader(doc))
+	if e != nil {
+		t.Fatal(e)
+	}
+	if got := d.Find("p.x").Text(); got != "hi" {
+		t.Errorf("got %q, want %q", got, "hi")
+	}
+}
+
+func TestNewDocumentFromReaderWithOptionsAppliesToAddedHtml(t *testing.T) {
+	const doc = `<html><body><p>before</p></body></html>`
+	const frag = `<noscript><a href="http://example.org">click this link</a></noscript>`
+
+	// The options given to the constructor hold for HTML added later, so the
+	// fragment is parsed the same way the document was.
+	d, e := NewDocumentFromReaderWithOptions(strings.NewReader(doc), html.ParseOptionEnableScripting(false))
+	if e != nil {
+		t.Fatal(e)
+	}
+	d.Find("body").AppendHtml(frag)
+	if _, ok := d.Find("noscript a").Attr("href"); !ok {
+		t.Error("expected the added noscript to be parsed with scripting disabled")
+	}
+
+	// Without the options the added fragment keeps the default behaviour.
+	d, e = NewDocumentFromReader(strings.NewReader(doc))
+	if e != nil {
+		t.Fatal(e)
+	}
+	d.Find("body").AppendHtml(frag)
+	if _, ok := d.Find("noscript a").Attr("href"); ok {
+		t.Error("expected no match inside the added noscript with scripting enabled")
+	}
+}

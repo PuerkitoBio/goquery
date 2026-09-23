@@ -19,6 +19,9 @@ type Document struct {
 	*Selection
 	Url      *url.URL
 	rootNode *html.Node
+	// parse options this document was built with, reused whenever an HTML
+	// string is parsed into it later on
+	parseOptions []html.ParseOption
 }
 
 // NewDocumentFromNode is a Document constructor that takes a root html Node
@@ -56,6 +59,24 @@ func NewDocumentFromReader(r io.Reader) (*Document, error) {
 	return newDocument(root, nil), nil
 }
 
+// NewDocumentFromReaderWithOptions is like NewDocumentFromReader, with the
+// parse options of the html package.
+//
+// The option that usually matters is html.ParseOptionEnableScripting(false),
+// which makes <noscript> content reachable by selectors:
+//
+//	doc, err := goquery.NewDocumentFromReaderWithOptions(r,
+//		html.ParseOptionEnableScripting(false))
+//
+// The options apply to this parse only.
+func NewDocumentFromReaderWithOptions(r io.Reader, opts ...html.ParseOption) (*Document, error) {
+	root, e := html.ParseWithOptions(r, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return newDocument(root, nil, opts...), nil
+}
+
 // NewDocumentFromResponse is another Document constructor that takes an http response as argument.
 // It loads the specified response's document, parses it, and stores the root Document
 // node, ready to be manipulated. The response's body is closed on return.
@@ -82,13 +103,13 @@ func NewDocumentFromResponse(res *http.Response) (*Document, error) {
 
 // CloneDocument creates a deep-clone of a document.
 func CloneDocument(doc *Document) *Document {
-	return newDocument(cloneNode(doc.rootNode), doc.Url)
+	return newDocument(cloneNode(doc.rootNode), doc.Url, doc.parseOptions...)
 }
 
 // Private constructor, make sure all fields are correctly filled.
-func newDocument(root *html.Node, url *url.URL) *Document {
+func newDocument(root *html.Node, url *url.URL, opts ...html.ParseOption) *Document {
 	// Create and fill the document
-	d := &Document{nil, url, root}
+	d := &Document{Url: url, rootNode: root, parseOptions: opts}
 	d.Selection = newSingleSelection(root, d)
 	return d
 }
