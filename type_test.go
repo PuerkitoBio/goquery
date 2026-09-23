@@ -290,3 +290,29 @@ func TestNewDocumentFromReaderWithOptionsNoOptions(t *testing.T) {
 		t.Errorf("got %q, want %q", got, "hi")
 	}
 }
+
+func TestNewDocumentFromReaderWithOptionsAppliesToAddedHtml(t *testing.T) {
+	const doc = `<html><body><p>before</p></body></html>`
+	const frag = `<noscript><a href="http://example.org">click this link</a></noscript>`
+
+	// The options given to the constructor hold for HTML added later, so the
+	// fragment is parsed the same way the document was.
+	d, e := NewDocumentFromReaderWithOptions(strings.NewReader(doc), html.ParseOptionEnableScripting(false))
+	if e != nil {
+		t.Fatal(e)
+	}
+	d.Find("body").AppendHtml(frag)
+	if _, ok := d.Find("noscript a").Attr("href"); !ok {
+		t.Error("expected the added noscript to be parsed with scripting disabled")
+	}
+
+	// Without the options the added fragment keeps the default behaviour.
+	d, e = NewDocumentFromReader(strings.NewReader(doc))
+	if e != nil {
+		t.Fatal(e)
+	}
+	d.Find("body").AppendHtml(frag)
+	if _, ok := d.Find("noscript a").Attr("href"); ok {
+		t.Error("expected no match inside the added noscript with scripting enabled")
+	}
+}

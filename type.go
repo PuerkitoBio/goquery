@@ -19,6 +19,9 @@ type Document struct {
 	*Selection
 	Url      *url.URL
 	rootNode *html.Node
+	// parse options this document was built with, reused whenever an HTML
+	// string is parsed into it later on
+	parseOptions []html.ParseOption
 }
 
 // NewDocumentFromNode is a Document constructor that takes a root html Node
@@ -71,7 +74,7 @@ func NewDocumentFromReaderWithOptions(r io.Reader, opts ...html.ParseOption) (*D
 	if e != nil {
 		return nil, e
 	}
-	return newDocument(root, nil), nil
+	return newDocument(root, nil, opts...), nil
 }
 
 // NewDocumentFromResponse is another Document constructor that takes an http response as argument.
@@ -100,13 +103,13 @@ func NewDocumentFromResponse(res *http.Response) (*Document, error) {
 
 // CloneDocument creates a deep-clone of a document.
 func CloneDocument(doc *Document) *Document {
-	return newDocument(cloneNode(doc.rootNode), doc.Url)
+	return newDocument(cloneNode(doc.rootNode), doc.Url, doc.parseOptions...)
 }
 
 // Private constructor, make sure all fields are correctly filled.
-func newDocument(root *html.Node, url *url.URL) *Document {
+func newDocument(root *html.Node, url *url.URL, opts ...html.ParseOption) *Document {
 	// Create and fill the document
-	d := &Document{nil, url, root}
+	d := &Document{Url: url, rootNode: root, parseOptions: opts}
 	d.Selection = newSingleSelection(root, d)
 	return d
 }
