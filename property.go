@@ -275,5 +275,7 @@ func setClasses(n *html.Node, attr *html.Attribute, classes string) {
 		return
 	}
 
-	attr.Val = classes
+	if attr != nil {
+		attr.Val = classes
+	}
 }
