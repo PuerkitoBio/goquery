@@ -62,13 +62,10 @@ func NewDocumentFromReader(r io.Reader) (*Document, error) {
 // NewDocumentFromReaderWithOptions is like NewDocumentFromReader, with the
 // parse options of the html package.
 //
-// The option that usually matters is html.ParseOptionEnableScripting(false),
-// which makes <noscript> content reachable by selectors:
+// For example:
 //
 //	doc, err := goquery.NewDocumentFromReaderWithOptions(r,
 //		html.ParseOptionEnableScripting(false))
-//
-// The options apply to this parse only.
 func NewDocumentFromReaderWithOptions(r io.Reader, opts ...html.ParseOption) (*Document, error) {
 	root, e := html.ParseWithOptions(r, opts...)
 	if e != nil {
@@ -152,8 +149,8 @@ type Matcher interface {
 //
 // For example, those two statements are semantically equivalent:
 //
-//     sel1 := doc.Find("a").First()
-//     sel2 := doc.FindMatcher(goquery.Single("a"))
+//	sel1 := doc.Find("a").First()
+//	sel2 := doc.FindMatcher(goquery.Single("a"))
 //
 // The one using Single is optimized to be potentially much faster on large
 // documents.
