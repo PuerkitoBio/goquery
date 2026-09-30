@@ -389,7 +389,7 @@ func (s *Selection) WrapHtml(htmlStr string) *Selection {
 		if parent == nil {
 			parent = &html.Node{Type: html.ElementNode}
 		}
-		nodes := cachedParseHtmlWithContext(cache, htmlStr, parent)
+		nodes := cachedParseHtmlWithContext(cache, htmlStr, parent, s.parseOpts())
 		newSingleSelection(n, s.document).wrapAllNodes(cloneNodes(nodes)...)
 	}
 	return s
@@ -450,9 +450,9 @@ func (s *Selection) WrapAllHtml(htmlStr string) *Selection {
 	if len(s.Nodes) > 0 {
 		context = s.Nodes[0]
 		if context.Parent != nil {
-			nodes = parseHtmlWithContext(htmlStr, context)
+			nodes = parseHtmlWithContext(htmlStr, context, s.parseOpts())
 		} else {
-			nodes = parseHtml(htmlStr)
+			nodes = parseHtml(htmlStr, s.parseOpts())
 		}
 	}
 	return s.wrapAllNodes(nodes...)
@@ -527,7 +527,7 @@ func (s *Selection) WrapInnerSelection(sel *Selection) *Selection {
 func (s *Selection) WrapInnerHtml(htmlStr string) *Selection {
 	cache := make(map[string][]*html.Node)
 	for _, n := range s.Nodes {
-		nodes := cachedParseHtmlWithContext(cache, htmlStr, n)
+		nodes := cachedParseHtmlWithContext(cache, htmlStr, n, s.parseOpts())
 		newSingleSelection(n, s.document).wrapInnerNodes(cloneNodes(nodes)...)
 	}
 	return s
@@ -560,14 +560,23 @@ func (s *Selection) wrapInnerNodes(ns ...*html.Node) *Selection {
 	return s
 }
 
-func parseHtml(h string) []*html.Node {
-	return parseHtmlWithContext(h, &html.Node{Type: html.ElementNode})
+// parseOpts returns the parse options of the document this selection belongs to,
+// so an HTML string added later is parsed the same way the document was.
+func (s *Selection) parseOpts() []html.ParseOption {
+	if s == nil || s.document == nil {
+		return nil
+	}
+	return s.document.parseOptions
 }
 
-func parseHtmlWithContext(h string, context *html.Node) []*html.Node {
+func parseHtml(h string, opts []html.ParseOption) []*html.Node {
+	return parseHtmlWithContext(h, &html.Node{Type: html.ElementNode}, opts)
+}
+
+func parseHtmlWithContext(h string, context *html.Node, opts []html.ParseOption) []*html.Node {
 	// Errors are only returned when the io.Reader returns any error besides
 	// EOF, but strings.Reader never will
-	nodes, err := html.ParseFragment(strings.NewReader(h), context)
+	nodes, err := html.ParseFragmentWithOptions(strings.NewReader(h), context, opts...)
 	if err != nil {
 		panic("goquery: failed to parse HTML: " + err.Error())
 	}
@@ -662,7 +671,7 @@ func (s *Selection) eachNodeHtml(htmlStr string, isParent bool, mergeFn func(n *
 		if context == nil {
 			continue
 		}
-		nodes := cachedParseHtmlWithContext(cache, htmlStr, context)
+		nodes := cachedParseHtmlWithContext(cache, htmlStr, context, s.parseOpts())
 		mergeFn(n, cloneNodes(nodes))
 	}
 	return s
@@ -671,12 +680,12 @@ func (s *Selection) eachNodeHtml(htmlStr string, isParent bool, mergeFn func(n *
 // cachedParseHtmlWithContext returns parseHtmlWithContext(htmlStr, context), reusing a prior
 // result when context's nodeName has already been seen. Callers pass their own
 // cache map so the cache lifetime matches the caller's loop scope.
-func cachedParseHtmlWithContext(cache map[string][]*html.Node, htmlStr string, context *html.Node) []*html.Node {
+func cachedParseHtmlWithContext(cache map[string][]*html.Node, htmlStr string, context *html.Node, opts []html.ParseOption) []*html.Node {
 	key := nodeName(context)
 	if nodes, ok := cache[key]; ok {
 		return nodes
 	}
-	nodes := parseHtmlWithContext(htmlStr, context)
+	nodes := parseHtmlWithContext(htmlStr, context, opts)
 	cache[key] = nodes
 	return nodes
 }
