@@ -6,7 +6,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-var classTrimReplacer = strings.NewReplacer("\t", " ", "\r", " ", "\n", " ")
+var classTrimReplacer = strings.NewReplacer("\t", " ", "\r", " ", "\n", " ", "\f", " ")
 
 // Attr gets the specified attribute's value for the first element in the
 // Selection. To get the value for each element individually, use a looping
