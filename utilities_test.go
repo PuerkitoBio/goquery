@@ -9,6 +9,162 @@ import (
 	"golang.org/x/net/html"
 )
 
+var invalidPathNodes = []struct {
+	in   string
+	path []int
+}{
+	{"<a>", []int{0, 1, 2}},
+	{"<html><head><meta><title></title></head><body><div><p></p><a></a><span></span></div></body></html>", []int{0, 0, 1, 2, 0}},
+	{"<html><head><meta><title></title></head><body><div><p></p><a></a><span></span></div></body></html>", []int{1}},
+	{"<html><head><meta><title></title></head><body><div><p></p><a></a><span></span></div></body></html>", []int{1, 2}},
+	{"<html><head><meta><title></title></head><body><div><p></p><a></a><span></span></div></body></html>", []int{1, 2, 10}},
+	{"<a>", []int{}},
+	{"<a>", []int{-1}},
+}
+
+var validPathNodes = []struct {
+	in   string
+	el   string
+	path []int
+}{
+	{"<a>", "a", []int{0, 0, 1, 0}},                                                                                                      // root html body(1) a
+	{"<html><head><meta></head><body></body></html>", "meta", []int{0, 0, 0, 0}},                                                         // root html head meta
+	{"<html><head><meta><title></title></head><body></body></html>", "title", []int{0, 0, 0, 1}},                                         // root html head title
+	{"<html><head><meta><title></title></head><body><div><p></p></div></body></html>", "div", []int{0, 0, 1, 0}},                         // root html body(1) div
+	{"<html><head><meta><title></title></head><body><div><p></p></div></body></html>", "p", []int{0, 0, 1, 0, 0}},                        // root html body(1) div p
+	{"<html><head><meta><title></title></head><body><div><p></p><a></a><span></span></div></body></html>", "a", []int{0, 0, 1, 0, 1}},    // root html body(1) div a(1)
+	{"<html><head><meta><title></title></head><body><div><p></p><a></a><span></span></div></body></html>", "span", []int{0, 0, 1, 0, 2}}, // root html body(1) div span(2)
+}
+
+func TestPathForNode(t *testing.T) {
+	for i, c := range validPathNodes {
+		doc, err := NewDocumentFromReader(strings.NewReader(c.in))
+		if err != nil {
+			t.Errorf("%d: failed to parse: %v", i, err)
+			continue
+		}
+
+		var n *html.Node
+		if sel := doc.Find(c.el); sel.Length() > 0 {
+			n = sel.Get(0)
+		}
+
+		got := PathForNode(n)
+		if !reflect.DeepEqual(c.path, got) {
+			h, _ := OuterHtml(doc.Selection)
+			t.Errorf("%d: want %v, got %v (html: %s)", i, c.path, got, h)
+		}
+	}
+
+	// test a nil node
+	if got := PathForNode(nil); got != nil {
+		t.Errorf("want nil for nil node, got %v", got)
+	}
+}
+
+func TestNodeAtPath(t *testing.T) {
+	// valid cases
+	for i, c := range validPathNodes {
+		n, err := html.Parse(strings.NewReader(c.in))
+		if err != nil {
+			t.Errorf("%d: failed to parse: %v", i, err)
+			continue
+		}
+
+		nn := NodeAtPath(c.path, n)
+		if nn == nil || nn.Data != c.el {
+			t.Errorf("%d: want element %s, got %v", i, c.el, nn)
+		}
+	}
+
+	// invalid cases
+	for i, c := range invalidPathNodes {
+		n, err := html.Parse(strings.NewReader(c.in))
+		if err != nil {
+			t.Errorf("%d: failed to parse: %v", i, err)
+			continue
+		}
+
+		if got := NodeAtPath(c.path, n); got != nil {
+			t.Errorf("%d: want nil, got %v", i, got)
+		}
+	}
+
+	// test a nil node
+	if got := NodeAtPath([]int{1, 2, 3}, nil); got != nil {
+		t.Errorf("want nil for nil node, got %v", got)
+	}
+
+	// test empty and nil path
+	n, _ := html.Parse(strings.NewReader("<a>"))
+	if got := NodeAtPath(nil, n); got != nil {
+		t.Errorf("want nil for nil path, got %v", got)
+	}
+	if got := NodeAtPath([]int{}, n); got != nil {
+		t.Errorf("want nil for empty path, got %v", got)
+	}
+}
+
+func TestSelectionPath(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader("<html><body><div><p>hello</p></div></body></html>"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	p := doc.Find("p")
+	path := p.Path()
+	want := []int{0, 0, 1, 0, 0}
+	if !reflect.DeepEqual(path, want) {
+		t.Errorf("want %v, got %v", want, path)
+	}
+
+	// empty selection
+	empty := doc.Find("nonexistent")
+	if got := empty.Path(); got != nil {
+		t.Errorf("want nil for empty selection, got %v", got)
+	}
+}
+
+func TestSelectionNodeAtPath(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader("<html><body><div><p>hello</p></div></body></html>"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	p := doc.Find("p")
+	path := p.Path()
+
+	// retrieve from doc
+	sel := doc.NodeAtPath(path)
+	if sel.Length() != 1 {
+		t.Fatalf("want 1 node, got %d", sel.Length())
+	}
+	if sel.Nodes[0] != p.Nodes[0] {
+		t.Errorf("want p node, got %v", sel.Nodes[0])
+	}
+	if sel.Text() != "hello" {
+		t.Errorf("want text 'hello', got %q", sel.Text())
+	}
+
+	// retrieve from sub-selection
+	div := doc.Find("div")
+	sel2 := div.NodeAtPath(path)
+	if sel2.Length() != 1 || sel2.Nodes[0] != p.Nodes[0] {
+		t.Errorf("want p node from sub-selection, got %v", sel2.Nodes)
+	}
+
+	// invalid path
+	if bad := doc.NodeAtPath([]int{9, 9, 9}); bad.Length() != 0 {
+		t.Errorf("want empty selection for invalid path, got %d nodes", bad.Length())
+	}
+
+	// empty selection
+	empty := doc.Find("nonexistent")
+	if bad := empty.NodeAtPath(path); bad.Length() != 0 {
+		t.Errorf("want empty selection from empty selection, got %d nodes", bad.Length())
+	}
+}
+
 var allNodes = `<!doctype html>
 <html>
 	<head>
