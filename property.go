@@ -108,7 +108,7 @@ func (s *Selection) Html() (ret string, e error) {
 // AddClass adds the given class(es) to each element in the set of matched elements.
 // Multiple class names can be specified, separated by a space or via multiple arguments.
 func (s *Selection) AddClass(class ...string) *Selection {
-	classStr := strings.TrimSpace(strings.Join(class, " "))
+	classStr := strings.Trim(strings.Join(class, " "), " \t\r\n\f")
 
 	if classStr == "" {
 		return s
@@ -157,7 +157,7 @@ func (s *Selection) HasClass(class string) bool {
 func (s *Selection) RemoveClass(class ...string) *Selection {
 	var rclasses []string
 
-	classStr := strings.TrimSpace(strings.Join(class, " "))
+	classStr := strings.Trim(strings.Join(class, " "), " \t\r\n\f")
 	remove := classStr == ""
 
 	if !remove {
@@ -183,7 +183,7 @@ func (s *Selection) RemoveClass(class ...string) *Selection {
 // ToggleClass adds or removes the given class(es) for each element in the set of matched elements.
 // Multiple class names can be specified, separated by a space or via multiple arguments.
 func (s *Selection) ToggleClass(class ...string) *Selection {
-	classStr := strings.TrimSpace(strings.Join(class, " "))
+	classStr := strings.Trim(strings.Join(class, " "), " \t\r\n\f")
 
 	if classStr == "" {
 		return s
@@ -258,7 +258,10 @@ func getClassesAndAttr(n *html.Node) (classes string, attr *html.Attribute) {
 }
 
 func getClassesSlice(classes string) []string {
-	return strings.Fields(classes)
+	// HTML class tokens are separated by ASCII whitespace, not Unicode whitespace.
+	return strings.FieldsFunc(classes, func(r rune) bool {
+		return r == ' ' || r == '\t' || r == '\r' || r == '\n' || r == '\f'
+	})
 }
 
 func removeAttr(n *html.Node, attrName string) {
@@ -272,7 +275,7 @@ func removeAttr(n *html.Node, attrName string) {
 }
 
 func setClasses(n *html.Node, attr *html.Attribute, classes string) {
-	classes = strings.TrimSpace(classes)
+	classes = strings.Trim(classes, " \t\r\n\f")
 	if classes == "" {
 		removeAttr(n, "class")
 		return
