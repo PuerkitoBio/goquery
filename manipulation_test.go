@@ -759,3 +759,123 @@ func TestHtmlWithNonElementNode(t *testing.T) {
 		})
 	}
 }
+
+func TestFormAncestorCache(t *testing.T) {
+	const htmlTemplate = `<html><head></head><body>` +
+		`<div id="wrapper-out"><div id="p-out"><div id="target-out" class="target"><span>c1</span></div></div></div>` +
+		`<form id="wrapper-in"><div id="p-in"><div id="target-in" class="target"><span>c2</span></div></div></form>` +
+		`</body></html>`
+
+	const insertFragment = `<form><input type="text"/></form>`
+	const wrapFragment = `<form><div class="wrapper"><span></span></div></form>`
+
+	cases := []struct {
+		name     string
+		fragment string
+		fn       func(*Selection, string) *Selection
+	}{
+		{"AppendHtml", insertFragment, (*Selection).AppendHtml},
+		{"PrependHtml", insertFragment, (*Selection).PrependHtml},
+		{"SetHtml", insertFragment, (*Selection).SetHtml},
+		{"BeforeHtml", insertFragment, (*Selection).BeforeHtml},
+		{"AfterHtml", insertFragment, (*Selection).AfterHtml},
+		{"ReplaceWithHtml", insertFragment, (*Selection).ReplaceWithHtml},
+		{"WrapHtml", wrapFragment, (*Selection).WrapHtml},
+		{"WrapInnerHtml", wrapFragment, (*Selection).WrapInnerHtml},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Control: apply to target-out only
+			docCtrlOut := loadString(t, htmlTemplate)
+			tc.fn(docCtrlOut.Find("#target-out"), tc.fragment)
+			ctrlOutHTML, err := docCtrlOut.Find("#p-out").Html()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Control: apply to target-in only
+			docCtrlIn := loadString(t, htmlTemplate)
+			tc.fn(docCtrlIn.Find("#target-in"), tc.fragment)
+			ctrlInHTML, err := docCtrlIn.Find("#p-in").Html()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Batch 1: outside element first [target-out, target-in]
+			docOutFirst := loadString(t, htmlTemplate)
+			selOutFirst := docOutFirst.Find("#target-out").AddNodes(docOutFirst.Find("#target-in").Get(0))
+			tc.fn(selOutFirst, tc.fragment)
+			outFirst_OutHTML, _ := docOutFirst.Find("#p-out").Html()
+			outFirst_InHTML, _ := docOutFirst.Find("#p-in").Html()
+
+			if outFirst_OutHTML != ctrlOutHTML {
+				t.Errorf("outside-first target-out: got %q, want %q", outFirst_OutHTML, ctrlOutHTML)
+			}
+			if outFirst_InHTML != ctrlInHTML {
+				t.Errorf("outside-first target-in: got %q, want %q", outFirst_InHTML, ctrlInHTML)
+			}
+
+			// Batch 2: inside element first [target-in, target-out]
+			docInFirst := loadString(t, htmlTemplate)
+			selInFirst := docInFirst.Find("#target-in").AddNodes(docInFirst.Find("#target-out").Get(0))
+			tc.fn(selInFirst, tc.fragment)
+			inFirst_OutHTML, _ := docInFirst.Find("#p-out").Html()
+			inFirst_InHTML, _ := docInFirst.Find("#p-in").Html()
+
+			if inFirst_OutHTML != ctrlOutHTML {
+				t.Errorf("inside-first target-out: got %q, want %q", inFirst_OutHTML, ctrlOutHTML)
+			}
+			if inFirst_InHTML != ctrlInHTML {
+				t.Errorf("inside-first target-in: got %q, want %q", inFirst_InHTML, ctrlInHTML)
+			}
+
+			// Empty selection control
+			docEmpty := loadString(t, htmlTemplate)
+			emptySel := docEmpty.Find(".nonexistent")
+			tc.fn(emptySel, tc.fragment)
+		})
+	}
+}
+
+func TestAppendHtmlFormAncestorContext(t *testing.T) {
+	doc := loadString(t, `<html><body>
+		<div id="out"><div class="target" id="t-out"></div></div>
+		<form id="f"><div class="target" id="t-in"></div></form>
+	</body></html>`)
+
+	doc.Find(".target").AppendHtml(`<form><input type="text" name="foo"/></form>`)
+
+	assertLength(t, doc.Find("#t-out form").Nodes, 1)
+	assertLength(t, doc.Find("#t-out form input").Nodes, 1)
+	assertLength(t, doc.Find("#t-in form").Nodes, 0)
+	assertLength(t, doc.Find("#t-in input").Nodes, 1)
+}
+
+func TestPrependHtmlFormAncestorContext(t *testing.T) {
+	doc := loadString(t, `<html><body>
+		<div id="out"><div class="target" id="t-out"><p>existing</p></div></div>
+		<form id="f"><div class="target" id="t-in"><p>existing</p></div></form>
+	</body></html>`)
+
+	doc.Find(".target").PrependHtml(`<form><input type="text" name="foo"/></form>`)
+
+	assertLength(t, doc.Find("#t-out form").Nodes, 1)
+	assertLength(t, doc.Find("#t-out form input").Nodes, 1)
+	assertLength(t, doc.Find("#t-in form").Nodes, 0)
+	assertLength(t, doc.Find("#t-in input").Nodes, 1)
+}
+
+func TestSetHtmlFormAncestorContext(t *testing.T) {
+	doc := loadString(t, `<html><body>
+		<div id="out"><div class="target" id="t-out"><p>old</p></div></div>
+		<form id="f"><div class="target" id="t-in"><p>old</p></div></form>
+	</body></html>`)
+
+	doc.Find(".target").SetHtml(`<form><input type="text" name="foo"/></form>`)
+
+	assertLength(t, doc.Find("#t-out form").Nodes, 1)
+	assertLength(t, doc.Find("#t-out form input").Nodes, 1)
+	assertLength(t, doc.Find("#t-in form").Nodes, 0)
+	assertLength(t, doc.Find("#t-in input").Nodes, 1)
+}
