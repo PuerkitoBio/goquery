@@ -198,6 +198,70 @@ func TestHasClassNotFirst(t *testing.T) {
 	}
 }
 
+func TestClassOperationsASCIIWhitespace(t *testing.T) {
+	for _, tc := range []struct {
+		name, separator string
+	}{
+		{"space", " "},
+		{"tab", "\t"},
+		{"line feed", "\n"},
+		{"carriage return", "\r"},
+		{"form feed", "\f"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			markup := "<div class=\"a" + tc.separator + "b\"></div>"
+			for _, op := range []struct {
+				name string
+				run  func(*Selection)
+				want string
+			}{
+				{"add", func(s *Selection) { s.AddClass("a") }, "a b"},
+				{"remove", func(s *Selection) { s.RemoveClass("a") }, "b"},
+				{"toggle", func(s *Selection) { s.ToggleClass("a") }, "b"},
+			} {
+				t.Run(op.name, func(t *testing.T) {
+					doc, err := NewDocumentFromReader(strings.NewReader(markup))
+					if err != nil {
+						t.Fatal(err)
+					}
+					sel := doc.Find("div")
+					for _, class := range []string{"a", "b"} {
+						if !sel.HasClass(class) {
+							t.Errorf("HasClass(%q) = false for %q", class, markup)
+						}
+					}
+					op.run(sel)
+					if got := sel.AttrOr("class", ""); got != op.want {
+						t.Errorf("class = %q, want %q", got, op.want)
+					}
+				})
+			}
+		})
+	}
+}
+
+func TestClassOperationsRepeatedFormFeed(t *testing.T) {
+	for _, class := range []string{"\fa\fb\f", "a\f\fb", "a\fa\fb"} {
+		t.Run(class, func(t *testing.T) {
+			for _, toggle := range []bool{false, true} {
+				doc, err := NewDocumentFromReader(strings.NewReader("<div class=\"" + class + "\"></div>"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				sel := doc.Find("div")
+				if toggle {
+					sel.ToggleClass("a")
+				} else {
+					sel.RemoveClass("a")
+				}
+				if got := sel.AttrOr("class", ""); got != "b" {
+					t.Errorf("toggle=%t: class = %q, want %q", toggle, got, "b")
+				}
+			}
+		})
+	}
+}
+
 func TestRemoveClass(t *testing.T) {
 	sel := Doc2Clone().Find("#nf1")
 	sel.RemoveClass("one row")
