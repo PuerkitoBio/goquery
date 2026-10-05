@@ -19,6 +19,89 @@ var nodeNames = []string{
 	html.CommentNode:  "#comment",
 }
 
+// PathForNode returns a unique path to retrieve the specified node
+// from its document tree. The path is a slice of int indices, starting
+// at the root of the tree.
+func PathForNode(n *html.Node) []int {
+	var indices []int
+	for n := n; n != nil; n = n.Parent {
+		ix := 0
+		for prev := n.PrevSibling; prev != nil; prev = prev.PrevSibling {
+			ix++
+		}
+		indices = append(indices, ix)
+	}
+
+	// reverse the slice of indices
+	for l, r := 0, len(indices)-1; l < r; l, r = l+1, r-1 {
+		indices[l], indices[r] = indices[r], indices[l]
+	}
+	return indices
+}
+
+// NodeAtPath returns the HTML node at the specified path in the
+// document tree of the specified n node. The path is followed from
+// the root of the tree. If no node is found by following the path,
+// or if path is empty, nil is returned.
+func NodeAtPath(path []int, n *html.Node) *html.Node {
+	if n == nil || len(path) == 0 {
+		return nil
+	}
+
+	// start at root
+	for n.Parent != nil {
+		n = n.Parent
+	}
+	for n.PrevSibling != nil {
+		n = n.PrevSibling
+	}
+
+	for i, ix := range path {
+		if ix < 0 {
+			return nil
+		}
+		if i > 0 {
+			n = n.FirstChild
+			if n == nil {
+				return nil
+			}
+		}
+
+		for j := 0; j < ix; j++ {
+			n = n.NextSibling
+			if n == nil {
+				return nil
+			}
+		}
+	}
+
+	return n
+}
+
+// Path returns the path of the first node in the selection, or nil if the
+// selection is empty. The path is a slice of int indices starting at the
+// root of the tree that uniquely identifies the node within the document.
+func (s *Selection) Path() []int {
+	if len(s.Nodes) == 0 {
+		return nil
+	}
+	return PathForNode(s.Nodes[0])
+}
+
+// NodeAtPath returns a new Selection containing the node at the specified path
+// in the document tree. If no node is found or the selection is empty, an empty
+// Selection is returned.
+func (s *Selection) NodeAtPath(path []int) *Selection {
+	if len(s.Nodes) == 0 {
+		return newEmptySelection(s.document)
+	}
+	n := NodeAtPath(path, s.Nodes[0])
+	if n == nil {
+		return newEmptySelection(s.document)
+	}
+	return pushStack(s, []*html.Node{n})
+}
+
 // NodeName returns the node name of the first element in the selection.
 // It tries to behave in a similar way as the DOM's nodeName property
 // (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeName).
