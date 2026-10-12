@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 // After applies the selector from the root document and inserts the matched elements
@@ -677,11 +678,26 @@ func (s *Selection) eachNodeHtml(htmlStr string, isParent bool, mergeFn func(n *
 	return s
 }
 
+// hasFormAncestor reports whether n or any of its ancestors is an HTML form element.
+// This mirrors the logic in net/html.ParseFragmentWithOptions, which initializes its
+// form pointer from context and its ancestor chain.
+func hasFormAncestor(n *html.Node) bool {
+	for ; n != nil; n = n.Parent {
+		if n.Type == html.ElementNode && (n.DataAtom == atom.Form || n.Data == "form") {
+			return true
+		}
+	}
+	return false
+}
+
 // cachedParseHtmlWithContext returns parseHtmlWithContext(htmlStr, context), reusing a prior
-// result when context's nodeName has already been seen. Callers pass their own
-// cache map so the cache lifetime matches the caller's loop scope.
+// result when context's nodeName has already been seen with the same form ancestor state.
+// Callers pass their own cache map so the cache lifetime matches the caller's loop scope.
 func cachedParseHtmlWithContext(cache map[string][]*html.Node, htmlStr string, context *html.Node, opts []html.ParseOption) []*html.Node {
 	key := nodeName(context)
+	if hasFormAncestor(context) {
+		key += ":form"
+	}
 	if nodes, ok := cache[key]; ok {
 		return nodes
 	}
