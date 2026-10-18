@@ -38,7 +38,7 @@ func (s *Selection) Eq(index int) *Selection {
 	}
 
 	if index >= len(s.Nodes) || index < 0 {
-		return newEmptySelection(s.document)
+		return pushStack(s, nil)
 	}
 
 	return s.Slice(index, index+1)
