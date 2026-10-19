@@ -139,18 +139,19 @@ type Matcher interface {
 	Filter([]*html.Node) []*html.Node
 }
 
-// Single compiles a selector string to a Matcher that stops after the first
-// match is found.
+// Single compiles a selector string to a Matcher that returns at most one
+// match per call to Matcher.MatchAll.
 //
 // By default, Selection.Find and other functions that accept a selector string
 // to select nodes will use all matches corresponding to that selector. By
-// using the Matcher returned by Single, at most the first match will be
-// selected.
+// using the Matcher returned by Single, each call to MatchAll returns at most
+// the first match. The number of nodes selected depends on how the Selection
+// method calls MatchAll. For example, FindMatcher calls it separately for each
+// element child of each node in the source selection, so it can return one
+// match from each child subtree.
 //
-// For example, those two statements are semantically equivalent:
-//
-//	sel1 := doc.Find("a").First()
-//	sel2 := doc.FindMatcher(goquery.Single("a"))
+// To select only the first match across the entire result set, use
+// Find(selector).First().
 //
 // The one using Single is optimized to be potentially much faster on large
 // documents.
