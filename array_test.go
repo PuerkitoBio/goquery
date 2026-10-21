@@ -94,6 +94,17 @@ func TestEqRollback(t *testing.T) {
 	assertEqual(t, sel, sel2)
 }
 
+func TestEqOutOfRangeRollback(t *testing.T) {
+	for _, sel := range []*Selection{Doc().Find(".pvk-content"), Doc().Find("missing")} {
+		for _, index := range []int{sel.Length(), -sel.Length() - 1} {
+			empty := sel.Eq(index)
+			assertLength(t, empty.Nodes, 0)
+			assertEqual(t, sel, empty.End())
+			assertLength(t, empty.AddBack().Nodes, sel.Length())
+		}
+	}
+}
+
 func TestSlice(t *testing.T) {
 	sel := Doc().Find(".pvk-content").Slice(0, 2)
 
