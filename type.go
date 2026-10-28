@@ -60,7 +60,12 @@ func NewDocumentFromReader(r io.Reader) (*Document, error) {
 }
 
 // NewDocumentFromReaderWithOptions is like NewDocumentFromReader, with the
-// parse options of the html package.
+// parse options of the html package. The html parser enables scripting by
+// default, which parses the contents of noscript elements as raw text. Disable
+// scripting to make elements inside a body noscript available to selectors.
+//
+// This constructor parses a complete document. To parse an HTML fragment with
+// a specific context, use html.ParseFragmentWithOptions and NewDocumentFromNode.
 //
 // For example:
 //

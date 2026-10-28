@@ -279,6 +279,29 @@ func TestNewDocumentFromReaderWithOptions(t *testing.T) {
 	}
 }
 
+func TestNewDocumentFromReaderWithOptionsNoscriptWithoutBody(t *testing.T) {
+	const doc = `<noscript><a href="http://example.org">click this link</a></noscript>`
+
+	d, e := NewDocumentFromReaderWithOptions(strings.NewReader(doc), html.ParseOptionEnableScripting(false))
+	if e != nil {
+		t.Fatal(e)
+	}
+
+	// NewDocumentFromReaderWithOptions parses a complete document. Without an
+	// explicit body, the leading noscript is parsed in the implicit head, where
+	// an anchor is invalid. The HTML tree builder moves the anchor into body, so
+	// it is present but is not a descendant of noscript.
+	if got := d.Find("head > noscript").Length(); got != 1 {
+		t.Errorf("got %d noscript elements in head, want 1", got)
+	}
+	if got := d.Find("body > a").Length(); got != 1 {
+		t.Errorf("got %d anchor elements in body, want 1", got)
+	}
+	if got := d.Find("noscript a").Length(); got != 0 {
+		t.Errorf("got %d anchors inside noscript, want 0", got)
+	}
+}
+
 func TestNewDocumentFromReaderWithOptionsNoOptions(t *testing.T) {
 	const doc = `<html><body><p class="x">hi</p></body></html>`
 

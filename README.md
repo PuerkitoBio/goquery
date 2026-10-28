@@ -114,6 +114,17 @@ Please note that Cascadia's selectors do not necessarily match all supported sel
 * `ParentsFiltered("~")` returns an empty selection because the selector string doesn't match anything.
 * `ParentsUntil("~")` returns all parents of the selection because the selector string didn't match any element to stop before the top element.
 
+### Parsing `noscript` content
+
+Go's `golang.org/x/net/html` parser enables scripting by default. In that mode, markup inside a `noscript` element is parsed as raw text, so it does not produce nodes that selectors can match. To make elements inside a `noscript` in the document body available to selectors, disable scripting while parsing:
+
+```Go
+doc, err := goquery.NewDocumentFromReaderWithOptions(r,
+  html.ParseOptionEnableScripting(false))
+```
+
+`NewDocumentFromReaderWithOptions` parses a complete HTML document. If the input is a fragment, either include its proper document context (for example, an explicit `body`) or parse it with `html.ParseFragmentWithOptions`. A leading `noscript` in a document without an explicit `body` can be parsed in the implicit `head`; elements that are invalid there may be moved elsewhere in the generated tree and therefore will not match a descendant selector such as `noscript a`.
+
 ## Examples
 
 See some tips and tricks in the [wiki][].
