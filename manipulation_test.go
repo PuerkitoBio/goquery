@@ -879,3 +879,33 @@ func TestSetHtmlFormAncestorContext(t *testing.T) {
 	assertLength(t, doc.Find("#t-in form").Nodes, 0)
 	assertLength(t, doc.Find("#t-in input").Nodes, 1)
 }
+
+func TestAppendHtmlNamespaceContext(t *testing.T) {
+	doc := loadString(t, `<html><head><title id="t-html">a</title></head><body>
+		<svg><title id="t-svg">b</title></svg>
+	</body></html>`)
+
+	doc.Find("title").AppendHtml(`<b>x</b>`)
+
+	// In an HTML <title> the markup is text; in an SVG <title> it is an element.
+	assertLength(t, doc.Find("#t-html b").Nodes, 0)
+	if got := doc.Find("#t-html").Text(); got != "a<b>x</b>" {
+		t.Errorf("html title text = %q, want %q", got, "a<b>x</b>")
+	}
+	assertLength(t, doc.Find("#t-svg b").Nodes, 1)
+}
+
+func TestSetHtmlNamespaceContext(t *testing.T) {
+	doc := loadString(t, `<html><body>
+		<svg><title id="t-svg">b</title></svg>
+		<title id="t-html">a</title>
+	</body></html>`)
+
+	doc.Find("title").SetHtml(`<b>x</b>`)
+
+	assertLength(t, doc.Find("#t-svg b").Nodes, 1)
+	assertLength(t, doc.Find("#t-html b").Nodes, 0)
+	if got := doc.Find("#t-html").Text(); got != "<b>x</b>" {
+		t.Errorf("html title text = %q, want %q", got, "<b>x</b>")
+	}
+}
