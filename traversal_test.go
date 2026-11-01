@@ -297,6 +297,15 @@ func TestSiblings3(t *testing.T) {
 	assertLength(t, sel.Nodes, 0)
 }
 
+func TestSiblingsWithoutParent(t *testing.T) {
+	doc := Doc2Clone()
+	sel := doc.Find("#main div")
+	sel.First().Remove()
+	assertLength(t, sel.Siblings().Nodes, 5)
+	assertLength(t, doc.Selection.Siblings().Nodes, 0)
+	assertLength(t, doc.Find("#nf1").Clone().SiblingsFiltered("div").Nodes, 0)
+}
+
 func TestSiblingsFiltered(t *testing.T) {
 	sel := Doc().Find(".pvk-gutter").SiblingsFiltered(".pvk-content")
 	assertLength(t, sel.Nodes, 3)
