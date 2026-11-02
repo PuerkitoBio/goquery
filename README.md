@@ -114,6 +114,15 @@ Please note that Cascadia's selectors do not necessarily match all supported sel
 * `ParentsFiltered("~")` returns an empty selection because the selector string doesn't match anything.
 * `ParentsUntil("~")` returns all parents of the selection because the selector string didn't match any element to stop before the top element.
 
+HTML is parsed with scripting enabled by default, so `<noscript>` content is treated as text. To query elements inside a `<noscript>` element in the document body, disable scripting when creating the document:
+
+```Go
+doc, err := goquery.NewDocumentFromReaderWithOptions(r,
+  html.ParseOptionEnableScripting(false))
+```
+
+Here, `html` is the `golang.org/x/net/html` package.
+
 ## Examples
 
 See some tips and tricks in the [wiki][].
