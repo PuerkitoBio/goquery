@@ -6,7 +6,6 @@
 tags
 
 # direnv config
-.env*
 
 # test binaries
 *.test
@@ -14,3 +13,5 @@ tags
 # coverage and profilte outputs
 *.out
 
+config.bat
+node_modules
