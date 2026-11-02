@@ -879,3 +879,97 @@ func TestSetHtmlFormAncestorContext(t *testing.T) {
 	assertLength(t, doc.Find("#t-in form").Nodes, 0)
 	assertLength(t, doc.Find("#t-in input").Nodes, 1)
 }
+
+func TestAppendHtmlNamespaceContext(t *testing.T) {
+	doc := loadString(t, `<html><head><title id="t-html">a</title></head><body>
+		<svg><title id="t-svg">b</title></svg>
+	</body></html>`)
+
+	doc.Find("title").AppendHtml(`<b>x</b>`)
+
+	// In an HTML <title> the markup is text; in an SVG <title> it is an element.
+	assertLength(t, doc.Find("#t-html b").Nodes, 0)
+	if got := doc.Find("#t-html").Text(); got != "a<b>x</b>" {
+		t.Errorf("html title text = %q, want %q", got, "a<b>x</b>")
+	}
+	assertLength(t, doc.Find("#t-svg b").Nodes, 1)
+}
+
+func TestSetHtmlNamespaceContext(t *testing.T) {
+	doc := loadString(t, `<html><body>
+		<svg><title id="t-svg">b</title></svg>
+		<title id="t-html">a</title>
+	</body></html>`)
+
+	doc.Find("title").SetHtml(`<b>x</b>`)
+
+	assertLength(t, doc.Find("#t-svg b").Nodes, 1)
+	assertLength(t, doc.Find("#t-html b").Nodes, 0)
+	if got := doc.Find("#t-html").Text(); got != "<b>x</b>" {
+		t.Errorf("html title text = %q, want %q", got, "<b>x</b>")
+	}
+}
+
+func TestHtmlInsertionNamespaceContext(t *testing.T) {
+	operations := []struct {
+		name     string
+		contents bool
+		apply    func(*Selection)
+	}{
+		{"AppendHtml", false, func(s *Selection) { s.AppendHtml(`<b>new</b>`) }},
+		{"PrependHtml", false, func(s *Selection) { s.PrependHtml(`<b>new</b>`) }},
+		{"SetHtml", false, func(s *Selection) { s.SetHtml(`<b>new</b>`) }},
+		{"WrapInnerHtml", false, func(s *Selection) { s.WrapInnerHtml(`<b>new</b>`) }},
+		{"AfterHtml", true, func(s *Selection) { s.AfterHtml(`<b>new</b>`) }},
+		{"BeforeHtml", true, func(s *Selection) { s.BeforeHtml(`<b>new</b>`) }},
+		{"ReplaceWithHtml", true, func(s *Selection) { s.ReplaceWithHtml(`<b>new</b>`) }},
+		{"WrapHtml", true, func(s *Selection) { s.WrapHtml(`<b>new</b>`) }},
+	}
+	for _, op := range operations {
+		for _, order := range []struct {
+			name string
+			ids  []string
+		}{
+			{"html-first", []string{"#html", "#svg", "#math", "#svg2"}},
+			{"foreign-first", []string{"#math", "#svg", "#html", "#svg2"}},
+		} {
+			t.Run(op.name+"/"+order.name, func(t *testing.T) {
+				const input = `<html><head><title id="html">old</title></head><body><svg><title id="svg">old</title><title id="svg2">old</title></svg><math><title id="math">old</title></math></body></html>`
+				batch, individual := loadString(t, input), loadString(t, input)
+				for id, namespace := range map[string]string{"#html": "", "#svg": "svg", "#svg2": "svg", "#math": "math"} {
+					node := batch.Find(id).Get(0)
+					if node == nil || node.Namespace != namespace {
+						t.Fatalf("missing or incorrect namespace for %s", id)
+					}
+				}
+				selected := batch.Find(order.ids[0])
+				for _, id := range order.ids[1:] {
+					selected = selected.Add(id)
+				}
+				if op.contents {
+					selected = selected.Contents()
+				}
+				op.apply(selected)
+				for _, id := range order.ids {
+					single := individual.Find(id)
+					if op.contents {
+						single = single.Contents()
+					}
+					op.apply(single)
+				}
+				got, err := OuterHtml(batch.Selection)
+				if err != nil {
+					t.Fatal(err)
+				}
+				want, err := OuterHtml(individual.Selection)
+				if err != nil {
+					t.Fatal(err)
+				}
+				// Sharing the parse cache must not change any namespace's DOM.
+				if got != want {
+					t.Errorf("batch insertion differs from individual insertion:\ngot  %s\nwant %s", got, want)
+				}
+			})
+		}
+	}
+}
