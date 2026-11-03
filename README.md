@@ -12,7 +12,9 @@ Syntax-wise, it is as close as possible to jQuery, with the same function names 
 
 ## Supporters
 
-[![SerpApi](misc/assets/serpapi.png)](https://serpapi.com/?utm_source=goquery)
+<a href="https://serpapi.com/?utm_source=goquery">
+  <img src="misc/assets/serpapi.png" alt="SerpApi" width="400px">
+</a>
 
 [SerpApi](https://serpapi.com/?utm_source=goquery) is the world's leading provider of search data, pioneering APIs that turn search engine results into structured, developer-ready information.
 
