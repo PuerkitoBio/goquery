@@ -618,6 +618,22 @@ func TestWrapAllHtml(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
+func TestWrapAllHtmlRawTextElement(t *testing.T) {
+	// The wrapper must be parsed in the parent's context. Parsed inside a
+	// textarea it would become text, and the textarea would be lost.
+	doc := loadString(t, `<html><body><textarea>hi</textarea></body></html>`)
+	doc.Find("textarea").WrapAllHtml(`<div class="wrap"></div>`)
+	assertLength(t, doc.Find("body > div.wrap > textarea").Nodes, 1)
+	printSel(t, doc.Selection)
+}
+
+func TestWrapAllHtmlTextNode(t *testing.T) {
+	doc := loadString(t, `<html><body><p>a <b>b</b></p></body></html>`)
+	doc.Find("p").Contents().WrapAllHtml(`<span class="wrap"></span>`)
+	assertLength(t, doc.Find("p > span.wrap > b").Nodes, 1)
+	printSel(t, doc.Selection)
+}
+
 func TestWrapInnerNoContent(t *testing.T) {
 	doc := Doc2Clone()
 	doc.Find(".one").WrapInner(".two")

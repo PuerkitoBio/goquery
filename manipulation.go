@@ -449,8 +449,10 @@ func (s *Selection) WrapAllHtml(htmlStr string) *Selection {
 	var context *html.Node
 	var nodes []*html.Node
 	if len(s.Nodes) > 0 {
-		context = s.Nodes[0]
-		if context.Parent != nil {
+		// The wrapper takes the place of the first node, so parse it in the
+		// context of that node's parent, as WrapHtml does.
+		context = s.Nodes[0].Parent
+		if context != nil && context.Type == html.ElementNode {
 			nodes = parseHtmlWithContext(htmlStr, context, s.parseOpts())
 		} else {
 			nodes = parseHtml(htmlStr, s.parseOpts())
