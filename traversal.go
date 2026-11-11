@@ -594,6 +594,10 @@ func getSiblingNodes(nodes []*html.Node, st siblingType, untilm Matcher, untilNo
 	}
 
 	return mapNodes(nodes, func(i int, n *html.Node) []*html.Node {
+		// The document root and removed or cloned nodes have no siblings.
+		if n.Parent == nil {
+			return nil
+		}
 		return getChildrenWithSiblingType(n.Parent, st, n, f)
 	})
 }
