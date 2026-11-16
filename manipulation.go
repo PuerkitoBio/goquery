@@ -698,7 +698,10 @@ func cachedParseHtmlWithContext(cache map[string][]*html.Node, htmlStr string, c
 	// The namespace is part of the key because the same tag name parses
 	// differently in HTML and foreign content, e.g. <title> or <style>
 	// in HTML versus inside <svg>.
-	key := context.Namespace + " " + nodeName(context)
+	key := nodeName(context)
+	if context.Namespace != "" {
+		key = context.Namespace + ":" + key
+	}
 	if hasFormAncestor(context) {
 		key += ":form"
 	}
