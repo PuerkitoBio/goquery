@@ -58,6 +58,9 @@ func (s *Selection) AddBack() *Selection {
 // It returns a new Selection object containing the current Selection combined
 // with the filtered previous one
 func (s *Selection) AddBackFiltered(selector string) *Selection {
+	if s.prevSel == nil {
+		return s.AddNodes()
+	}
 	return s.AddSelection(s.prevSel.Filter(selector))
 }
 
@@ -66,5 +69,8 @@ func (s *Selection) AddBackFiltered(selector string) *Selection {
 // It returns a new Selection object containing the current Selection combined
 // with the filtered previous one
 func (s *Selection) AddBackMatcher(m Matcher) *Selection {
+	if s.prevSel == nil {
+		return s.AddNodes()
+	}
 	return s.AddSelection(s.prevSel.FilterMatcher(m))
 }
