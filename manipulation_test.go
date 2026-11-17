@@ -662,6 +662,33 @@ func TestWrapInnerHtml(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
+func TestWrapInnerHtmlMixedContents(t *testing.T) {
+	cases := []struct {
+		name, input, want string
+	}{
+		{"text first", `before<span>inside</span><!--note--><i></i>after`, `before<span><b>inside</b></span><!--note--><i><b></b></i>after`},
+		{"comment first", `<!--note--><span>inside</span>after`, `<!--note--><span><b>inside</b></span>after`},
+		{"text only", `text`, `text`},
+		{"comment only", `<!--note-->`, `<!--note-->`},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			doc := loadString(t, "<div>"+tc.input+"</div>")
+			contents := doc.Find("div").Contents()
+			if got := contents.WrapInnerHtml("<b></b>"); got != contents {
+				t.Fatal("WrapInnerHtml did not return the original selection")
+			}
+			got, err := doc.Find("div").Html()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got != tc.want {
+				t.Errorf("got HTML %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
 func TestParsingRespectsVaryingContext(t *testing.T) {
 	docA := loadString(t, `
 	<html>
@@ -733,6 +760,7 @@ func TestHtmlWithNonElementNode(t *testing.T) {
 		"PrependHtml":     (*Selection).PrependHtml,
 		"ReplaceWithHtml": (*Selection).ReplaceWithHtml,
 		"SetHtml":         (*Selection).SetHtml,
+		"WrapInnerHtml":   (*Selection).WrapInnerHtml,
 	}
 	for nm, fn := range cases {
 		// this test is only to make sure that the HTML parsing/manipulation

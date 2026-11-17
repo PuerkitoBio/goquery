@@ -528,6 +528,9 @@ func (s *Selection) WrapInnerSelection(sel *Selection) *Selection {
 func (s *Selection) WrapInnerHtml(htmlStr string) *Selection {
 	cache := make(map[string][]*html.Node)
 	for _, n := range s.Nodes {
+		if n.Type != html.ElementNode {
+			continue
+		}
 		nodes := cachedParseHtmlWithContext(cache, htmlStr, n, s.parseOpts())
 		newSingleSelection(n, s.document).wrapInnerNodes(cloneNodes(nodes)...)
 	}
