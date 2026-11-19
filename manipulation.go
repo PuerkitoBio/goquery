@@ -312,7 +312,12 @@ func (s *Selection) ReplaceWithHtml(htmlStr string) *Selection {
 // This follows the same rules as Selection.Append.
 func (s *Selection) ReplaceWithNodes(ns ...*html.Node) *Selection {
 	s.AfterNodes(ns...)
-	return s.Remove()
+	for _, n := range s.Nodes {
+		if !slices.Contains(ns, n) && n.Parent != nil {
+			n.Parent.RemoveChild(n)
+		}
+	}
+	return s
 }
 
 // SetHtml sets the html content of each element in the selection to
@@ -627,6 +632,25 @@ func (s *Selection) manipulateNodes(ns []*html.Node, reverse bool,
 	f func(sn *html.Node, n *html.Node)) *Selection {
 
 	lasti := s.Size() - 1
+
+	if len(s.Nodes) > 0 {
+		hasSelf := false
+		for _, n := range ns {
+			if slices.Contains(s.Nodes, n) {
+				hasSelf = true
+				break
+			}
+		}
+		if hasSelf {
+			filtered := make([]*html.Node, 0, len(ns))
+			for _, n := range ns {
+				if !slices.Contains(s.Nodes, n) {
+					filtered = append(filtered, n)
+				}
+			}
+			ns = filtered
+		}
+	}
 
 	// net.Html doesn't provide document fragments for insertion, so to get
 	// things in the correct order with After() and Prepend(), the callback
