@@ -879,3 +879,101 @@ func TestSetHtmlFormAncestorContext(t *testing.T) {
 	assertLength(t, doc.Find("#t-in form").Nodes, 0)
 	assertLength(t, doc.Find("#t-in input").Nodes, 1)
 }
+
+func TestSelfInsertion(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		fn   func(a *Selection)
+	}{
+		{
+			name: "AfterSelection",
+			fn: func(a *Selection) {
+				a.AfterSelection(a)
+			},
+		},
+		{
+			name: "BeforeSelection",
+			fn: func(a *Selection) {
+				a.BeforeSelection(a)
+			},
+		},
+		{
+			name: "ReplaceWithSelection",
+			fn: func(a *Selection) {
+				a.ReplaceWithSelection(a)
+			},
+		},
+		{
+			name: "AfterMatcher",
+			fn: func(a *Selection) {
+				a.After("#a")
+			},
+		},
+		{
+			name: "BeforeMatcher",
+			fn: func(a *Selection) {
+				a.Before("#a")
+			},
+		},
+		{
+			name: "ReplaceWithMatcher",
+			fn: func(a *Selection) {
+				a.ReplaceWith("#a")
+			},
+		},
+		{
+			name: "AppendSelection",
+			fn: func(a *Selection) {
+				a.AppendSelection(a)
+			},
+		},
+		{
+			name: "PrependSelection",
+			fn: func(a *Selection) {
+				a.PrependSelection(a)
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			doc := loadString(t, `<main><b id="a">A</b><b id="b">B</b></main>`)
+			tc.fn(doc.Find("#a"))
+			h, err := doc.Find("main").Html()
+			if err != nil {
+				t.Fatal(err)
+			}
+			expected := `<b id="a">A</b><b id="b">B</b>`
+			if h != expected {
+				t.Errorf("got %q, want %q", h, expected)
+			}
+		})
+	}
+}
+
+func TestIntersectingInsertion(t *testing.T) {
+	t.Run("AfterSelection ignores target in source", func(t *testing.T) {
+		doc := loadString(t, `<main><b id="a">A</b><b id="b">B</b><b id="c">C</b></main>`)
+		doc.Find("#a, #b").AfterSelection(doc.Find("#b, #c"))
+		h, err := doc.Find("main").Html()
+		if err != nil {
+			t.Fatal(err)
+		}
+		expected := `<b id="a">A</b><b id="c">C</b><b id="b">B</b><b id="c">C</b>`
+		if h != expected {
+			t.Errorf("got %q, want %q", h, expected)
+		}
+	})
+
+	t.Run("ReplaceWithSelection preserves target present in replacement", func(t *testing.T) {
+		doc := loadString(t, `<main><b id="a">A</b><b id="b">B</b><b id="c">C</b></main>`)
+		doc.Find("#a, #b").ReplaceWithSelection(doc.Find("#a"))
+		h, err := doc.Find("main").Html()
+		if err != nil {
+			t.Fatal(err)
+		}
+		expected := `<b id="a">A</b><b id="c">C</b>`
+		if h != expected {
+			t.Errorf("got %q, want %q", h, expected)
+		}
+	})
+}
+
