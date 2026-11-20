@@ -1,7 +1,11 @@
 package goquery
 
 import (
+	"fmt"
+	"strings"
 	"testing"
+
+	"golang.org/x/net/html"
 )
 
 func TestAdd(t *testing.T) {
@@ -82,6 +86,88 @@ func TestAddNodesBig(t *testing.T) {
 	nodes3 := append(nodes2, nodes...)
 	sel2 = sel2.End().AddNodes(nodes3...)
 	assertLength(t, sel2.Nodes, 373)
+}
+
+func TestAddNodesPreservesRelatedSelections(t *testing.T) {
+	for _, size := range []int{1, minNodesForSet} {
+		t.Run(fmt.Sprint(size), func(t *testing.T) {
+			doc, err := NewDocumentFromReader(strings.NewReader(strings.Repeat("<i>x</i>", size+3)))
+			if err != nil {
+				t.Fatal(err)
+			}
+			all := doc.Find("i")
+			original := append([]*html.Node(nil), all.Nodes...)
+			prefix := all.Slice(0, size)
+			left := prefix.AddNodes(original[size+1], original[0], original[size+1])
+			right := prefix.AddNodes(original[size+2])
+
+			for i, node := range original {
+				if all.Nodes[i] != node {
+					t.Errorf("source node %d changed", i)
+				}
+			}
+			for name, result := range map[string]*Selection{"left": left, "right": right} {
+				assertLength(t, result.Nodes, size+1)
+				for i := 0; i < size; i++ {
+					if result.Nodes[i] != original[i] {
+						t.Errorf("%s: original node %d changed", name, i)
+					}
+				}
+				if result.End() != prefix {
+					t.Errorf("%s: End did not restore the receiver", name)
+				}
+			}
+			if left.Nodes[size] != original[size+1] || right.Nodes[size] != original[size+2] {
+				t.Error("adding to the receiver changed an earlier result")
+			}
+		})
+	}
+}
+
+func TestAddMethodsPreserveSourceSelection(t *testing.T) {
+	for _, method := range []struct {
+		name  string
+		index int
+		add   func(*Selection, *Selection) *Selection
+		want  []int
+	}{
+		{"Add", 0, func(s, all *Selection) *Selection { return s.Add(".c") }, []int{0, 2}},
+		{"AddMatcher", 0, func(s, all *Selection) *Selection { return s.AddMatcher(compileMatcher(".c")) }, []int{0, 2}},
+		{"AddSelection", 0, func(s, all *Selection) *Selection { return s.AddSelection(all.Eq(2)) }, []int{0, 2}},
+		{"Union", 0, func(s, all *Selection) *Selection { return s.Union(all.Eq(2)) }, []int{0, 2}},
+		{"AddBack", 1, func(s, all *Selection) *Selection { return s.AddBack() }, []int{1, 0, 2, 3}},
+		{"AndSelf", 1, func(s, all *Selection) *Selection { return s.AndSelf() }, []int{1, 0, 2, 3}},
+		{"AddBackFiltered", 1, func(s, all *Selection) *Selection { return s.AddBackFiltered("i") }, []int{1, 0, 2, 3}},
+		{"AddBackMatcher", 1, func(s, all *Selection) *Selection { return s.AddBackMatcher(compileMatcher("i")) }, []int{1, 0, 2, 3}},
+	} {
+		t.Run(method.name, func(t *testing.T) {
+			doc, err := NewDocumentFromReader(strings.NewReader(`<i>A</i><i>B</i><i class="c">C</i><i>D</i>`))
+			if err != nil {
+				t.Fatal(err)
+			}
+			all := doc.Find("i")
+			original := append([]*html.Node(nil), all.Nodes...)
+			current := all.Eq(method.index)
+			result := method.add(current, all)
+			if result.Length() != len(method.want) {
+				t.Errorf("got %d nodes, want %d", result.Length(), len(method.want))
+			} else {
+				for i, index := range method.want {
+					if result.Nodes[i] != original[index] {
+						t.Errorf("result node %d has the wrong identity", i)
+					}
+				}
+			}
+			for i, node := range original {
+				if all.Nodes[i] != node {
+					t.Errorf("source node %d changed", i)
+				}
+			}
+			if result.End() != current {
+				t.Error("End did not restore the receiver")
+			}
+		})
+	}
 }
 
 func TestAndSelf(t *testing.T) {
