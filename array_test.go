@@ -2,6 +2,8 @@ package goquery
 
 import (
 	"testing"
+
+	"golang.org/x/net/html"
 )
 
 func TestFirst(t *testing.T) {
@@ -177,6 +179,39 @@ func TestSliceRollback(t *testing.T) {
 	sel := Doc().Find(".pvk-content")
 	sel2 := sel.Slice(0, 2).End()
 	assertEqual(t, sel, sel2)
+}
+
+func TestSliceAppendPreservesSource(t *testing.T) {
+	for _, method := range []struct {
+		name  string
+		slice func(*Selection) *Selection
+	}{
+		{"prefix", func(s *Selection) *Selection { return s.Slice(0, 1) }},
+		{"middle", func(s *Selection) *Selection { return s.Slice(1, 2) }},
+		{"negative", func(s *Selection) *Selection { return s.Slice(-2, -1) }},
+		{"to end", func(s *Selection) *Selection { return s.Slice(1, ToEnd) }},
+		{"empty", func(s *Selection) *Selection { return s.Slice(1, 1) }},
+		{"Eq", func(s *Selection) *Selection { return s.Eq(0) }},
+		{"First", func(s *Selection) *Selection { return s.First() }},
+		{"Last", func(s *Selection) *Selection { return s.Last() }},
+	} {
+		t.Run(method.name, func(t *testing.T) {
+			all := Doc().Find(".container-fluid")
+			original := append([]*html.Node(nil), all.Nodes...)
+			source := all.Slice(0, 3)
+			part := method.slice(source)
+			part.Nodes = append(part.Nodes, original[0])
+
+			for i, node := range original {
+				if all.Nodes[i] != node {
+					t.Errorf("appending to the slice changed source node %d", i)
+				}
+			}
+			if part.End() != source || source.End() != all {
+				t.Error("End did not restore the selection stack")
+			}
+		})
+	}
 }
 
 func TestGet(t *testing.T) {

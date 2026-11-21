@@ -64,7 +64,7 @@ func (s *Selection) Slice(start, end int) *Selection {
 	} else if end < 0 {
 		end += len(s.Nodes)
 	}
-	return pushStack(s, s.Nodes[start:end])
+	return pushStack(s, s.Nodes[start:end:end])
 }
 
 // Get retrieves the underlying node at the specified index.
