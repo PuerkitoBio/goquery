@@ -380,14 +380,17 @@ func (s *Selection) WrapSelection(sel *Selection) *Selection {
 }
 
 // WrapHtml wraps each element in the set of matched elements inside the inner-
-// most child of the given HTML.
+// most child of the given HTML. Non-element nodes in the selection are skipped.
 //
 // It returns the original set of elements.
 func (s *Selection) WrapHtml(htmlStr string) *Selection {
 	cache := make(map[string][]*html.Node)
 	for _, n := range s.Nodes {
+		if n.Type != html.ElementNode {
+			continue
+		}
 		parent := n.Parent
-		if parent == nil {
+		if parent == nil || parent.Type != html.ElementNode {
 			parent = &html.Node{Type: html.ElementNode}
 		}
 		nodes := cachedParseHtmlWithContext(cache, htmlStr, parent, s.parseOpts())
@@ -442,21 +445,23 @@ func (s *Selection) WrapAllSelection(sel *Selection) *Selection {
 
 // WrapAllHtml wraps the given HTML structure around all elements in the set of
 // matched elements. The matched child is cloned before being inserted into the
-// document.
+// document. Non-element nodes in the selection are skipped.
 //
 // It returns the original set of elements.
 func (s *Selection) WrapAllHtml(htmlStr string) *Selection {
-	var context *html.Node
-	var nodes []*html.Node
-	if len(s.Nodes) > 0 {
-		context = s.Nodes[0]
-		if context.Parent != nil {
-			nodes = parseHtmlWithContext(htmlStr, context, s.parseOpts())
-		} else {
-			nodes = parseHtml(htmlStr, s.parseOpts())
-		}
+	elements := s.Filter("*")
+	if elements.Size() == 0 {
+		return s
 	}
-	return s.wrapAllNodes(nodes...)
+	context := elements.Nodes[0]
+	var nodes []*html.Node
+	if context.Parent != nil {
+		nodes = parseHtmlWithContext(htmlStr, context, s.parseOpts())
+	} else {
+		nodes = parseHtml(htmlStr, s.parseOpts())
+	}
+	elements.wrapAllNodes(nodes...)
+	return s
 }
 
 func (s *Selection) wrapAllNodes(ns ...*html.Node) *Selection {
@@ -522,7 +527,8 @@ func (s *Selection) WrapInnerSelection(sel *Selection) *Selection {
 
 // WrapInnerHtml wraps an HTML structure, matched by the given selector, around
 // the content of element in the set of matched elements. The matched child is
-// cloned before being inserted into the document.
+// cloned before being inserted into the document. Non-element nodes in the
+// selection are skipped.
 //
 // It returns the original set of elements.
 func (s *Selection) WrapInnerHtml(htmlStr string) *Selection {

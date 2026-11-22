@@ -2,6 +2,7 @@ package goquery
 
 import (
 	"log"
+	"slices"
 	"testing"
 )
 
@@ -662,30 +663,68 @@ func TestWrapInnerHtml(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
-func TestWrapInnerHtmlMixedContents(t *testing.T) {
+func TestWrapHtmlMixedContents(t *testing.T) {
 	cases := []struct {
-		name, input, want string
+		name, input, wantEach, wantAll, wantInner string
 	}{
-		{"text first", `before<span>inside</span><!--note--><i></i>after`, `before<span><b>inside</b></span><!--note--><i><b></b></i>after`},
-		{"comment first", `<!--note--><span>inside</span>after`, `<!--note--><span><b>inside</b></span>after`},
-		{"text only", `text`, `text`},
-		{"comment only", `<!--note-->`, `<!--note-->`},
+		{
+			"text first", `before<span>inside</span><!--note--><i></i>after`,
+			`before<b><span>inside</span></b><!--note--><b><i></i></b>after`,
+			`before<b><span>inside</span><i></i></b><!--note-->after`,
+			`before<span><b>inside</b></span><!--note--><i><b></b></i>after`,
+		},
+		{
+			"comment first", `<!--note--><span>inside</span>after`,
+			`<!--note--><b><span>inside</span></b>after`,
+			`<!--note--><b><span>inside</span></b>after`,
+			`<!--note--><span><b>inside</b></span>after`,
+		},
+		{
+			"element first", `<i></i>text<span></span>`,
+			`<b><i></i></b>text<b><span></span></b>`,
+			`<b><i></i><span></span></b>text`,
+			`<i><b></b></i>text<span><b></b></span>`,
+		},
+		{"text only", "text", "text", "text", "text"},
+		{"comment only", "<!--note-->", "<!--note-->", "<!--note-->", "<!--note-->"},
+		{"empty", "", "", "", ""},
 	}
 	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			doc := loadString(t, "<div>"+tc.input+"</div>")
-			contents := doc.Find("div").Contents()
-			if got := contents.WrapInnerHtml("<b></b>"); got != contents {
-				t.Fatal("WrapInnerHtml did not return the original selection")
-			}
-			got, err := doc.Find("div").Html()
-			if err != nil {
-				t.Fatal(err)
-			}
-			if got != tc.want {
-				t.Errorf("got HTML %q, want %q", got, tc.want)
-			}
-		})
+		for _, method := range []struct {
+			name string
+			wrap func(*Selection, string) *Selection
+			want string
+		}{
+			{"WrapHtml", (*Selection).WrapHtml, tc.wantEach},
+			{"WrapAllHtml", (*Selection).WrapAllHtml, tc.wantAll},
+			{"WrapInnerHtml", (*Selection).WrapInnerHtml, tc.wantInner},
+		} {
+			t.Run(method.name+"/"+tc.name, func(t *testing.T) {
+				doc := loadString(t, "<div>"+tc.input+"</div>")
+				div := doc.Find("div")
+				contents := div.Contents()
+				original := slices.Clone(contents.Nodes)
+				if got := method.wrap(contents, "<b></b>"); got != contents || !slices.Equal(got.Nodes, original) {
+					t.Fatal("did not return the original selection and nodes")
+				}
+				got, err := div.Html()
+				if err != nil {
+					t.Fatal(err)
+				}
+				if got != method.want {
+					t.Errorf("got HTML %q, want %q", got, method.want)
+				}
+			})
+		}
+	}
+}
+
+func TestWrapHtmlDocumentParent(t *testing.T) {
+	doc := loadString(t, `<!doctype html><html><body></body></html>`)
+	root := doc.Find("html")
+	root.WrapHtml("<div></div>")
+	if got := doc.Find("div > html").Get(0); got == nil || got != root.Get(0) {
+		t.Fatal("expected the wrapper to contain the original html element")
 	}
 }
 
@@ -760,6 +799,8 @@ func TestHtmlWithNonElementNode(t *testing.T) {
 		"PrependHtml":     (*Selection).PrependHtml,
 		"ReplaceWithHtml": (*Selection).ReplaceWithHtml,
 		"SetHtml":         (*Selection).SetHtml,
+		"WrapHtml":        (*Selection).WrapHtml,
+		"WrapAllHtml":     (*Selection).WrapAllHtml,
 		"WrapInnerHtml":   (*Selection).WrapInnerHtml,
 	}
 	for nm, fn := range cases {
