@@ -662,6 +662,38 @@ func TestWrapInnerHtml(t *testing.T) {
 	printSel(t, doc.Selection)
 }
 
+func TestWrapHtmlContents(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		wrap func(*Selection, string) *Selection
+		want string
+	}{
+		{"each", (*Selection).WrapHtml, "<b>before</b><b><!--note--></b><b><i>inside</i></b><b>after</b>"},
+		{"inner", (*Selection).WrapInnerHtml, "before<!--note--><i><b>inside</b></i>after"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			doc := loadString(t, "<div>before<!--note--><i>inside</i>after</div>")
+			div := doc.Find("div")
+			contents := div.Contents()
+			if got := tc.wrap(contents, "<b></b>"); got != contents {
+				t.Fatal("did not return the original selection")
+			}
+			if got, err := div.Html(); err != nil || got != tc.want {
+				t.Errorf("Html() = %q, %v; want %q", got, err, tc.want)
+			}
+		})
+	}
+}
+
+func TestWrapHtmlDocumentParent(t *testing.T) {
+	doc := loadString(t, `<!doctype html><html><body></body></html>`)
+	root := doc.Find("html")
+	root.WrapHtml("<div></div>")
+	if got := doc.Find("div > html").Get(0); got == nil || got != root.Get(0) {
+		t.Fatal("expected the wrapper to contain the original html element")
+	}
+}
+
 func TestParsingRespectsVaryingContext(t *testing.T) {
 	docA := loadString(t, `
 	<html>
@@ -733,6 +765,8 @@ func TestHtmlWithNonElementNode(t *testing.T) {
 		"PrependHtml":     (*Selection).PrependHtml,
 		"ReplaceWithHtml": (*Selection).ReplaceWithHtml,
 		"SetHtml":         (*Selection).SetHtml,
+		"WrapHtml":        (*Selection).WrapHtml,
+		"WrapInnerHtml":   (*Selection).WrapInnerHtml,
 	}
 	for nm, fn := range cases {
 		// this test is only to make sure that the HTML parsing/manipulation

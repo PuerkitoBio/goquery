@@ -387,7 +387,7 @@ func (s *Selection) WrapHtml(htmlStr string) *Selection {
 	cache := make(map[string][]*html.Node)
 	for _, n := range s.Nodes {
 		parent := n.Parent
-		if parent == nil {
+		if parent == nil || parent.Type != html.ElementNode {
 			parent = &html.Node{Type: html.ElementNode}
 		}
 		nodes := cachedParseHtmlWithContext(cache, htmlStr, parent, s.parseOpts())
@@ -522,12 +522,16 @@ func (s *Selection) WrapInnerSelection(sel *Selection) *Selection {
 
 // WrapInnerHtml wraps an HTML structure, matched by the given selector, around
 // the content of element in the set of matched elements. The matched child is
-// cloned before being inserted into the document.
+// cloned before being inserted into the document. Non-element nodes in the
+// selection are skipped.
 //
 // It returns the original set of elements.
 func (s *Selection) WrapInnerHtml(htmlStr string) *Selection {
 	cache := make(map[string][]*html.Node)
 	for _, n := range s.Nodes {
+		if n.Type != html.ElementNode {
+			continue
+		}
 		nodes := cachedParseHtmlWithContext(cache, htmlStr, n, s.parseOpts())
 		newSingleSelection(n, s.document).wrapInnerNodes(cloneNodes(nodes)...)
 	}
