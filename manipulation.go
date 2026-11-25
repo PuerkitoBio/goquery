@@ -331,9 +331,19 @@ func (s *Selection) SetHtml(htmlStr string) *Selection {
 }
 
 // SetText sets the content of each element in the selection to specified content.
-// The provided text string is escaped.
+// The text is stored as a single text node, so it is preserved exactly as
+// provided, including in raw-text elements such as script or style. It is
+// escaped as needed when the document is serialized back to HTML.
 func (s *Selection) SetText(text string) *Selection {
-	return s.SetHtml(html.EscapeString(text))
+	for _, node := range s.Nodes {
+		for c := node.FirstChild; c != nil; c = node.FirstChild {
+			node.RemoveChild(c)
+		}
+		if text != "" {
+			node.AppendChild(&html.Node{Type: html.TextNode, Data: text})
+		}
+	}
+	return s
 }
 
 // Unwrap removes the parents of the set of matched elements, leaving the matched

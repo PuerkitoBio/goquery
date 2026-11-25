@@ -2,6 +2,7 @@ package goquery
 
 import (
 	"log"
+	"strings"
 	"testing"
 )
 
@@ -486,6 +487,58 @@ func TestSetText(t *testing.T) {
 	}
 
 	printSel(t, doc.Selection)
+}
+
+func TestSetTextInRawTextElement(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader(
+		`<html><head><script type="application/json">old</script><style>old</style></head><body><div>old</div></body></html>`))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	repl := `{"label":"<b>&"}`
+	doc.Find("script").SetText(repl)
+	doc.Find("style").SetText(repl)
+	doc.Find("div").SetText(repl)
+
+	for _, sel := range []string{"script", "style", "div"} {
+		if got := doc.Find(sel).Text(); got != repl {
+			t.Errorf("%s: expected text to be %q, found %q", sel, repl, got)
+		}
+	}
+
+	// In raw-text elements the content is serialized literally when the
+	// element itself is rendered.
+	h, err := OuterHtml(doc.Find("script"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := `<script type="application/json">` + repl + `</script>`
+	if h != want {
+		t.Errorf("script: expected outer html to be %q, found %q", want, h)
+	}
+
+	// In ordinary elements the text node is escaped on serialization.
+	h, err = doc.Find("div").Html()
+	if err != nil {
+		t.Fatal(err)
+	}
+	esc := "{&#34;label&#34;:&#34;&lt;b&gt;&amp;&#34;}"
+	if h != esc {
+		t.Errorf("div: expected html to be %q, found %q", esc, h)
+	}
+}
+
+func TestSetTextEmpty(t *testing.T) {
+	doc := Doc2Clone()
+	sel := doc.Find("#main")
+	sel.SetText("")
+	if sel.Text() != "" {
+		t.Errorf("expected empty text, found %q", sel.Text())
+	}
+	if sel.Nodes[0].FirstChild != nil {
+		t.Error("expected no children after SetText with an empty string")
+	}
 }
 
 func TestReplaceWithSelection(t *testing.T) {
