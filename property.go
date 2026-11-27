@@ -1,6 +1,7 @@
 package goquery
 
 import (
+	"slices"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -264,11 +265,12 @@ func getClassesSlice(classes string) []string {
 	})
 }
 
+// removeAttr removes the first attribute named attrName from the node,
+// keeping the remaining attributes in their original order.
 func removeAttr(n *html.Node, attrName string) {
 	for i, a := range n.Attr {
 		if a.Key == attrName {
-			n.Attr[i], n.Attr[len(n.Attr)-1], n.Attr =
-				n.Attr[len(n.Attr)-1], html.Attribute{}, n.Attr[:len(n.Attr)-1]
+			n.Attr = slices.Delete(n.Attr, i, i+1)
 			return
 		}
 	}
