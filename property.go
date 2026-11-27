@@ -118,7 +118,7 @@ func (s *Selection) AddClass(class ...string) *Selection {
 	for _, n := range s.Nodes {
 		curClasses, attr := getClassesAndAttr(n)
 		for _, newClass := range tcls {
-			if !strings.Contains(curClasses, " "+newClass+" ") {
+			if classIndex(curClasses, newClass) < 0 {
 				curClasses += newClass + " "
 			}
 		}
@@ -194,7 +194,7 @@ func (s *Selection) ToggleClass(class ...string) *Selection {
 	for _, n := range s.Nodes {
 		classes, attr := getClassesAndAttr(n)
 		for _, tcl := range tcls {
-			if strings.Contains(classes, " "+tcl+" ") {
+			if classIndex(classes, tcl) >= 0 {
 				classes = removeClassFromClasses(classes, tcl)
 			} else {
 				classes += tcl + " "
@@ -211,14 +211,31 @@ func (s *Selection) ToggleClass(class ...string) *Selection {
 // class string. One ReplaceAll pass is not enough: adjacent occurrences
 // share the space between them, so " a a " holds only one " a ".
 func removeClassFromClasses(classes, cl string) string {
-	target := " " + cl + " "
 	for {
-		replaced := strings.Replace(classes, target, " ", 1)
-		if replaced == classes {
+		i := classIndex(classes, cl)
+		if i < 0 {
 			return classes
 		}
-		classes = replaced
+		classes = classes[:i] + classes[i+len(cl)+1:]
 	}
+}
+
+// classIndex returns the index of the first cl in the normalized class
+// string that has a space before and after it, or -1.
+func classIndex(classes, cl string) int {
+	for i := 0; i < len(classes); {
+		j := strings.Index(classes[i:], cl)
+		if j < 0 {
+			return -1
+		}
+		j += i
+		end := j + len(cl)
+		if j > 0 && classes[j-1] == ' ' && end < len(classes) && classes[end] == ' ' {
+			return j
+		}
+		i = j + 1
+	}
+	return -1
 }
 
 func getAttributePtr(attrName string, n *html.Node) *html.Attribute {
