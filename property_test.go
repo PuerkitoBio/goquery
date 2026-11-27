@@ -44,6 +44,52 @@ func TestRemoveAttr(t *testing.T) {
 	}
 }
 
+func TestRemoveAttrKeepsAttributeOrder(t *testing.T) {
+	cases := []struct {
+		remove string
+		want   string
+	}{
+		{"id", `<div href="/x" class="c" title="t" data-k="v"></div>`},
+		{"href", `<div id="i" class="c" title="t" data-k="v"></div>`},
+		{"title", `<div id="i" href="/x" class="c" data-k="v"></div>`},
+		{"data-k", `<div id="i" href="/x" class="c" title="t"></div>`},
+		{"missing", `<div id="i" href="/x" class="c" title="t" data-k="v"></div>`},
+	}
+	for _, c := range cases {
+		t.Run(c.remove, func(t *testing.T) {
+			doc, err := NewDocumentFromReader(strings.NewReader(`<div id="i" href="/x" class="c" title="t" data-k="v"></div>`))
+			if err != nil {
+				t.Fatal(err)
+			}
+			sel := doc.Find("div").RemoveAttr(c.remove)
+			got, err := OuterHtml(sel)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got != c.want {
+				t.Errorf("RemoveAttr(%q): got %s, want %s", c.remove, got, c.want)
+			}
+		})
+	}
+}
+
+func TestRemoveClassKeepsAttributeOrder(t *testing.T) {
+	doc, err := NewDocumentFromReader(strings.NewReader(`<p class="x" id="i" title="t" lang="en"></p>`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	sel := doc.Find("p")
+
+	sel.RemoveClass("x")
+	got, err := OuterHtml(sel)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := `<p id="i" title="t" lang="en"></p>`; got != want {
+		t.Errorf("RemoveClass: got %s, want %s", got, want)
+	}
+}
+
 func TestSetAttr(t *testing.T) {
 	sel := Doc2Clone().Find("#main")
 
